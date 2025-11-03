@@ -8,15 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class KategoriSampah extends Model
 {
     use HasFactory;
-
     protected $table = 'kategori_sampah';
-
-    protected $fillable = [
-        'nama_kategori',
-    ];
-
-    public function jenisSampah()
+    protected $primaryKey = 'id_kategori';
+    
+    public function sampah()
     {
-        return $this->hasMany(JenisSampah::class);
+        return $this->hasMany(Sampah::class, 'kategori_id', 'id_kategori');
     }
 }
