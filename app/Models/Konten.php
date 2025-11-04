@@ -11,7 +11,12 @@ class Konten extends Model
     protected $table = 'konten';
     protected $primaryKey = 'id_konten';
 
-    protected $fillable = ['user_id', 'status_id', 'judul', 'deskripsi'];
+    protected $fillable = [
+        'judul', 
+        'deskripsi', 
+        'status_id', 
+        'user_id'
+    ];
 
     public function user()
     {
