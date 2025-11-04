@@ -12,6 +12,11 @@ class Desa extends Model
     protected $table = 'desa'; 
     protected $primaryKey = 'id_desa';
 
+    protected $fillable = [
+        'nama_desa',
+        'kecamatan_id'
+    ];
+
     /**
      * Relasi: Satu Desa dimiliki oleh satu Kecamatan
      */

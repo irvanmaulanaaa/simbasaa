@@ -1,7 +1,7 @@
-<x-guest-layout>    
+<x-guest-layout>
     <div class="text-center">
         <div class="flex items-center justify-center">
-            <img src="{{ asset('images/logobaru.png') }}" alt="Logo Bank Sampah" class="h-12 w-auto">
+            <img src="{{ asset('images/logobaru.png') }}" alt="Logo Bank Sampah" class="h-16 w-auto">
             <span class="mx-4 text-gray-300 text-2xl font-light">|</span>
             <span class="text-2xl font-semibold text-gray-700">SIMBASA</span>
         </div>
@@ -15,10 +15,10 @@
         @csrf
 
         <div>
-            <x-input-label for="login" value="Username" class="font-semibold" />
-            <x-text-input id="login" class="block mt-1 w-full rounded-lg" type="text" name="login" :value="old('login')"
-                required autofocus />
-            <x-input-error :messages="$errors->get('login')" class="mt-2" />
+            <x-input-label for="username" :value="__('Username')" />
+            <x-text-input id="username" class="block mt-1 w-full" type="text" name="username" :value="old('username')"
+                required autofocus autocomplete="username" />
+            <x-input-error :messages="$errors->get('username')" class="mt-2" />
         </div>
 
         <div class="mt-4">
@@ -36,13 +36,12 @@
             </label>
 
             @if (Route::has('password.request'))
-                <a class="text-sm text-blue-600"
-                    href="{{ route('password.request') }}">
+                <a class="text-sm text-blue-600" href="{{ route('password.request') }}">
                     {{ __('Lupa password?') }}
                 </a>
             @endif
         </div>
-        
+
         <div class="mt-6">
             <x-primary-button class="w-full justify-center py-3 rounded-lg text-base bg-green-600 hover:bg-green-700">
                 {{ __('Masuk') }}

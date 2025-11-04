@@ -8,7 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
-
+use App\Providers\RouteServiceProvider;
 class AuthenticatedSessionController extends Controller
 {
     /**
@@ -30,12 +30,16 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
 
-        if ($user->role === 'admin') {
-            return redirect()->intended(route('admin.warga.index'));
-        } 
-        
-        if ($user->role === 'warga') {
-            return redirect()->intended(route('warga.dashboard'));
+        $role = $user->role->nama_role;
+
+        if ($role == 'admin_data') {
+            return redirect()->route('admin-data.kecamatan.index');
+        } elseif ($role == 'admin_pusat') {
+            return redirect()->intended('/dashboard');
+        } elseif ($role == 'ketua') {
+            return redirect()->intended('/dashboard');
+        } elseif ($role == 'warga') {
+            return redirect()->intended('/dashboard');
         }
 
         return redirect()->intended('/dashboard');

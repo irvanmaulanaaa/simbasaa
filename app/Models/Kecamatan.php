@@ -12,6 +12,11 @@ class Kecamatan extends Model
     protected $table = 'kecamatan'; 
     protected $primaryKey = 'id_kecamatan';
 
+    protected $fillable = [
+        'nama_kecamatan',
+        'kab_kota'
+    ];
+
     /**
      * Relasi: Satu Kecamatan memiliki banyak Desa
      */

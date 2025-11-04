@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
@@ -14,19 +15,18 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
-            'nama' => 'Admin',
-            'username' => 'admin',
-            'password' => Hash::make('Admin123'),
-            'role' => 'admin',
-        ]);
+        $adminDataRole = Role::where('nama_role', 'admin_data')->first();
 
-        User::create([
-            'nama' => 'Sri Mulayani',
-            'nik' => '1234567890123456',
-            'password' => Hash::make('User123'),
-            'role' => 'warga',
-            'alamat' => 'Jl. Merpati No. 10, Jakarta',
-        ]);
+        if ($adminDataRole) {
+            User::create([
+                'nama_lengkap' => 'Admin Data',
+                'username' => 'admindata',
+                'password' => Hash::make('!@#$%^&*()'),
+                'role_id' => $adminDataRole->id_role,
+                'desa_id' => null, 
+                'status' => 'aktif',
+            ]);
+        }
+        
     }
 }
