@@ -1,7 +1,11 @@
 <x-app-layout>
+    <x-slot name="sidebar">
+        @include('admin-data.partials.sidebar')
+    </x-slot>
+
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Edit Konten Edukasi') }}
+            {{ __('Edit Konten') }}
         </h2>
     </x-slot>
 

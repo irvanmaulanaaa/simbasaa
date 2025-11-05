@@ -1,7 +1,11 @@
 <x-app-layout>
+    <x-slot name="sidebar">
+        @include('admin-data.partials.sidebar')
+    </x-slot>
+
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Tambah Pengguna Baru') }}
+            {{ __('Tambah Pengguna') }}
         </h2>
     </x-slot>
 
@@ -54,7 +58,6 @@
                                     class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                     required>
                                     <option value="">Pilih Desa (Pilih Kecamatan Dulu)</option>
-                                    {{-- Opsi Desa akan diisi oleh JavaScript --}}
                                 </select>
                             </div>
                             <div>

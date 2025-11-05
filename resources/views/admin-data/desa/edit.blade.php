@@ -1,4 +1,8 @@
 <x-app-layout>
+    <x-slot name="sidebar">
+        @include('admin-data.partials.sidebar')
+    </x-slot>
+
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Edit Desa') }}
@@ -23,7 +27,7 @@
 
                     <form action="{{ route('admin-data.desa.update', $desa->id_desa) }}" method="POST">
                         @csrf
-                        @method('PUT') {{-- Penting untuk update --}}
+                        @method('PUT') 
 
                         <div class="mt-4">
                             <x-input-label for="kecamatan_id" :value="__('Kecamatan')" />
@@ -31,7 +35,6 @@
                                 <option value="">Pilih Kecamatan</option>
                                 @foreach ($kecamatans as $kecamatan)
                                     <option value="{{ $kecamatan->id_kecamatan }}" 
-                                        {{-- Logika untuk memilih opsi yang sesuai --}}
                                         @if($desa->kecamatan_id == $kecamatan->id_kecamatan) selected @endif>
                                         {{ $kecamatan->nama_kecamatan }}
                                     </option>

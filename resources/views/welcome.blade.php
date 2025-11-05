@@ -25,7 +25,7 @@
                 <div>
                     @if (Route::has('login'))
                         @auth
-                            <a href="{{ url('/admin/warga') }}" class="font-semibold text-gray-600 hover:text-gray-900">Dashboard</a>
+                            <a href="{{ url('/admin-data') }}" class="font-semibold text-gray-600 hover:text-gray-900">Dashboard</a>
                         @else
                             <a href="{{ route('login') }}" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow">
                                 Masuk

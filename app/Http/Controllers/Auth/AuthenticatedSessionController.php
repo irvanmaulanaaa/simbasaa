@@ -33,7 +33,7 @@ class AuthenticatedSessionController extends Controller
         $role = $user->role->nama_role;
 
         if ($role == 'admin_data') {
-            return redirect()->route('admin-data.kecamatan.index');
+            return redirect()->route('admin-data.dashboard');
         } elseif ($role == 'admin_pusat') {
             return redirect()->intended('/dashboard');
         } elseif ($role == 'ketua') {
