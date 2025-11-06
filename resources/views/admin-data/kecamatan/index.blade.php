@@ -9,7 +9,7 @@
         </h2>
     </x-slot>
 
-    <div class="py-6">
+    <div class="py-6 px-4 sm:px-0">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <nav class="flex mb-4" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
@@ -46,7 +46,7 @@
                         </div>
                     @endif
 
-                    <div class="overflow-x-auto">
+                    <div class="overflow-x-auto rounded-md">
                         <table class="min-w-full bg-white">
                             <thead class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
                                 <tr>

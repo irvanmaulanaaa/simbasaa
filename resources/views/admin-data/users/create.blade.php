@@ -9,7 +9,7 @@
         </h2>
     </x-slot>
 
-    <div class="py-6">
+    <div class="py-6 px-4 sm:px-0">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <nav class="flex mb-4" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
@@ -72,6 +72,16 @@
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                            <div>
+                                <x-input-label for="no_telepon" :value="__('Nomor Telepon')" />
+                                <x-text-input id="no_telepon" class="block mt-1 w-full" type="text" name="no_telepon"
+                                    :value="old('no_telepon')" />
+                            </div>
+                            <div>
+                                <x-input-label for="jalan" :value="__('Nama Jalan')" />
+                                <x-text-input id="jalan" class="block mt-1 w-full" type="text" name="jalan"
+                                    :value="old('jalan')" />
+                            </div>
                             <div>
                                 <x-input-label for="kecamatan_id" :value="__('Kecamatan')" />
                                 <select id="kecamatan_id" name="kecamatan_id"

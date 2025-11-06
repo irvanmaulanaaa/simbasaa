@@ -19,13 +19,13 @@ class UserController extends Controller
     public function index()
     {
         $users = User::with(['role', 'desa.kecamatan'])
-                    ->whereHas('role', function ($query) {
-                        $query->where('nama_role', 'warga')
-                              ->orWhere('nama_role', 'ketua');
-                    })
-                    ->latest()
-                    ->paginate(10);
-                    
+            ->whereHas('role', function ($query) {
+                $query->where('nama_role', 'warga')
+                    ->orWhere('nama_role', 'ketua');
+            })
+            ->latest()
+            ->paginate(10);
+
         return view('admin-data.users.index', compact('users'));
     }
 
@@ -36,7 +36,7 @@ class UserController extends Controller
     {
         $roles = Role::whereIn('nama_role', ['warga', 'ketua'])->get();
         $kecamatans = Kecamatan::all();
-        
+
         return view('admin-data.users.create', compact('roles', 'kecamatans'));
     }
 
@@ -54,6 +54,8 @@ class UserController extends Controller
             'rt' => ['required', 'string', 'max:5'],
             'rw' => ['required', 'string', 'max:5'],
             'status' => ['required', 'in:aktif,tidak_aktif'],
+            'no_telepon' => ['nullable', 'string', 'max:20'],
+            'jalan' => ['nullable', 'string', 'max:255'],
         ]);
 
         $user = User::create([
@@ -67,21 +69,21 @@ class UserController extends Controller
             'rw' => $request->rw,
             'status' => $request->status,
         ]);
-        
+
         if ($user->role->nama_role == 'warga') {
             $user->saldo()->create(['jumlah_saldo' => 0]);
         }
 
         return redirect()->route('admin-data.users.index')
-                         ->with('success', 'User berhasil ditambahkan.');
+            ->with('success', 'User berhasil ditambahkan.');
     }
 
     public function getDesa(Request $request)
     {
         $desa = Desa::where('kecamatan_id', $request->kecamatan_id)
-                    ->orderBy('nama_desa', 'asc')
-                    ->get();
-        
+            ->orderBy('nama_desa', 'asc')
+            ->get();
+
         // Mengembalikan data dalam format JSON
         return response()->json($desa);
     }
@@ -100,10 +102,10 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $user->load('desa.kecamatan');
-        
+
         $roles = Role::whereIn('nama_role', ['warga', 'ketua'])->get();
         $kecamatans = Kecamatan::all();
-        
+
         // Ambil desa yang satu kecamatan dengan user
         $desas = Desa::where('kecamatan_id', $user->desa->kecamatan_id)->get();
 
@@ -117,13 +119,15 @@ class UserController extends Controller
     {
         $request->validate([
             'nama_lengkap' => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'max:100', 'unique:users,username,' . $user->id_user . ',id_user'], 
-            'password' => ['nullable', 'confirmed', Rules\Password::defaults()], 
+            'username' => ['required', 'string', 'max:100', 'unique:users,username,' . $user->id_user . ',id_user'],
+            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
             'role_id' => ['required', 'exists:roles,id_role'],
             'desa_id' => ['required', 'exists:desa,id_desa'],
             'rt' => ['required', 'string', 'max:5'],
             'rw' => ['required', 'string', 'max:5'],
             'status' => ['required', 'in:aktif,tidak_aktif'],
+            'no_telepon' => ['nullable', 'string', 'max:20'],
+            'jalan' => ['nullable', 'string', 'max:255'],
         ]);
 
         $data = $request->except('password', 'password_confirmation');
@@ -135,7 +139,7 @@ class UserController extends Controller
         $user->update($data);
 
         return redirect()->route('admin-data.users.index')
-                         ->with('success', 'User berhasil diperbarui.');
+            ->with('success', 'User berhasil diperbarui.');
     }
 
     /**
@@ -144,8 +148,8 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $user->update(['status' => 'tidak_aktif']);
-        
+
         return redirect()->route('admin-data.users.index')
-                         ->with('success', 'User berhasil dinonaktifkan.');
+            ->with('success', 'User berhasil dinonaktifkan.');
     }
 }

@@ -16,7 +16,7 @@
 
 <body class="font-sans antialiased">
 
-    <header x-data="{ sidebarOpen: false }" class="bg-white shadow-sm sticky top-0 z-50">
+    <header x-data="{ sidebarOpen: false }" class="bg-gray-50 shadow-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
 
@@ -39,12 +39,12 @@
 
                 <div class="flex items-center space-x-4">
 
-                    <nav class="hidden md:flex space-x-6">
+                    <nav class="hidden md:flex space-x-6 mr-8">
                         @auth
                             <a href="{{ route('dashboard') }}"
-                                class="text-sm font-medium text-gray-500 hover:text-gray-900">Dashboard</a>
+                                class="text-lg font-medium text-gray-500 hover:text-green-600">Dashboard</a>
                         @endauth
-                        <a href="#" class="text-sm font-medium text-gray-500 hover:text-gray-900">Konten</a>
+                        <a href="#" class="text-lg font-medium text-gray-500 hover:text-green-600">Konten</a>
                     </nav>
 
                     <div class="flex items-center">
@@ -82,7 +82,8 @@
             x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full" x-cloak>
 
             <div class="flex justify-between items-center mb-4">
-                <span class="text-lg font-bold">Menu</span>
+                <img src="{{ asset('images/logobaru.png') }}" alt="SIMBASA" class="h-10 w-auto ml-2">
+                <span class="text-gray-800 text-xl font-bold mr-4">SIMBASA</span>
                 <button @click="sidebarOpen = false" class="p-1 text-gray-400 hover:text-gray-600">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -132,8 +133,8 @@
             </div>
         </section>
 
-        <section class="py-20">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section class="py-20 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
                 <div class="text-center">
                     <h2 class="text-3xl font-bold">Bagaimana Caranya?</h2>
                     <p class="mt-2 text-gray-600">Hanya dengan 3 langkah mudah.</p>

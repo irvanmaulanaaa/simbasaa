@@ -9,7 +9,7 @@
         </h2>
     </x-slot>
 
-    <div class="py-6">
+    <div class="py-6 px-4 sm:px-0">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             <nav class="flex mb-4" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
