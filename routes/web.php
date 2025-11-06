@@ -7,13 +7,38 @@ use App\Http\Controllers\AdminData\DesaController;
 use App\Http\Controllers\AdminData\UserController;
 use App\Http\Controllers\AdminData\KontenController;
 use App\Http\Controllers\AdminData\DashboardController;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $user = Auth::user();
+
+    if (!$user->role) {
+        Auth::logout();
+        return redirect('/login')->withErrors('Akun Anda tidak memiliki peran. Hubungi administrator.');
+    }
+
+    $role = $user->role->nama_role;
+
+    if ($role == 'admin_data') {
+        return redirect()->route('admin-data.dashboard');
+    } 
+    elseif ($role == 'admin_pusat') {
+        return redirect()->route('admin-pusat.dashboard'); 
+    } 
+    elseif ($role == 'ketua') {
+        return redirect()->route('ketua.dashboard');
+    } 
+    elseif ($role == 'warga') {
+        return redirect()->route('warga.dashboard');
+    }
+
+    Auth::logout();
+    return redirect('/login')->withErrors('Role tidak dikenal.');
+
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {

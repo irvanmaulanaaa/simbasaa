@@ -14,7 +14,7 @@
     </head>
     <body class="font-sans antialiased">
         
-        <div x-data="{ sidebarOpen: false }" class="min-h-screen bg-gray-100 flex">
+        <div x-data="{ sidebarOpen: false }" class="h-screen bg-gray-100 flex overflow-hidden">
             
             <div x-show="sidebarOpen" @click="sidebarOpen = false" class="fixed inset-0 z-20 bg-black opacity-50 transition-opacity lg:hidden" x-cloak></div>
 
@@ -25,14 +25,14 @@
                     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" x-cloak>
                     
                     <div class="h-full flex flex-col">
-                        <div class="h-16 flex items-center justify-center shadow-sm border-b border-gray-100 relative">
-                            <img src="{{ asset('images/logobaru.png') }}" alt="SIMBASA" class="h-10 w-auto">
-                            <span class="text-gray-800 text-2xl font-bold ml-2">SIMBASA</span>
+                        <div class="h-16 flex items-center shadow-sm border-b border-gray-100 relative">
+                            <img src="{{ asset('images/logobaru.png') }}" alt="SIMBASA" class="h-10 w-auto ml-6">
+                            <span class="text-gray-800 text-xl font-bold ml-4">SIMBASA</span>
                             <button @click="sidebarOpen = false" class="absolute top-3 right-3 p-1 text-gray-400 hover:text-gray-600 lg:hidden">
-                                <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                <svg class="h-6 w-6 mt-1" stroke="currentColor" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                             </button>
                         </div>
-                        <nav class="flex-1 py-4 px-4 space-y-2">
+                        <nav class="flex-1 py-4 px-4 space-y-2 overflow-y-auto">
                             {{ $sidebar }}
                         </nav>
                     </div>
