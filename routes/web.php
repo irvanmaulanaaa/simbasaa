@@ -25,14 +25,11 @@ Route::get('/dashboard', function () {
 
     if ($role == 'admin_data') {
         return redirect()->route('admin-data.dashboard');
-    } 
-    elseif ($role == 'admin_pusat') {
-        return redirect()->route('admin-pusat.dashboard'); 
-    } 
-    elseif ($role == 'ketua') {
+    } elseif ($role == 'admin_pusat') {
+        return redirect()->route('admin-pusat.dashboard');
+    } elseif ($role == 'ketua') {
         return redirect()->route('ketua.dashboard');
-    } 
-    elseif ($role == 'warga') {
+    } elseif ($role == 'warga') {
         return redirect()->route('warga.dashboard');
     }
 
@@ -42,9 +39,9 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::prefix('admin-data')->name('admin-data.')->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/users/get-desa', [UserController::class, 'getDesa'])->name('users.get-desa');
@@ -52,7 +49,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('desa', DesaController::class);
         Route::resource('users', UserController::class);
         Route::resource('konten', KontenController::class);
-    }); 
+    });
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

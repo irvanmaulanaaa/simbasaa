@@ -18,6 +18,7 @@ class User extends Authenticatable
         'nama_lengkap',
         'username',
         'password',
+        'profile_photo_path',
         'no_telepon',
         'jalan',
         'rt',
