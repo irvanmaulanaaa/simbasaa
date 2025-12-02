@@ -3,6 +3,12 @@
         @include('admin-pusat.partials.sidebar')
     </x-slot>
 
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Tambah Data Sampah') }}
+        </h2>
+    </x-slot>
+
     <div class="py-6 px-4 sm:px-0">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
@@ -10,13 +16,8 @@
                 <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
                     <li class="inline-flex items-center">
                         <a href="{{ route('admin-pusat.dashboard') }}"
-                            class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-green-600">
-                            <svg class="w-3 h-3 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z" />
-                            </svg>
-                            Dashboard
+                            class="inline-flex items-center text-lg font-medium text-gray-700 hover:text-green-600">
+                            Home
                         </a>
                     </li>
                     <li>
@@ -27,8 +28,7 @@
                                     stroke-width="2" d="m1 9 4-4-4-4" />
                             </svg>
                             <a href="{{ route('admin-pusat.sampah.index') }}"
-                                class="ms-1 text-sm font-medium text-gray-700 hover:text-green-600 md:ms-2">Manajemen
-                                Sampah</a>
+                                class="ms-1 text-lg font-medium text-gray-700 hover:text-green-600 md:ms-2">Data Sampah</a>
                         </div>
                     </li>
                     <li aria-current="page">
@@ -38,7 +38,7 @@
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                                     stroke-width="2" d="m1 9 4-4-4-4" />
                             </svg>
-                            <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2">Tambah Baru</span>
+                            <span class="ms-1 text-lg font-medium text-gray-500 md:ms-2">Tambah</span>
                         </div>
                     </li>
                 </ol>
@@ -72,7 +72,7 @@
                             </div>
 
                             <div>
-                                <x-input-label for="kode_sampah" :value="__('Kode Sampah (Unik)')" />
+                                <x-input-label for="kode_sampah" :value="__('Kode Sampah')" />
                                 <x-text-input id="kode_sampah" class="block mt-1 w-full" type="text"
                                     name="kode_sampah" :value="old('kode_sampah')" required />
                                 <x-input-error :messages="$errors->get('kode_sampah')" class="mt-2" />
@@ -83,7 +83,7 @@
                                 <select id="kategori_id" name="kategori_id"
                                     class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm"
                                     required>
-                                    <option value="">-- Pilih Kategori --</option>
+                                    <option value="">Pilih Kategori</option>
                                     @foreach ($kategoris as $kategori)
                                         <option value="{{ $kategori->id_kategori }}"
                                             {{ old('kategori_id') == $kategori->id_kategori ? 'selected' : '' }}>
@@ -95,7 +95,7 @@
                             </div>
 
                             <div>
-                                <x-input-label for="harga_anggota" :value="__('Harga Beli dari Warga (Rp)')" />
+                                <x-input-label for="harga_anggota" :value="__('Harga Anggota')" />
                                 <x-text-input id="harga_anggota" class="block mt-1 w-full" type="number"
                                     name="harga_anggota" :value="old('harga_anggota')" required />
                                 <x-input-error :messages="$errors->get('harga_anggota')" class="mt-2" />
@@ -106,9 +106,9 @@
                                 <select id="UOM" name="UOM"
                                     class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm"
                                     required>
-                                    <option value="kg" {{ old('UOM') == 'kg' ? 'selected' : '' }}>Kilogram (kg)
+                                    <option value="kg" {{ old('UOM') == 'kg' ? 'selected' : '' }}>Kilogram (Kg)
                                     </option>
-                                    <option value="pcs" {{ old('UOM') == 'pcs' ? 'selected' : '' }}>Satuan (pcs)
+                                    <option value="pcs" {{ old('UOM') == 'pcs' ? 'selected' : '' }}>Satuan (Pcs)
                                     </option>
                                 </select>
                                 <x-input-error :messages="$errors->get('UOM')" class="mt-2" />

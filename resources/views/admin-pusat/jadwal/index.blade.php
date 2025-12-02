@@ -3,18 +3,19 @@
         @include('admin-pusat.partials.sidebar')
     </x-slot>
 
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Jadwal Penimbangan') }}
+        </h2>
+    </x-slot>
+
     <div class="py-6 px-4 sm:px-0">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight mb-4">
-                {{ __('Jadwal Penimbangan') }}
-            </h2>
-
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <a href="{{ route('admin-pusat.jadwal.create') }}"
                         class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 mb-4">
-                        Buat Jadwal Baru
+                        Buat Jadwal
                     </a>
 
                     @if ($message = Session::get('success'))
@@ -29,7 +30,7 @@
                                 <tr>
                                     <th class="py-3 px-6 text-left">Tanggal</th>
                                     <th class="py-3 px-6 text-left">Jam</th>
-                                    <th class="py-3 px-6 text-left">Lokasi (Desa / RW)</th>
+                                    <th class="py-3 px-6 text-left">Lokasi</th>
                                     <th class="py-3 px-6 text-center">Aksi</th>
                                 </tr>
                             </thead>

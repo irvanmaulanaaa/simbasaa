@@ -13,4 +13,14 @@ class JadwalPenimbangan extends Model
     protected $fillable = [
         'user_id', 'desa_id', 'rw_penimbangan', 'jam_penimbangan', 'tgl_jadwal'
     ];
+
+    public function desa()
+    {
+        return $this->belongsTo(Desa::class, 'desa_id', 'id_desa');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id_user');
+    }
 }

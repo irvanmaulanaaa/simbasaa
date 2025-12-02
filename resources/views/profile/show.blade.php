@@ -92,23 +92,21 @@
                             <p class="mt-1 text-lg text-gray-900 capitalize">{{ Auth::user()->role->nama_role }}</p>
                         </div>
 
-                        <div class="border-t pt-4 mt-4">
+                        <div>
                             <span class="block font-medium text-sm text-gray-700">No. Telepon</span>
                             <p class="mt-1 text-lg text-gray-900">{{ Auth::user()->no_telepon ?? '-' }}</p>
                         </div>
                         <div>
                             <span class="block font-medium text-sm text-gray-700">Alamat Lengkap</span>
                             <p class="mt-1 text-lg text-gray-900">
-                                {{ Auth::user()->jalan ?? 'Belum diatur' }}
-                                <br>
-                                RT {{ Auth::user()->rt ?? '-' }} / RW {{ Auth::user()->rw ?? '-' }}
-                                <br>
+                                {{ Auth::user()->jalan ?? 'Belum diatur' }},
+                                RT {{ Auth::user()->rt ?? '-' }} / RW {{ Auth::user()->rw ?? '-' }},
                                 {{ Auth::user()->desa->nama_desa ?? '-' }},
                                 {{ Auth::user()->desa->kecamatan->nama_kecamatan ?? '-' }}
                             </p>
                         </div>
 
-                        <div class="flex items-center gap-4 pt-4 border-t mt-4">
+                        <div class="flex items-center gap-4 pt-4 mt-4">
                             <a href="{{ route('profile.edit') }}"
                                 class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700">
                                 Edit Profile
