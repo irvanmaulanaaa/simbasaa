@@ -1,0 +1,77 @@
+<div class="flex flex-col space-y-1">
+    @php
+        $activeClass = 'flex items-center px-3 py-3 text-sm font-medium bg-green-600 text-white rounded-md';
+        $inactiveClass =
+            'flex items-center px-3 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-md';
+    @endphp
+
+    <a href="{{ route('admin-pusat.dashboard') }}"
+        class="{{ request()->routeIs('admin-pusat.dashboard') ? $activeClass : $inactiveClass }}">
+        <x-heroicon-o-home class="h-6 w-6 mr-3" />
+        {{ __('Home') }}
+    </a>
+
+    <h3 class="px-3 pt-4 pb-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+        Operasional
+    </h3>
+
+    <a href="{{ route('admin-pusat.kategori-sampah.index') }}"
+        class="{{ request()->routeIs('admin-pusat.kategori-sampah.*') ? $activeClass : $inactiveClass }}">
+        <svg class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" />
+        </svg>
+        {{ __('Kategori Sampah') }}
+    </a>
+
+    <a href="{{ route('admin-pusat.sampah.index') }}"
+        class="{{ request()->routeIs('admin-pusat.sampah.*') ? $activeClass : $inactiveClass }}">
+        <svg class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        {{ __('Data Jenis Sampah') }}
+    </a>
+
+    <a href="{{ route('admin-pusat.jadwal.index') }}"
+        class="{{ request()->routeIs('admin-pusat.jadwal.*') ? $activeClass : $inactiveClass }}">
+        <svg class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0h18M9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />
+        </svg>
+        {{ __('Jadwal Penimbangan') }}
+    </a>
+
+    <a href="{{ url('/') }}#konten" class="{{ $inactiveClass }}">
+        <svg class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+        </svg>
+        {{ __('Lihat Konten') }}
+    </a>
+
+    <div class="mt-6 pt-6 border-t border-gray-200">
+        <a href="{{ url('/') }}" class="{{ $inactiveClass }}">
+            <svg class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M12 21a9 9 0 010-18h.01m0 18a9 9 0 000-18h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {{ __('Halaman Utama') }}
+        </a>
+    </div>
+
+    <div class="mt-2">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <a href="{{ route('logout') }}"
+                class="flex items-center px-3 py-3 text-sm font-medium text-red-700 hover:bg-red-600 hover:text-white rounded-md"
+                onclick="event.preventDefault(); this.closest('form').submit();">
+                <svg class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                </svg>
+                {{ __('Log Out') }}
+            </a>
+        </form>
+    </div>
+</div>

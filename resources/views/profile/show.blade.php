@@ -1,8 +1,27 @@
 <x-app-layout>
-    <x-slot name="sidebar">
-        @include('admin-data.partials.sidebar')
-    </x-slot>
+    @php
+        $role = Auth::user()->role->nama_role;
+        $sidebarView = '';
+        $dashboardRoute = '#';
 
+        if ($role == 'admin_data') {
+            $sidebarView = 'admin-data.partials.sidebar';
+            $dashboardRoute = route('admin-data.dashboard');
+        } elseif ($role == 'admin_pusat') {
+            $sidebarView = 'admin-pusat.partials.sidebar';
+            $dashboardRoute = route('admin-pusat.dashboard');
+        } elseif ($role == 'ketua') {
+            $dashboardRoute = '#';
+        } else {
+            $dashboardRoute = '#';
+        }
+    @endphp
+
+    <x-slot name="sidebar">
+        @if (View::exists($sidebarView))
+            @include($sidebarView)
+        @endif
+    </x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Profile Saya') }}
@@ -15,9 +34,9 @@
             <nav class="flex mb-4" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
                     <li class="inline-flex items-center">
-                        <a href="{{ route('admin-data.dashboard') }}"
+                        <a href="{{ $dashboardRoute }}"
                             class="inline-flex items-center text-lg font-medium text-gray-700 hover:text-green-600">
-                            Dashboard
+                            Home
                         </a>
                     </li>
                     <li aria-current="page">
@@ -32,6 +51,7 @@
                     </li>
                 </ol>
             </nav>
+
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                 <div class="max-w-xl">
                     <header>

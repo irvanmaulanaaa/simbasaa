@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Kecamatan;
 use App\Models\Desa;
 use App\Models\Konten;
-use App\Models\User; // <-- Pastikan ini ada
+use App\Models\User;
 
 class DashboardController extends Controller
 {

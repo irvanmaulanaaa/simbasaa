@@ -8,6 +8,7 @@ use App\Models\Role;
 use App\Models\Kecamatan;
 use App\Models\Desa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 
@@ -16,15 +17,22 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+
         $users = User::with(['role', 'desa.kecamatan'])
-            ->whereHas('role', function ($query) {
-                $query->where('nama_role', 'warga')
-                    ->orWhere('nama_role', 'ketua');
+            ->where('id_user', '!=', Auth::id())
+            ->when($search, function ($query, $search) {
+                return $query->where(function ($q) use ($search) {
+                    $q->where('nama_lengkap', 'like', "%{$search}%")
+                        ->orWhere('username', 'like', "%{$search}%")
+                        ->orWhere('nik', 'like', "%{$search}%");
+                });
             })
             ->latest()
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString();
 
         return view('admin-data.users.index', compact('users'));
     }
@@ -34,7 +42,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        $roles = Role::whereIn('nama_role', ['warga', 'ketua'])->get();
+        $roles = Role::all();
         $kecamatans = Kecamatan::all();
 
         return view('admin-data.users.create', compact('roles', 'kecamatans'));
@@ -83,8 +91,6 @@ class UserController extends Controller
         $desa = Desa::where('kecamatan_id', $request->kecamatan_id)
             ->orderBy('nama_desa', 'asc')
             ->get();
-
-        // Mengembalikan data dalam format JSON
         return response()->json($desa);
     }
 
@@ -103,10 +109,8 @@ class UserController extends Controller
     {
         $user->load('desa.kecamatan');
 
-        $roles = Role::whereIn('nama_role', ['warga', 'ketua'])->get();
+        $roles = Role::all();
         $kecamatans = Kecamatan::all();
-
-        // Ambil desa yang satu kecamatan dengan user
         $desas = Desa::where('kecamatan_id', $user->desa->kecamatan_id)->get();
 
         return view('admin-data.users.edit', compact('user', 'roles', 'kecamatans', 'desas'));
