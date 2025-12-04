@@ -36,7 +36,7 @@
                     <li class="inline-flex items-center">
                         <a href="{{ $dashboardRoute }}"
                             class="inline-flex items-center text-lg font-medium text-gray-700 hover:text-green-600">
-                            Dashboard
+                            Home
                         </a>
                     </li>
 

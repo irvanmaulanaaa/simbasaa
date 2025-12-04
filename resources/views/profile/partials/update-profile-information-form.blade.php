@@ -1,11 +1,11 @@
 <section>
     <header>
         <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Informasi Profil') }}
+            {{ __('Informasi Profile') }}
         </h2>
 
         <p class="mt-1 text-sm text-gray-600">
-            {{ __('Perbarui informasi profil, alamat, dan foto Anda.') }}
+            {{ __('Perbarui informasi profile, alamat, dan foto Anda.') }}
         </p>
     </header>
 
@@ -14,7 +14,7 @@
         @method('patch')
 
         <div>
-            <x-input-label for="profile_photo" :value="__('Foto Profil')" />
+            <x-input-label for="profile_photo" :value="__('Foto Profile')" />
             <div class="mt-2 flex items-center space-x-4">
                 @if (Auth::user()->profile_photo_path)
                     <img src="{{ Storage::url(Auth::user()->profile_photo_path) }}" alt="Foto Profil"

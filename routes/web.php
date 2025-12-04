@@ -12,6 +12,9 @@ use App\Http\Controllers\AdminPusat\SampahController;
 use App\Http\Controllers\AdminPusat\JadwalPenimbanganController;
 use App\Http\Controllers\AdminPusat\DashboardController as AdminPusatDashboard;
 use App\Http\Controllers\AdminPusat\KategoriSampahController;
+use App\Http\Controllers\Ketua\DashboardController as KetuaDashboard;
+use App\Http\Controllers\Ketua\SetoranController;
+use App\Http\Controllers\Ketua\PenarikanController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -58,11 +61,19 @@ Route::middleware('auth')->group(function () {
         Route::resource('konten', KontenController::class);
     });
 
-    Route::prefix('admin-pusat')->name('admin-pusat.')->group(function () { 
+    Route::prefix('admin-pusat')->name('admin-pusat.')->group(function () {
         Route::get('dashboard', [AdminPusatDashboard::class, 'index'])->name('dashboard');
         Route::resource('sampah', SampahController::class);
         Route::resource('jadwal', JadwalPenimbanganController::class);
         Route::resource('kategori-sampah', KategoriSampahController::class);
+    });
+
+    Route::prefix('ketua')->name('ketua.')->middleware(['auth'])->group(function () {
+        Route::get('dashboard', [KetuaDashboard::class, 'index'])->name('dashboard');
+        Route::get('setoran/create', function () {
+            return 'Form Setoran'; })->name('setoran.create');
+        Route::get('penarikan', function () {
+            return 'Validasi Penarikan'; })->name('penarikan.index');
     });
 });
 

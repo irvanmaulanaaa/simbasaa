@@ -81,8 +81,7 @@
                             <div>
                                 <x-input-label for="kategori_id" :value="__('Kategori Sampah')" />
                                 <select id="kategori_id" name="kategori_id"
-                                    class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm"
-                                    required>
+                                    class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm" required>
                                     <option value="">Pilih Kategori</option>
                                     @foreach ($kategoris as $kategori)
                                         <option value="{{ $kategori->id_kategori }}"
