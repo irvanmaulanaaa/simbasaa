@@ -5,62 +5,27 @@ namespace App\Http\Controllers\Warga;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Setoran;
+use App\Models\Penarikan;
 
 class DashboardController extends Controller
 {
     public function index()
     {
         $user = Auth::user();
+        
+        $saldo = $user->saldo ? $user->saldo->jumlah_saldo : 0;
 
-        // Logika perhitungan saldo INI TIDAK BERUBAH. Saldo tetap dihitung dari transaksi 'approved'.
-        $totalSetor = $user->transaksi()->where('tipe', 'setor')->sum('jumlah');
-        $totalTarik = $user->transaksi()->where('tipe', 'tarik')->where('status', 'approved')->sum('jumlah');
-        $totalTabungan = $totalSetor - $totalTarik;
+        $setorans = Setoran::where('warga_id', $user->id_user)
+                    ->select('id_setor as id', 'total_harga as jumlah', 'tgl_setor as tanggal', \DB::raw("'setor' as tipe"), \DB::raw("'selesai' as status"))
+                    ->get();
 
-        // UBAH BAGIAN INI: Ambil SEMUA riwayat transaksi, bukan hanya yang 'approved'
-        $riwayatTransaksi = $user->transaksi()->latest()->paginate(10);
+        $penarikans = Penarikan::where('warga_id', $user->id_user)
+                    ->select('id_tarik as id', 'jumlah', 'tgl_request as tanggal', \DB::raw("'tarik' as tipe"), 'status')
+                    ->get();
 
-        return view('warga.dashboard', compact('totalTabungan', 'riwayatTransaksi'));
-    }
+        $riwayat = $setorans->concat($penarikans)->sortByDesc('tanggal')->values();
 
-    /**
-     * Menampilkan form untuk warga mengajukan penarikan.
-     */
-    public function createTarik()
-    {
-        $user = Auth::user();
-
-        $totalSetor = $user->transaksi()->where('tipe', 'setor')->sum('jumlah');
-        $totalTarik = $user->transaksi()->where('tipe', 'tarik')->where('status', 'approved')->sum('jumlah');
-        $saldo = $totalSetor - $totalTarik;
-
-        return view('warga.tarik_saldo', compact('saldo'));
-    }
-
-    /**
-     * Menyimpan permintaan penarikan dari warga.
-     */
-    public function storeTarik(Request $request)
-    {
-        $user = Auth::user();
-
-        $totalSetor = $user->transaksi()->where('tipe', 'setor')->sum('jumlah');
-        $totalTarik = $user->transaksi()->where('tipe', 'tarik')->where('status', 'approved')->sum('jumlah');
-        $saldo = $totalSetor - $totalTarik;
-
-        $request->validate([
-            'jumlah' => 'required|integer|min:10000|max:' . $saldo,
-        ], [
-            'jumlah.max' => 'Jumlah penarikan melebihi saldo Anda yang tersedia (Rp ' . number_format($saldo, 0, ',', '.') . ').'
-        ]);
-
-        $user->transaksi()->create([
-            'tipe' => 'tarik',
-            'jumlah' => $request->jumlah,
-            'status' => 'pending',
-            'tgl_transaksi' => now(),
-        ]);
-
-        return redirect()->route('warga.dashboard')->with('success', 'Permintaan penarikan saldo telah diajukan dan sedang menunggu persetujuan admin.');
+        return view('warga.dashboard', compact('saldo', 'riwayat'));
     }
 }

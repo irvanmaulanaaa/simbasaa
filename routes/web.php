@@ -15,6 +15,8 @@ use App\Http\Controllers\AdminPusat\KategoriSampahController;
 use App\Http\Controllers\Ketua\DashboardController as KetuaDashboard;
 use App\Http\Controllers\Ketua\SetoranController;
 use App\Http\Controllers\Ketua\PenarikanController;
+use App\Http\Controllers\Warga\DashboardController as WargaDashboard;
+use App\Http\Controllers\Warga\PenarikanController as WargaPenarikan;
 
 Route::get('/', function () {
     return view('welcome');
@@ -73,10 +75,17 @@ Route::middleware('auth')->group(function () {
 
         Route::get('setoran/create', [SetoranController::class, 'create'])->name('setoran.create');
         Route::post('setoran', [SetoranController::class, 'store'])->name('setoran.store');
-        Route::get('setoran/{id_setor}', [SetoranController::class, 'show'])->name('setoran.show'); 
-        
+        Route::get('setoran/{id_setor}', [SetoranController::class, 'show'])->name('setoran.show');
+
         Route::get('penarikan', [PenarikanController::class, 'index'])->name('penarikan.index');
         Route::patch('penarikan/{id}', [PenarikanController::class, 'konfirmasi'])->name('penarikan.konfirmasi');
+    });
+
+    Route::prefix('warga')->name('warga.')->middleware(['auth'])->group(function () {
+        Route::get('dashboard', [WargaDashboard::class, 'index'])->name('dashboard');
+
+        Route::get('tarik-saldo', [WargaPenarikan::class, 'create'])->name('tarik.create');
+        Route::post('tarik-saldo', [WargaPenarikan::class, 'store'])->name('tarik.store');
     });
 });
 
