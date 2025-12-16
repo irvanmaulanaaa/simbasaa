@@ -62,8 +62,8 @@ class UserController extends Controller
             'rt' => ['required', 'string', 'max:5'],
             'rw' => ['required', 'string', 'max:5'],
             'status' => ['required', 'in:aktif,tidak_aktif'],
-            'no_telepon' => ['nullable', 'string', 'max:20'],
-            'jalan' => ['nullable', 'string', 'max:255'],
+            'no_telepon' => ['required', 'string', 'max:20'],
+            'jalan' => ['required', 'string', 'max:255'],
         ]);
 
         $user = User::create([
@@ -73,6 +73,7 @@ class UserController extends Controller
             'role_id' => $request->role_id,
             'desa_id' => $request->desa_id,
             'jalan' => $request->jalan,
+            'no_telepon' => $request->no_telepon,
             'rt' => $request->rt,
             'rw' => $request->rw,
             'status' => $request->status,
@@ -130,8 +131,8 @@ class UserController extends Controller
             'rt' => ['required', 'string', 'max:5'],
             'rw' => ['required', 'string', 'max:5'],
             'status' => ['required', 'in:aktif,tidak_aktif'],
-            'no_telepon' => ['nullable', 'string', 'max:20'],
-            'jalan' => ['nullable', 'string', 'max:255'],
+            'no_telepon' => ['required', 'string', 'max:20'],
+            'jalan' => ['required', 'string', 'max:255'],
         ]);
 
         $data = $request->except('password', 'password_confirmation');

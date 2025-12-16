@@ -70,10 +70,13 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('ketua')->name('ketua.')->middleware(['auth'])->group(function () {
         Route::get('dashboard', [KetuaDashboard::class, 'index'])->name('dashboard');
-        Route::get('setoran/create', function () {
-            return 'Form Setoran'; })->name('setoran.create');
-        Route::get('penarikan', function () {
-            return 'Validasi Penarikan'; })->name('penarikan.index');
+
+        Route::get('setoran/create', [SetoranController::class, 'create'])->name('setoran.create');
+        Route::post('setoran', [SetoranController::class, 'store'])->name('setoran.store');
+        Route::get('setoran/{id_setor}', [SetoranController::class, 'show'])->name('setoran.show'); 
+        
+        Route::get('penarikan', [PenarikanController::class, 'index'])->name('penarikan.index');
+        Route::patch('penarikan/{id}', [PenarikanController::class, 'konfirmasi'])->name('penarikan.konfirmasi');
     });
 });
 

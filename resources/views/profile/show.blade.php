@@ -11,9 +11,11 @@
             $sidebarView = 'admin-pusat.partials.sidebar';
             $dashboardRoute = route('admin-pusat.dashboard');
         } elseif ($role == 'ketua') {
-            $dashboardRoute = '#';
+            $sidebarView = 'ketua.partials.sidebar'; 
+            $dashboardRoute = route('ketua.dashboard');
         } else {
-            $dashboardRoute = '#';
+            $sidebarView = 'warga.partials.sidebar'; 
+            $dashboardRoute = route('warga.dashboard');
         }
     @endphp
 
@@ -93,8 +95,8 @@
                         </div>
 
                         <div>
-                            <span class="block font-medium text-sm text-gray-700">No. Telepon</span>
-                            <p class="mt-1 text-lg text-gray-900">{{ Auth::user()->no_telepon ?? '-' }}</p>
+                            <x-input-label for="no_telp" value="{{ __('Nomor Telepon') }}" />
+                            <p class="mt-1 text-sm text-gray-900">{{ Auth::user()->no_telp }}</p>
                         </div>
                         <div>
                             <span class="block font-medium text-sm text-gray-700">Alamat Lengkap</span>
