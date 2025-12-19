@@ -12,9 +12,9 @@ class Konten extends Model
     protected $primaryKey = 'id_konten';
 
     protected $fillable = [
-        'judul', 
-        'deskripsi', 
-        'status_id', 
+        'judul',
+        'deskripsi',
+        'status_id',
         'user_id'
     ];
 
@@ -31,5 +31,10 @@ class Konten extends Model
     public function media()
     {
         return $this->hasMany(MediaKonten::class, 'konten_id', 'id_konten');
+    }
+
+    public function komentars()
+    {
+        return $this->hasMany(Komentar::class, 'konten_id', 'id_konten');
     }
 }

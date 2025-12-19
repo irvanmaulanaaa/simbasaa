@@ -91,12 +91,6 @@
                     <div class="prose max-w-none text-lg">
                         {!! nl2br(e($konten->deskripsi)) !!}
                     </div>
-
-                    <div class="mt-8 border-t pt-6">
-                        <a href="{{ route('admin-data.konten.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700">
-                            &larr; Kembali ke Daftar
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>

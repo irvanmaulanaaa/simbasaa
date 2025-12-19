@@ -17,6 +17,7 @@ use App\Http\Controllers\Ketua\SetoranController;
 use App\Http\Controllers\Ketua\PenarikanController;
 use App\Http\Controllers\Warga\DashboardController as WargaDashboard;
 use App\Http\Controllers\Warga\PenarikanController as WargaPenarikan;
+use App\Http\Controllers\HomeController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -47,7 +48,13 @@ Route::get('/dashboard', function () {
 
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/konten', [HomeController::class, 'allContent'])->name('public.konten.index');
+Route::get('/konten/{id}', [HomeController::class, 'show'])->name('public.konten.show');
+Route::post('/konten/{id}/like', [HomeController::class, 'like'])->name('public.konten.like');
+
 Route::middleware('auth')->group(function () {
+    Route::post('/konten/{id}/comment', [HomeController::class, 'comment'])->name('public.konten.comment');
 
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');

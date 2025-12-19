@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'SIMBASA') }}</title>
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -14,23 +14,21 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased">
+<body class="font-sans antialiased text-gray-700 bg-gray-50">
 
-    <header x-data="{ sidebarOpen: false }" class="bg-gray-50 shadow-sm sticky top-0 z-50">
+    <header x-data="{ sidebarOpen: false }" class="bg-white shadow-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
-
                 <div class="flex items-center">
                     <div class="flex items-center md:hidden mr-3">
                         <button @click="sidebarOpen = !sidebarOpen"
-                            class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none">
+                            class="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none">
                             <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
                         </button>
                     </div>
-
                     <a href="{{ url('/') }}" class="flex-shrink-0 flex items-center">
                         <img src="{{ asset('images/logobaru.png') }}" alt="SIMBASA" class="h-10 w-auto">
                         <span class="ml-2 font-bold text-xl text-gray-800">SIMBASA</span>
@@ -38,20 +36,19 @@
                 </div>
 
                 <div class="flex items-center space-x-4">
-
                     <nav class="hidden md:flex space-x-6 mr-8">
                         @auth
                             <a href="{{ route('dashboard') }}"
                                 class="text-lg font-medium text-gray-500 hover:text-green-600">Dashboard</a>
                         @endauth
-                        <a href="#" class="text-lg font-medium text-gray-500 hover:text-green-600">Konten</a>
+                        <a href="{{ route('public.konten.index') }}" class="text-lg font-medium text-gray-500 hover:text-green-600">Konten</a>
                     </nav>
 
                     <div class="flex items-center">
                         @auth
-                            <a href="{{ route('profile.edit') }}"
+                            <a href="{{ route('dashboard') }}"
                                 class="flex items-center space-x-2 text-sm font-medium text-gray-500 hover:text-gray-700"
-                                title="Profile">
+                                title="Kembali ke Dashboard">
                                 <div
                                     class="h-8 w-8 rounded-full bg-green-600 flex items-center justify-center text-white font-bold flex-shrink-0">
                                     {{ substr(Auth::user()->nama_lengkap, 0, 1) }}
@@ -65,129 +62,161 @@
                             </a>
                         @else
                             <a href="{{ route('login') }}"
-                                class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-500 active:bg-green-700 focus:outline-none focus:border-green-700 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150">
+                                class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-500 transition">
                                 Masuk
                             </a>
                         @endguest
                     </div>
                 </div>
-
             </div>
         </div>
 
         <div x-show="sidebarOpen" @click.away="sidebarOpen = false"
-            class="md:hidden fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg p-4 transform transition-transform duration-300 ease-in-out"
-            x-transition:enter="transition ease-out duration-300" x-transition:enter-start="-translate-x-full"
-            x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in duration-300"
-            x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full" x-cloak>
-
+            class="md:hidden fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg p-4 transition" x-cloak>
             <div class="flex justify-between items-center mb-4">
-                <img src="{{ asset('images/logobaru.png') }}" alt="SIMBASA" class="h-10 w-auto ml-2">
-                <span class="text-gray-800 text-xl font-bold mr-4">SIMBASA</span>
-                <button @click="sidebarOpen = false" class="p-1 text-gray-400 hover:text-gray-600">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                <span class="text-gray-800 text-xl font-bold ml-2">SIMBASA</span>
+                <button @click="sidebarOpen = false" class="p-1 text-gray-400"><svg class="h-6 w-6"
+                        stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+                    </svg></button>
             </div>
-
             <nav class="flex flex-col space-y-2">
-                @auth
-                    <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-responsive-nav-link>
+                @auth <a href="{{ route('dashboard') }}"
+                        class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-green-600">Dashboard</a>
                 @endauth
-
-                <x-responsive-nav-link href="#" :active="false">
-                    {{ __('Konten') }}
-                </x-responsive-nav-link>
+                <a href="{{ route('public.konten.index') }}" class="text-lg font-medium text-gray-500 hover:text-green-600">Konten</a>
             </nav>
         </div>
-        <div x-show="sidebarOpen" @click="sidebarOpen = false"
-            class="fixed inset-0 z-20 bg-black opacity-50 transition-opacity md:hidden" x-cloak></div>
-
     </header>
 
     <main>
         <section class="bg-white">
             <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-8 items-center">
                 <div class="text-center md:text-left">
-                    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900">
-                        Ubah Sampah Menjadi <span class="text-green-500">Rupiah</span>
-                    </h1>
-                    <p class="mt-4 text-lg text-gray-600">
-                        Selamatkan lingkungan sambil menambah pundi-pundi tabungan Anda. Bergabunglah dengan sistem bank
-                        sampah digital kami yang mudah dan transparan.
-                    </p>
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900">Ubah Sampah Menjadi <span
+                            class="text-green-500">Rupiah</span></h1>
+                    <p class="mt-4 text-lg text-gray-600">Selamatkan lingkungan sambil menambah pundi-pundi tabungan
+                        Anda. Bergabunglah dengan sistem bank sampah digital kami.</p>
                     <div class="mt-8">
                         <a href="{{ route('login') }}"
-                            class="inline-block bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg text-lg">
-                            Mulai Menabung
-                        </a>
+                            class="inline-block bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg text-lg">Mulai
+                            Menabung</a>
                     </div>
                 </div>
                 <div class="flex justify-center md:justify-end">
-                    <img src="{{ asset('images/ilus.png') }}" alt="Ilustrasi bank sampah" class="w-full max-w-md">
+                    <img src="{{ asset('images/ilus.png') }}" alt="Ilustrasi" class="w-full max-w-md">
                 </div>
             </div>
         </section>
 
-        <section class="py-20 bg-gray-50">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
-                <div class="text-center">
-                    <h2 class="text-3xl font-bold">Bagaimana Caranya?</h2>
-                    <p class="mt-2 text-gray-600">Hanya dengan 3 langkah mudah.</p>
-                </div>
+        <section class="py-20 bg-green-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-3xl font-bold">Bagaimana Caranya?</h2>
+                <p class="mt-2 text-gray-600">Hanya dengan 3 langkah mudah.</p>
                 <div class="mt-12 grid gap-8 md:grid-cols-3">
-                    <div class="bg-white p-8 rounded-lg shadow-lg text-center">
+                    <div
+                        class="bg-white p-8 rounded-lg shadow-lg text-center transform hover:-translate-y-2 transition duration-300">
                         <div
-                            class="flex items-center justify-center h-12 w-12 rounded-full bg-green-500 text-white mx-auto">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
-                            </svg>
-                        </div>
-                        <h3 class="mt-5 text-lg font-medium">1. Pilah Sampah</h3>
-                        <p class="mt-2 text-base text-gray-500">Pisahkan sampah anorganik (plastik, kertas, logam, dll)
-                            di rumah Anda.</p>
+                            class="flex items-center justify-center h-12 w-12 rounded-full bg-green-500 text-white mx-auto mb-5">
+                            1</div>
+                        <h3 class="text-lg font-medium">Pilah Sampah</h3>
+                        <p class="mt-2 text-gray-500">Pisahkan sampah anorganik di rumah Anda.</p>
                     </div>
-                    <div class="bg-white p-8 rounded-lg shadow-lg text-center">
+                    <div
+                        class="bg-white p-8 rounded-lg shadow-lg text-center transform hover:-translate-y-2 transition duration-300">
                         <div
-                            class="flex items-center justify-center h-12 w-12 rounded-full bg-green-500 text-white mx-auto">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M9 8.25H7.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H15M9 12l3 3m0 0l3-3m-3 3V2.25" />
-                            </svg>
-                        </div>
-                        <h3 class="mt-5 text-lg font-medium">2. Setor ke Kami</h3>
-                        <p class="mt-2 text-base text-gray-500">Bawa sampah yang sudah dipilah ke lokasi kami untuk
-                            ditimbang dan dicatat oleh admin.</p>
+                            class="flex items-center justify-center h-12 w-12 rounded-full bg-green-500 text-white mx-auto mb-5">
+                            2</div>
+                        <h3 class="text-lg font-medium">Setor ke Kami</h3>
+                        <p class="mt-2 text-gray-500">Bawa ke lokasi kami untuk ditimbang.</p>
                     </div>
-                    <div class="bg-white p-8 rounded-lg shadow-lg text-center">
+                    <div
+                        class="bg-white p-8 rounded-lg shadow-lg text-center transform hover:-translate-y-2 transition duration-300">
                         <div
-                            class="flex items-center justify-center h-12 w-12 rounded-full bg-green-500 text-white mx-auto">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75-.75v-.75m0 0l-1.5-1.5m0 0l-1.5 1.5m1.5-1.5v1.5" />
-                            </svg>
-                        </div>
-                        <h3 class="mt-5 text-lg font-medium">3. Cek Tabungan</h3>
-                        <p class="mt-2 text-base text-gray-500">Nilai sampah Anda akan langsung dikonversi menjadi
-                            saldo
-                            yang bisa Anda cek kapan saja di sini.</p>
+                            class="flex items-center justify-center h-12 w-12 rounded-full bg-green-500 text-white mx-auto mb-5">
+                            3</div>
+                        <h3 class="text-lg font-medium">Cek Tabungan</h3>
+                        <p class="mt-2 text-gray-500">Nilai sampah otomatis jadi saldo tabungan.</p>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <section id="konten" class="py-20 bg-white border-t border-gray-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900">Konten Edukasi</h2>
+                    <p class="mt-2 text-gray-600">Informasi terbaru seputar bank sampah.</p>
+                </div>
+
+                @if (isset($kontens) && $kontens->count() > 0)
+                    <div class="grid gap-8 md:grid-cols-3">
+                        @foreach ($kontens as $item)
+                            <div
+                                class="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-100 flex flex-col h-full hover:shadow-xl transition duration-300">
+
+                                <div class="h-48 overflow-hidden bg-gray-200 relative">
+                                    @php
+                                        $media = $item->media->first();
+                                        $imagePath = null;
+                                        if ($media) {
+                                            $isUrl = filter_var($media->gambar, FILTER_VALIDATE_URL);
+                                            $imagePath = $isUrl
+                                                ? $media->gambar
+                                                : Illuminate\Support\Facades\Storage::url($media->gambar);
+                                        }
+                                    @endphp
+
+                                    @if ($imagePath)
+                                        <img src="{{ $imagePath }}" alt="{{ $item->judul }}"
+                                            class="w-full h-full object-cover transform hover:scale-110 transition duration-500">
+                                    @else
+                                        <div class="flex items-center justify-center h-full text-gray-400 bg-gray-100">
+                                            <svg class="w-12 h-12" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                                </path>
+                                            </svg>
+                                        </div>
+                                    @endif
+
+                                    <div
+                                        class="absolute top-0 right-0 bg-green-600 text-white text-xs font-bold px-3 py-1 m-2 rounded">
+                                        {{ \Carbon\Carbon::parse($item->created_at)->format('d M Y') }}
+                                    </div>
+                                </div>
+
+                                <div class="p-6 flex flex-col flex-grow">
+                                    <h3
+                                        class="text-xl font-bold text-gray-900 mb-2 line-clamp-2 hover:text-green-600 transition">
+                                        <a
+                                            href="{{ route('public.konten.show', $item->id_konten) }}">{{ $item->judul }}</a>
+                                    </h3>
+                                    <p class="text-gray-600 text-sm mb-4 line-clamp-3 flex-grow">
+                                        {{ Str::limit(strip_tags($item->deskripsi ?? $item->isi), 100) }}
+                                    </p>
+                                    <a href="{{ route('public.konten.show', $item->id_konten) }}"
+                                        class="inline-flex items-center text-green-600 font-semibold hover:text-green-800 mt-auto">
+                                        Baca Selengkapnya
+                                    </a>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="text-center py-10 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                        <p class="text-gray-500 italic">Belum ada konten berita saat ini.</p>
+                    </div>
+                @endif
             </div>
         </section>
     </main>
 
     <footer class="bg-green-500 border-t">
-        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-            <p class="text-center text-white">&copy; 2025 Bank Sampah Digital. All rights reserved.</p>
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-white text-lg">&copy; {{ date('Y') }} SIMBASA. All rights reserved.</p>
         </div>
     </footer>
 

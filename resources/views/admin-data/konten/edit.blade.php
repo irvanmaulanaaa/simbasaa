@@ -27,8 +27,7 @@
                                     stroke-width="2" d="m1 9 4-4-4-4" />
                             </svg>
                             <a href="{{ route('admin-data.konten.index') }}"
-                                class="ms-1 text-lg font-medium text-gray-700 hover:text-green-600 md:ms-2">Manajemen
-                                Pengguna</a>
+                                class="ms-1 text-lg font-medium text-gray-700 hover:text-green-600 md:ms-2">Manajemen Konten</a>
                         </div>
                     </li>
                     <li aria-current="page">
