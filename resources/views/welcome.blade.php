@@ -12,83 +12,117 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <style>
+        body {
+            font-family: 'Figtree', sans-serif;
+        }
+
+        .glass-nav {
+            background: rgba(246, 255, 243, 0.876);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
 </head>
 
 <body class="font-sans antialiased text-gray-700 bg-gray-50">
 
-    <header x-data="{ sidebarOpen: false }" class="bg-white shadow-sm sticky top-0 z-50">
+    <nav class="glass-nav border-b border-gray-100 sticky top-0 z-50 transition-all duration-300"
+        x-data="{ mobileMenuOpen: false }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <div class="flex items-center md:hidden mr-3">
-                        <button @click="sidebarOpen = !sidebarOpen"
-                            class="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none">
-                            <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 6h16M4 12h16M4 18h16" />
-                            </svg>
-                        </button>
+            <div class="flex justify-between h-20 items-center">
+
+                <a href="{{ url('/') }}" class="flex items-center space-x-3 group">
+                    <div class="relative">
+                        <div
+                            class="absolute -inset-1 bg-green-200 rounded-full opacity-0 group-hover:opacity-50 blur transition duration-300">
+                        </div>
+                        <img src="{{ asset('images/logobaru.png') }}"
+                            class="relative h-12 w-auto transform transition duration-300 group-hover:rotate-6"
+                            alt="SIMBASA">
                     </div>
-                    <a href="{{ url('/') }}" class="flex-shrink-0 flex items-center">
-                        <img src="{{ asset('images/logobaru.png') }}" alt="SIMBASA" class="h-10 w-auto">
-                        <span class="ml-2 font-bold text-xl text-gray-800">SIMBASA</span>
+                    <span
+                        class="font-extrabold text-2xl text-slate-800 tracking-tight group-hover:text-green-600 transition duration-300">SIMBASA</span>
+                </a>
+
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="{{ route('public.konten.index') }}"
+                        class="px-5 py-2.5 rounded-full text-lg font-bold text-slate-600 hover:text-green-600 hover:bg-green-50 transition duration-300">
+                        Konten
                     </a>
-                </div>
 
-                <div class="flex items-center space-x-4">
-                    <nav class="hidden md:flex space-x-6 mr-8">
-                        @auth
-                            <a href="{{ route('dashboard') }}"
-                                class="text-lg font-medium text-gray-500 hover:text-green-600">Dashboard</a>
-                        @endauth
-                        <a href="{{ route('public.konten.index') }}" class="text-lg font-medium text-gray-500 hover:text-green-600">Konten</a>
-                    </nav>
+                    <a href="{{ route('dashboard') }}"
+                        class="px-5 py-2.5 bg-green-600 text-white text-base font-bold rounded-full shadow-lg shadow-green-200 hover:bg-green-700 hover:shadow-green-300 transform hover:-translate-y-0.5 transition duration-300">
+                        Dashboard
+                    </a>
 
-                    <div class="flex items-center">
-                        @auth
-                            <a href="{{ route('dashboard') }}"
-                                class="flex items-center space-x-2 text-sm font-medium text-gray-500 hover:text-gray-700"
-                                title="Kembali ke Dashboard">
+                    @auth
+                        <div class="flex items-center pl-6 border-l border-slate-200">
+                            <a href="{{ route('profile.show') }}" class="flex items-center space-x-3 group" title="profile">
                                 <div
-                                    class="h-8 w-8 rounded-full bg-green-600 flex items-center justify-center text-white font-bold flex-shrink-0">
+                                    class="h-8 w-8 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white font-bold shadow-md ring-4 ring-white group-hover:scale-105 transition transform">
                                     {{ substr(Auth::user()->nama_lengkap, 0, 1) }}
                                 </div>
                                 <div class="hidden sm:flex flex-col text-left">
                                     <span
-                                        class="font-semibold text-gray-800 leading-tight">{{ Auth::user()->nama_lengkap }}</span>
-                                    <span
-                                        class="text-xs text-gray-500 leading-tight">{{ Auth::user()->role->nama_role }}</span>
+                                        class="font-bold text-slate-800 text-sm leading-tight group-hover:text-green-600 transition">
+                                        {{ Auth::user()->nama_lengkap }}
+                                    </span>
+                                    <span class="text-[8px] font-bold uppercase tracking-wider text-slate-400">
+                                        {{ Auth::user()->role->nama_role }}
+                                    </span>
                                 </div>
                             </a>
-                        @else
-                            <a href="{{ route('login') }}"
-                                class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-500 transition">
-                                Masuk
-                            </a>
-                        @endguest
-                    </div>
+                        </div>
+                    @else
+                        <a href="{{ route('login') }}"
+                            class="ml-2 px-6 py-2.5 bg-green-600 text-white text-base font-bold rounded-full shadow-lg shadow-green-200 hover:bg-green-700 hover:shadow-green-300 transform hover:-translate-y-0.5 transition duration-300">
+                            Masuk
+                        </a>
+                    @endauth
+                </div>
+
+                <div class="md:hidden flex items-center">
+                    <button @click="mobileMenuOpen = !mobileMenuOpen"
+                        class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 focus:outline-none transition">
+                        <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
                 </div>
             </div>
         </div>
 
-        <div x-show="sidebarOpen" @click.away="sidebarOpen = false"
-            class="md:hidden fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg p-4 transition" x-cloak>
-            <div class="flex justify-between items-center mb-4">
-                <span class="text-gray-800 text-xl font-bold ml-2">SIMBASA</span>
-                <button @click="sidebarOpen = false" class="p-1 text-gray-400"><svg class="h-6 w-6"
-                        stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
-                    </svg></button>
-            </div>
-            <nav class="flex flex-col space-y-2">
-                @auth <a href="{{ route('dashboard') }}"
-                        class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-green-600">Dashboard</a>
-                @endauth
-                <a href="{{ route('public.konten.index') }}" class="text-lg font-medium text-gray-500 hover:text-green-600">Konten</a>
-            </nav>
+        <div x-show="mobileMenuOpen" x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 -translate-y-2"
+            class="md:hidden bg-white/95 backdrop-blur-xl border-t border-gray-100 p-4 space-y-3 absolute w-full shadow-xl z-40"
+            style="display: none;">
+
+            <a href="{{ route('public.konten.index') }}"
+                class="block text-center px-4 py-3 border-2 border-green-600 text-green-600 rounded-xl font-bold text-lg">Konten</a>
+
+            @auth
+                <a href="{{ route('dashboard') }}"
+                    class="block px-4 py-3 bg-green-600 rounded-xl border border-green-600 group hover:bg-green-100 transition">
+
+                    <div class="flex items-center justify-center space-x-3">
+                        <div class="flex flex-col">
+                            <span class="text-lg font-bold text-white group-hover:text-green-600 transition">
+                                Dashboard
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            @else
+                <a href="{{ route('login') }}"
+                    class="block text-center px-4 py-3 bg-green-600 text-white rounded-xl font-bold shadow-md hover:bg-green-700 transition text-lg">Masuk</a>
+            @endauth
         </div>
-    </header>
+    </nav>
 
     <main>
         <section class="bg-white">

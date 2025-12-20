@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Arsip Wawasan - SIMBASA</title>
+    <title>Konten Edukasi - SIMBASA</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -56,7 +56,7 @@
 
                 <div class="hidden md:flex items-center space-x-3">
                     <a href="{{ url('/') }}"
-                        class="ml-2 px-6 py-2.5 border-2 border-green-600 text-green-600 text-sm font-bold rounded-full hover:bg-green-600 hover:text-white transition duration-300">
+                        class="px-5 py-2.5 rounded-full text-lg font-bold text-slate-600 hover:text-green-600 hover:bg-green-50 transition duration-300">
                         Home
                     </a>
                     @auth
@@ -66,7 +66,7 @@
                         </a>
                     @else
                         <a href="{{ route('login') }}"
-                            class="ml-2 px-6 py-2.5 border-2 border-green-600 text-green-600 text-sm font-bold rounded-full hover:bg-green-600 hover:text-white transition duration-300">
+                            class="ml-2 px-6 py-2.5 bg-green-600 text-white text-base font-bold rounded-full shadow-lg shadow-green-200 hover:bg-green-700 hover:shadow-green-300 transform hover:-translate-y-0.5 transition duration-300">
                             Masuk
                         </a>
                     @endauth
@@ -107,7 +107,7 @@
         <div class="relative max-w-7xl mx-auto px-4 pt-16 pb-12 text-center z-20">
             <span
                 class="inline-block py-1 px-3 rounded-full bg-green-100 text-green-700 text-xs font-bold tracking-wider uppercase mb-4 animate-fade-in-up">
-                Bank Sampah Digital
+                Konten Edukasi BY SIMBASA
             </span>
             <h1
                 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 mb-6 tracking-tight leading-tight">
