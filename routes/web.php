@@ -55,6 +55,8 @@ Route::post('/konten/{id}/like', [HomeController::class, 'like'])->name('public.
 
 Route::middleware('auth')->group(function () {
     Route::post('/konten/{id}/comment', [HomeController::class, 'comment'])->name('public.konten.comment');
+    Route::put('/komentar/{id}', [HomeController::class, 'updateComment'])->name('public.komentar.update');
+    Route::delete('/komentar/{id}', [HomeController::class, 'deleteComment'])->name('public.komentar.delete');
 
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');

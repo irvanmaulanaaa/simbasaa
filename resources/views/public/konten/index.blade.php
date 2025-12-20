@@ -19,22 +19,24 @@
         }
 
         .glass-nav {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(246, 255, 243, 0.876);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
         }
 
-        .pattern-bg {
-            background-color: #f8fafc;
-            background-image: radial-gradient(#22c55e 0.5px, transparent 0.5px), radial-gradient(#22c55e 0.5px, #f8fafc 0.5px);
-            background-size: 20px 20px;
-            background-position: 0 0, 10px 10px;
-            background-repeat: repeat;
+        .premium-bg {
+            background-color: #fcfdfc;
+            background-image: radial-gradient(#dcfce7 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+
+        select::-ms-expand {
+            display: none;
         }
     </style>
 </head>
 
-<body class="bg-gray-50 text-slate-600 antialiased selection:bg-green-100 selection:text-green-700">
+<body class="premium-bg text-slate-600 antialiased selection:bg-green-100 selection:text-green-700">
 
     <nav class="glass-nav border-b border-gray-100 sticky top-0 z-50 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -54,10 +56,9 @@
 
                 <div class="hidden md:flex items-center space-x-3">
                     <a href="{{ url('/') }}"
-                        class="px-5 py-2.5 rounded-full text-sm font-semibold text-slate-600 hover:text-green-600 hover:bg-green-50 transition duration-300">
+                        class="ml-2 px-6 py-2.5 border-2 border-green-600 text-green-600 text-sm font-bold rounded-full hover:bg-green-600 hover:text-white transition duration-300">
                         Home
                     </a>
-
                     @auth
                         <a href="{{ route('dashboard') }}"
                             class="ml-2 px-6 py-2.5 bg-green-600 text-white text-sm font-bold rounded-full shadow-lg shadow-green-200 hover:bg-green-700 hover:shadow-green-300 transform hover:-translate-y-0.5 transition duration-300">
@@ -66,7 +67,7 @@
                     @else
                         <a href="{{ route('login') }}"
                             class="ml-2 px-6 py-2.5 border-2 border-green-600 text-green-600 text-sm font-bold rounded-full hover:bg-green-600 hover:text-white transition duration-300">
-                            Masuk Akun
+                            Masuk
                         </a>
                     @endauth
                 </div>
@@ -86,7 +87,7 @@
         <div id="mobile-menu"
             class="hidden md:hidden bg-white/95 backdrop-blur-xl border-t border-gray-100 p-4 space-y-3 absolute w-full shadow-xl">
             <a href="{{ url('/') }}"
-                class="block px-4 py-3 rounded-xl text-slate-600 font-medium hover:bg-slate-50">Home</a>
+                class="block text-center px-4 py-3 border-2 border-green-600 text-green-600 rounded-xl font-bold">Home</a>
             @auth
                 <a href="{{ route('dashboard') }}"
                     class="block text-center px-4 py-3 bg-green-600 text-white rounded-xl font-bold shadow-md">Dashboard</a>
@@ -97,13 +98,13 @@
         </div>
     </nav>
 
-    <div class="relative bg-white overflow-hidden">
-        <div class="absolute inset-0 pattern-bg opacity-30"></div>
+    <div class="relative bg-white overflow-hidden shadow-sm">
+        <div class="absolute inset-0 bg-gradient-to-b from-white via-transparent to-transparent z-10"></div>
         <div
             class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-green-200/20 blur-[100px] rounded-full pointer-events-none">
         </div>
 
-        <div class="relative max-w-7xl mx-auto px-4 pt-16 pb-12 text-center">
+        <div class="relative max-w-7xl mx-auto px-4 pt-16 pb-12 text-center z-20">
             <span
                 class="inline-block py-1 px-3 rounded-full bg-green-100 text-green-700 text-xs font-bold tracking-wider uppercase mb-4 animate-fade-in-up">
                 Bank Sampah Digital
@@ -119,11 +120,10 @@
                 sini.
             </p>
 
-            <form action="{{ route('public.konten.index') }}" method="GET" class="max-w-5xl mx-auto relative z-10">
+            <form action="{{ route('public.konten.index') }}" method="GET" class="max-w-5xl mx-auto relative z-30">
                 <div class="flex flex-col md:flex-row gap-4">
-
                     <div
-                        class="flex-grow p-2 bg-white rounded-[20px] shadow-xl shadow-slate-200/60 border border-slate-100">
+                        class="flex-grow p-2 bg-white rounded-[20px] shadow-xl shadow-slate-200/60 border border-slate-100 transition focus-within:ring-4 focus-within:ring-green-100 focus-within:border-green-400">
                         <div class="relative group h-full">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <svg class="h-6 w-6 text-slate-400 group-focus-within:text-green-500 transition-colors"
@@ -133,61 +133,64 @@
                                 </svg>
                             </div>
                             <input type="text" name="cari" value="{{ request('cari') }}"
-                                class="block w-full h-full pl-12 pr-4 py-4 bg-slate-50 border-0 text-slate-900 rounded-xl focus:ring-2 focus:ring-green-500 placeholder:text-slate-400 font-medium transition-all hover:bg-slate-100 focus:bg-white"
+                                class="block w-full h-full pl-12 pr-4 py-4 bg-transparent border-0 text-slate-900 placeholder:text-slate-400 font-medium focus:ring-0"
                                 placeholder="Cari topik menarik...">
                         </div>
                     </div>
 
                     <div
-                        class="md:w-1/3 p-2 bg-white rounded-[20px] shadow-xl shadow-slate-200/60 border border-slate-100">
+                        class="md:w-1/3 p-2 bg-white rounded-[20px] shadow-xl shadow-slate-200/60 border border-slate-100 transition focus-within:ring-4 focus-within:ring-green-100 focus-within:border-green-400">
+                        <div class="relative h-full">
 
-                        <select name="filter" onchange="this.form.submit()"
-                            style="-webkit-appearance: none; -moz-appearance: none; appearance: none;"
-                            class="peer w-full py-3 pl-4 pr-10 rounded-full shadow-sm border-2 border-green-500 focus:ring-4 focus:ring-green-100 focus:border-green-600 text-gray-700 bg-white bg-none transition cursor-pointer">
-                            <option value="terbaru" {{ request('filter') == 'terbaru' ? 'selected' : '' }}>Terbaru
-                            </option>
-                            <option value="terlama" {{ request('filter') == 'terlama' ? 'selected' : '' }}>Terlama
-                            </option>
-                            <option value="populer" {{ request('filter') == 'populer' ? 'selected' : '' }}>Populer
-                            </option>
-                        </select>
-                        <div
-                            class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-green-600 transition-transform duration-300 peer-focus:rotate-180 justify-content-center">
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 9l-7 7-7-7"></path>
-                            </svg>
+                            <select name="filter" onchange="this.form.submit()"
+                                style="-webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: none;"
+                                class="peer block w-full h-full pl-5 pr-10 py-4 bg-transparent border-0 text-slate-700 font-semibold cursor-pointer focus:ring-0">
+                                <option value="terbaru" {{ request('filter') == 'terbaru' ? 'selected' : '' }}>Terbaru</option>
+                                <option value="terlama" {{ request('filter') == 'terlama' ? 'selected' : '' }}>Terlama</option>
+                                <option value="populer" {{ request('filter') == 'populer' ? 'selected' : '' }}>Populer</option>
+                            </select>
+
+                            <div
+                                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-green-600 transition-transform duration-300 peer-focus:rotate-180">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </div>
                         </div>
-
                     </div>
 
                     <button type="submit"
-                        class="md:hidden w-full bg-green-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-green-200 mt-2">
-                        Cari
-                    </button>
-
+                        class="md:hidden w-full bg-green-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-green-200 mt-2">Cari</button>
                 </div>
             </form>
         </div>
 
-        <div class="absolute bottom-0 w-full">
-            <svg viewBox="0 0 1440 48" fill="none" xmlns="http://www.w3.org/2000/svg"
-                class="w-full text-gray-50 transform translate-y-px">
-                <path d="M0 48H1440V0C1440 0 1140 48 720 48C300 48 0 0 0 0V48Z" fill="currentColor" />
+        <div class="absolute bottom-0 w-full text-slate-50 opacity-50">
+            <svg viewBox="0 0 1440 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg" class="w-full h-12">
+                <path d="M0 48H1440V0C1440 0 1140 48 720 48C300 48 0 0 0 0V48Z" />
             </svg>
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 py-16 min-h-[600px]">
+    <div class="relative max-w-7xl mx-auto px-4 py-16 min-h-[600px]">
+        <div
+            class="absolute top-10 left-0 w-72 h-72 bg-purple-200/20 rounded-full blur-[80px] -z-10 pointer-events-none">
+        </div>
+        <div
+            class="absolute bottom-10 right-0 w-72 h-72 bg-green-200/20 rounded-full blur-[80px] -z-10 pointer-events-none">
+        </div>
+
         @if ($kontens->count() > 0)
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 @foreach ($kontens as $item)
                     <a href="{{ route('public.konten.show', $item->id_konten) }}"
-                        class="group relative bg-white rounded-[24px] border border-gray-100 shadow-sm hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2 transition-all duration-500 flex flex-col h-full overflow-hidden">
+                        class="group relative bg-white rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-green-900/5 hover:-translate-y-2 transition-all duration-500 flex flex-col h-full overflow-hidden">
 
-                        <div class="h-64 bg-slate-50 relative overflow-hidden flex items-center justify-center p-4">
+                        <div
+                            class="h-64 bg-gradient-to-b from-slate-50 to-white relative overflow-hidden flex items-center justify-center p-6">
                             <div
-                                class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                                class="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300 z-10">
                             </div>
 
                             @php
@@ -201,7 +204,7 @@
 
                             @if ($path)
                                 <img src="{{ $path }}"
-                                    class="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-700 ease-in-out relative z-0">
+                                    class="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-700 ease-in-out relative z-0 filter drop-shadow-md">
                             @else
                                 <div class="text-slate-300 flex flex-col items-center">
                                     <svg class="w-16 h-16 mb-3" fill="none" stroke="currentColor"
@@ -210,50 +213,69 @@
                                             d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
                                         </path>
                                     </svg>
-                                    <span class="font-medium">No Image</span>
+                                    <span class="font-medium text-sm">Visual Tidak Tersedia</span>
                                 </div>
                             @endif
 
-                            <div class="absolute top-4 right-4 z-20">
+                            <div class="absolute top-4 left-4 z-20">
                                 <span
-                                    class="bg-white/90 backdrop-blur-md text-slate-800 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm border border-white/50">
-                                    {{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}
+                                    class="bg-white/80 backdrop-blur text-slate-800 text-[10px] font-extrabold px-3 py-1 rounded-full border border-slate-200 uppercase tracking-wider shadow-sm">
+                                    Artikel
                                 </span>
                             </div>
                         </div>
 
-                        <div class="p-7 flex flex-col flex-grow relative">
+                        <div class="p-8 flex flex-col flex-grow relative">
                             <div
-                                class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 to-emerald-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500">
+                                class="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent group-hover:via-green-400 transition-colors duration-500">
                             </div>
 
-                            <h3
-                                class="text-xl font-bold text-slate-800 group-hover:text-green-600 transition-colors duration-300 mb-3 leading-snug tracking-tight">
-                                {{ $item->judul }}
-                            </h3>
+                            <div class="mb-4">
+                                <span class="text-green-600 text-xs font-bold flex items-center gap-1 mb-2">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                        </path>
+                                    </svg>
+                                    {{ \Carbon\Carbon::parse($item->created_at)->format('d M Y') }}
+                                </span>
+                                <h3
+                                    class="text-xl font-bold text-slate-900 group-hover:text-green-600 transition-colors duration-300 leading-snug tracking-tight">
+                                    {{ $item->judul }}
+                                </h3>
+                            </div>
 
                             <p class="text-slate-500 text-sm line-clamp-3 mb-6 flex-grow leading-relaxed">
-                                {{ Str::limit(strip_tags($item->deskripsi ?? $item->isi), 130) }}
+                                {{ Str::limit(strip_tags($item->deskripsi ?? $item->isi), 120) }}
                             </p>
 
-                            <div class="pt-5 border-t border-slate-100 flex items-center justify-between">
-                                <div class="flex items-center text-sm font-medium text-slate-400">
-                                    <svg class="w-4 h-4 mr-1.5 text-red-400 fill-current" viewBox="0 0 20 20">
-                                        <path
-                                            d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
-                                    </svg>
-                                    {{ $item->jumlah_like }} <span class="hidden sm:inline ml-1">Suka</span>
+                            <div class="flex items-center justify-between mt-auto pt-5 border-t border-slate-50">
+                                <div class="flex items-center gap-2">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-gradient-to-tr from-green-400 to-emerald-500 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                                        {{ substr($item->user->nama_lengkap ?? 'A', 0, 1) }}
+                                    </div>
+                                    <span
+                                        class="text-xs font-semibold text-slate-600">{{ $item->user->nama_lengkap ?? 'Admin' }}</span>
                                 </div>
 
-                                <span
-                                    class="inline-flex items-center text-sm font-bold text-green-600 group-hover:translate-x-1 transition-transform duration-300">
-                                    Baca Selengkapnya
-                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                            d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                                    </svg>
-                                </span>
+                                <div class="flex items-center gap-4 text-xs font-bold text-slate-400">
+                                    <div class="flex items-center gap-1 group-hover:text-red-500 transition-colors">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path
+                                                d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
+                                        </svg>
+                                        {{ $item->jumlah_like }}
+                                    </div>
+                                    <span
+                                        class="text-green-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                                        Baca <svg class="w-3 h-3" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 5l7 7-7 7"></path>
+                                        </svg>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </a>
@@ -275,10 +297,9 @@
                 </div>
                 <h3 class="text-xl font-bold text-slate-900 mb-2">Belum ada konten ditemukan</h3>
                 <p class="text-slate-500 mb-8 max-w-sm mx-auto">Kami tidak dapat menemukan apa yang Anda cari. Coba
-                    kata
-                    kunci lain atau reset filter.</p>
+                    kata kunci lain atau reset filter.</p>
                 <a href="{{ route('public.konten.index') }}"
-                    class="inline-flex items-center px-6 py-3 bg-white border-2 border-slate-200 rounded-full text-slate-700 font-bold hover:border-green-500 hover:text-green-600 transition-all duration-300">
+                    class="inline-flex items-center px-8 py-3 bg-white border-2 border-slate-200 rounded-full text-slate-700 font-bold hover:border-green-500 hover:text-green-600 transition-all duration-300">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">

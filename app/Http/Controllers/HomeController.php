@@ -28,12 +28,12 @@ class HomeController extends Controller
             $query->where('judul', 'like', '%' . $request->cari . '%');
         }
 
-        $filter = $request->get('filter', 'terbaru'); 
-        
+        $filter = $request->get('filter', 'terbaru');
+
         if ($filter == 'terlama') {
             $query->oldest();
         } elseif ($filter == 'populer') {
-            $query->orderBy('jumlah_like', 'desc'); 
+            $query->orderBy('jumlah_like', 'desc');
         } else {
             $query->latest();
         }
@@ -46,32 +46,40 @@ class HomeController extends Controller
     public function show($id)
     {
         $konten = Konten::with(['media', 'komentars.user', 'user'])->findOrFail($id);
-        
+
+        $sessionKey = 'liked_konten_' . $id;
+        $isLiked = Session::has($sessionKey);
+
         $beritaLain = Konten::with('media')
             ->where('id_konten', '!=', $id)
             ->whereHas('status', fn($q) => $q->where('nama_status', 'published'))
             ->latest()->take(4)->get();
 
-        return view('public.konten.show', compact('konten', 'beritaLain'));
+        return view('public.konten.show', compact('konten', 'beritaLain', 'isLiked'));
     }
 
     public function like($id)
     {
         $sessionKey = 'liked_konten_' . $id;
+        $konten = Konten::findOrFail($id);
 
-        if (!Session::has($sessionKey)) {
-            $konten = Konten::findOrFail($id);
+        if (Session::has($sessionKey)) {
+            $konten->decrement('jumlah_like');
+            Session::forget($sessionKey);
+            $status = 'unliked';
+            $message = 'Batal menyukai konten.';
+        } else {
             $konten->increment('jumlah_like');
             Session::put($sessionKey, true);
-            
-            return response()->json([
-                'status' => 'success', 
-                'likes' => $konten->jumlah_like,
-                'message' => 'Terima kasih atas apresiasinya!'
-            ]);
+            $status = 'liked';
+            $message = 'Terima kasih atas apresiasinya!';
         }
 
-        return response()->json(['status' => 'error', 'message' => 'Anda sudah menyukai konten ini.']);
+        return response()->json([
+            'status' => $status,
+            'likes' => $konten->jumlah_like,
+            'message' => $message
+        ]);
     }
 
     public function comment(Request $request, $id)
@@ -87,5 +95,29 @@ class HomeController extends Controller
         ]);
 
         return back()->with('success', 'Komentar berhasil dikirim.');
+    }
+
+    public function updateComment(Request $request, $id)
+    {
+        $request->validate(['isi_komentar' => 'required|string|max:500']);
+
+        $komentar = Komentar::where('id_komentar', $id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        $komentar->update(['isi_komentar' => $request->isi_komentar]);
+
+        return back()->with('success', 'Komentar berhasil diperbarui.');
+    }
+
+    public function deleteComment($id)
+    {
+        $komentar = Komentar::where('id_komentar', $id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        $komentar->delete();
+
+        return back()->with('success', 'Komentar berhasil dihapus.');
     }
 }
