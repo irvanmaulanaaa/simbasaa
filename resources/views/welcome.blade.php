@@ -51,12 +51,12 @@
                         Konten
                     </a>
 
-                    <a href="{{ route('dashboard') }}"
-                        class="px-5 py-2.5 bg-green-600 text-white text- font-bold rounded-full shadow-lg shadow-green-200 hover:bg-green-700 hover:shadow-green-300 transform hover:-translate-y-0.5 transition duration-300">
-                        Dashboard
-                    </a>
-
                     @auth
+                        <a href="{{ route('dashboard') }}"
+                            class="px-5 py-2.5 bg-green-600 text-white text-base font-bold rounded-full shadow-lg shadow-green-200 hover:bg-green-700 hover:shadow-green-300 transform hover:-translate-y-0.5 transition duration-300">
+                            Dashboard
+                        </a>
+
                         <div class="flex items-center pl-6 border-l border-slate-200">
                             <a href="{{ route('profile.show') }}" class="flex items-center space-x-3 group" title="profile">
                                 <div
@@ -107,7 +107,6 @@
             @auth
                 <a href="{{ route('dashboard') }}"
                     class="block px-4 py-3 bg-green-600 rounded-xl border border-green-600 group hover:bg-green-100 transition">
-
                     <div class="flex items-center justify-center space-x-3">
                         <div class="flex flex-col">
                             <span class="text-lg font-bold text-white group-hover:text-green-600 transition">
@@ -248,7 +247,7 @@
                         <p class="mt-2 text-gray-500">Wawasan terbaru untuk lingkungan yang lebih baik.</p>
                     </div>
                     <a href="{{ route('public.konten.index') }}"
-                        class="hidden md:inline-flex items-center text-green-600 font-bold hover:text-green-800 transition">
+                        class="hidden md:inline-flex items-center text-green-600 font-bold hover:text-green-800 transition text-base">
                         Lihat Semua Konten
                     </a>
                 </div>
@@ -304,8 +303,8 @@
                                     <div
                                         class="mt-auto pt-4 border-t border-gray-50 flex justify-between items-center">
                                         <div
-                                            class="flex items-center gap-1.5 text-xs font-bold text-gray-400 group-hover:text-red-500 transition-colors">
-                                            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                                            class="flex items-center gap-1.5 text-lg font-bold text-red-600 transition-colors">
+                                            <svg class="w-8 h-8 fill-current" viewBox="0 0 20 20">
                                                 <path
                                                     d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
                                             </svg>
@@ -313,9 +312,9 @@
                                         </div>
 
                                         <span
-                                            class="text-sm font-medium text-green-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                                            Baca <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
+                                            class="text-base font-medium text-green-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                                            Baca Selengkapnya<svg class="w-6 h-6" fill="none"
+                                                stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M9 5l7 7-7 7"></path>
                                             </svg>
@@ -337,7 +336,7 @@
                     </div>
                 @endif
 
-                <div class="mt-10 text-center md:hidden">
+                <div class="mt-10 text-center md:hidden text-base">
                     <a href="{{ route('public.konten.index') }}"
                         class="inline-block text-green-600 font-bold hover:text-green-800">
                         Lihat Semua Konten
@@ -398,7 +397,8 @@
                     </div>
                     <div>
                         <span class="text-green-600 font-bold uppercase tracking-wide text-sm">Tentang SIMBASA</span>
-                        <h2 class="text-3xl font-bold text-gray-900 mt-2 mb-6">Solusi Digital untuk Pengelolaan Sampah yang masih Manual</h2>
+                        <h2 class="text-3xl font-bold text-gray-900 mt-2 mb-6">Solusi Digital untuk Pengelolaan Sampah
+                            yang masih Manual</h2>
                         <div class="prose text-gray-600 space-y-4">
                             <p>
                                 <strong>SIMBASA</strong> hadir sebagai respon terhadap tantangan pengelolaan sampah di
@@ -415,16 +415,22 @@
                                 baru yang menguntungkan secara finansial dan berdampak positif bagi lingkungan.
                             </p>
                         </div>
-                        <div class="mt-8 flex gap-4">
-                            <span
-                                class="px-4 py-2 bg-gray-100 text-gray-600 rounded-md text-sm font-semibold border border-gray-200">Telkom
-                                University</span>
-                            <span
-                                class="px-4 py-2 bg-gray-100 text-gray-600 rounded-md text-sm font-semibold border border-gray-200">CoE
-                                GreenTech</span>
-                            <span
-                                class="px-4 py-2 bg-gray-100 text-gray-600 rounded-md text-sm font-semibold border border-gray-200">Layanan
-                                Kerjasama dan Magang</span>
+                        <div class="mt-8 flex flex-wrap gap-4">
+                            <a href="https://telkomuniversity.ac.id/" target="_blank" rel="noopener noreferrer"
+                                class="px-4 py-2 bg-green-50 text-gray-600 rounded-md text-sm font-semibold border border-gray-200 hover:bg-green-100 hover:text-green-700 transition duration-300">
+                                Telkom University
+                            </a>
+
+                            <a href="https://greentech.center.telkomuniversity.ac.id/" target="_blank"
+                                rel="noopener noreferrer"
+                                class="px-4 py-2 bg-green-50 text-gray-600 rounded-md text-sm font-semibold border border-gray-200 hover:bg-green-100 hover:text-green-700 transition duration-300">
+                                CoE GreenTech
+                            </a>
+
+                            <a href="https://magang-sas.telkomuniversity.ac.id/" target="_blank" rel="noopener noreferrer"
+                                class="px-4 py-2 bg-green-50 text-gray-600 rounded-md text-sm font-semibold border border-gray-200 hover:bg-green-100 hover:text-green-700 transition duration-300">
+                                Layanan Kerjasama dan Magang
+                            </a>
                         </div>
                     </div>
                 </div>

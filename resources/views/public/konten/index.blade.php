@@ -220,7 +220,7 @@
                             <div class="absolute top-4 left-4 z-20">
                                 <span
                                     class="bg-white/80 backdrop-blur text-slate-800 text-[10px] font-extrabold px-3 py-1 rounded-full border border-slate-200 uppercase tracking-wider shadow-sm">
-                                    Artikel
+                                    Konten
                                 </span>
                             </div>
                         </div>
@@ -259,9 +259,9 @@
                                         class="text-xs font-semibold text-slate-600">{{ $item->user->nama_lengkap ?? 'Admin' }}</span>
                                 </div>
 
-                                <div class="flex items-center gap-4 text-xs font-bold text-slate-400">
-                                    <div class="flex items-center gap-1 group-hover:text-red-500 transition-colors">
-                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <div class="flex items-center gap-4 text-base font-bold text-slate-400">
+                                    <div class="flex items-center gap-1 text-red-500 transition-colors">
+                                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                                             <path
                                                 d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
                                         </svg>
@@ -269,7 +269,7 @@
                                     </div>
                                     <span
                                         class="text-green-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                                        Baca <svg class="w-3 h-3" fill="none" stroke="currentColor"
+                                        Baca <svg class="w-6 h-6" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M9 5l7 7-7 7"></path>
@@ -311,6 +311,42 @@
         @endif
     </div>
 
+    <footer class="bg-green-50 border-t pt-12 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center mb-4">
+                        <img src="{{ asset('images/logobaru.png') }}" class="h-12 w-auto mr-2" alt="Logo">
+                        <span class="font-bold text-xl text-gray-800">SIMBASA</span>
+                    </div>
+                    <p class="text-gray-500 text-sm leading-relaxed max-w-sm">
+                        Aplikasi Bank Sampah Digital untuk Desa Sukapura. Mewujudkan lingkungan bersih, sehat, dan
+                        mandiri secara ekonomi.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-900 mb-4">Menu</h4>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li><a href="{{ route('public.konten.index') }}" class="hover:text-green-600">Konten</a></li>
+                        <li><a href="{{ route('login') }}" class="hover:text-green-600">Masuk</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-900 mb-4">Hubungi Kami</h4>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li>Desa Sukapura, Kab. Bandung, Jawa Barat, Indonesia</li>
+                        <li>admin@simbasa.com</li>
+                        <li>+62 1234 5678</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-200 pt-8 text-center">
+                <p class="text-gray-400 text-sm">&copy; {{ date('Y') }} SIMBASA. All rights reserved. Developed
+                    with ❤️ by Irvan Maulana.</p>
+            </div>
+        </div>
+    </footer>
+
     <script>
         const btn = document.getElementById('mobile-menu-btn');
         const menu = document.getElementById('mobile-menu');
@@ -318,6 +354,25 @@
             menu.classList.toggle('hidden');
         });
     </script>
+
+    <div x-data="{ showBackToTop: false }" @scroll.window="showBackToTop = (window.pageYOffset > 300)">
+        <button x-show="showBackToTop" @click="window.scrollTo({top: 0, behavior: 'smooth'})"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 transform translate-y-4"
+            x-transition:enter-end="opacity-100 transform translate-y-0"
+            x-transition:leave="transition ease-in duration-300"
+            x-transition:leave-start="opacity-100 transform translate-y-0"
+            x-transition:leave-end="opacity-0 transform translate-y-4"
+            class="fixed bottom-8 right-8 z-50 bg-green-600 hover:bg-green-700 text-white p-3 rounded-full shadow-lg shadow-green-200 focus:outline-none focus:ring-4 focus:ring-green-300 transition-all duration-300"
+            style="display: none;">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                    d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+            </svg>
+        </button>
+    </div>
+
+    <script src="//unpkg.com/alpinejs" defer></script>
 </body>
 
 </html>
