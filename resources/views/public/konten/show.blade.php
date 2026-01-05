@@ -19,6 +19,7 @@
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
+
         .glass-nav {
             background: rgba(246, 255, 243, 0.876);
             backdrop-filter: blur(12px);
@@ -81,7 +82,7 @@
                         <div class="p-8 md:p-12">
                             <div class="flex items-center space-x-4 text-sm text-gray-500 mb-6">
                                 <span
-                                    class="bg-green-100 text-green-700 px-4 py-1.5 rounded-full font-bold text-xs uppercase tracking-wide">Berita</span>
+                                    class="bg-green-100 text-green-700 px-4 py-1.5 rounded-full font-bold text-xs uppercase tracking-wide">Konten</span>
                                 <span class="flex items-center">
                                     <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
@@ -187,7 +188,7 @@
 
                                     <div class="flex-grow">
                                         <div
-                                            class="bg-slate-50 rounded-2xl p-5 relative border border-slate-100 group-hover:border-green-200 transition duration-300">
+                                            class="bg-slate-50 rounded-2xl p-5 border border-slate-100 group-hover:border-green-200 transition duration-300">
 
                                             <div class="flex items-center justify-between mb-2">
                                                 <h4 class="font-bold text-slate-900">{{ $komen->user->nama_lengkap }}
@@ -219,18 +220,19 @@
                                                     </div>
                                                 </form>
 
-                                                <div class="absolute top-4 right-4 flex space-x-1 opacity-0 group-hover:opacity-100 transition duration-200"
+                                                <div class="flex justify-end mt-2 space-x-3 opacity-0 group-hover:opacity-100 transition duration-200"
                                                     id="action-buttons-{{ $komen->id_komentar }}">
                                                     <button onclick="showEditForm({{ $komen->id_komentar }})"
-                                                        class="p-1 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded transition"
-                                                        title="Edit">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                            viewBox="0 0 24 24">
+                                                        class="flex items-center text-xs text-slate-400 hover:text-blue-600 transition"
+                                                        title="Edit Komentar">
+                                                        <svg class="w-4 h-4 mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                                 stroke-width="2"
                                                                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
                                                             </path>
                                                         </svg>
+                                                        Edit
                                                     </button>
 
                                                     <form
@@ -240,15 +242,16 @@
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit"
-                                                            class="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition"
-                                                            title="Hapus">
-                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                                viewBox="0 0 24 24">
+                                                            class="flex items-center text-xs text-slate-400 hover:text-red-600 transition"
+                                                            title="Hapus Komentar">
+                                                            <svg class="w-4 h-4 mr-1" fill="none"
+                                                                stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                                     stroke-width="2"
                                                                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
                                                                 </path>
                                                             </svg>
+                                                            Hapus
                                                         </button>
                                                     </form>
                                                 </div>
@@ -341,7 +344,6 @@
 
                             <div x-show="tab === 'populer'" class="space-y-5 animate-fade-in" style="display: none;">
                                 @php
-                                    // Ambil 3 berita dengan like terbanyak
                                     $populer = \App\Models\Konten::with('media')
                                         ->whereHas('status', fn($q) => $q->where('nama_status', 'published'))
                                         ->orderBy('jumlah_like', 'desc')

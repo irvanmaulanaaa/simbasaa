@@ -93,7 +93,7 @@
                     class="block text-center px-4 py-3 bg-green-600 text-white rounded-xl font-bold shadow-md">Dashboard</a>
             @else
                 <a href="{{ route('login') }}"
-                    class="block text-center px-4 py-3 border-2 border-green-600 text-green-600 rounded-xl font-bold">Masuk</a>
+                    class="block text-center px-4 py-3 border-2 bg-green-600 text-white rounded-xl font-bold">Masuk</a>
             @endauth
         </div>
     </nav>

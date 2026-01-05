@@ -7,6 +7,7 @@ use App\Models\Konten;
 use App\Models\Komentar;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use App\Models\Like;
 use Illuminate\Database\Eloquent\Builder;
 
 class HomeController extends Controller
@@ -15,7 +16,9 @@ class HomeController extends Controller
     {
         $kontens = Konten::with('media')
             ->whereHas('status', fn($q) => $q->where('nama_status', 'published'))
-            ->latest()->take(3)->get();
+            ->latest()
+            ->take(10)
+            ->get();
         return view('welcome', compact('kontens'));
     }
 
@@ -47,8 +50,11 @@ class HomeController extends Controller
     {
         $konten = Konten::with(['media', 'komentars.user', 'user'])->findOrFail($id);
 
-        $sessionKey = 'liked_konten_' . $id;
-        $isLiked = Session::has($sessionKey);
+        if (Auth::check()) {
+            $isLiked = Like::where('user_id', Auth::id())->where('id_konten', $id)->exists();
+        } else {
+            $isLiked = session()->has('liked_konten_' . $id);
+        }
 
         $beritaLain = Konten::with('media')
             ->where('id_konten', '!=', $id)
@@ -60,19 +66,38 @@ class HomeController extends Controller
 
     public function like($id)
     {
-        $sessionKey = 'liked_konten_' . $id;
         $konten = Konten::findOrFail($id);
+        $status = 'liked';
+        $message = '';
 
-        if (Session::has($sessionKey)) {
-            $konten->decrement('jumlah_like');
-            Session::forget($sessionKey);
-            $status = 'unliked';
-            $message = 'Batal menyukai konten.';
+        if (Auth::check()) {
+            $existingLike = Like::where('user_id', Auth::id())->where('id_konten', $id)->first();
+
+            if ($existingLike) {
+                $existingLike->delete();
+                $konten->decrement('jumlah_like');
+                $status = 'unliked';
+                $message = 'Batal menyukai konten.';
+            } else {
+                Like::create([
+                    'user_id' => Auth::user()->id_user,
+                    'id_konten' => $id
+                ]);
+                $konten->increment('jumlah_like');
+                $message = 'Terima kasih atas apresiasinya!';
+            }
         } else {
-            $konten->increment('jumlah_like');
-            Session::put($sessionKey, true);
-            $status = 'liked';
-            $message = 'Terima kasih atas apresiasinya!';
+            $sessionKey = 'liked_konten_' . $id;
+            if (session()->has($sessionKey)) {
+                $konten->decrement('jumlah_like');
+                session()->forget($sessionKey);
+                $status = 'unliked';
+                $message = 'Batal menyukai konten.';
+            } else {
+                $konten->increment('jumlah_like');
+                session()->put($sessionKey, true);
+                $message = 'Terima kasih atas apresiasinya!';
+            }
         }
 
         return response()->json([
