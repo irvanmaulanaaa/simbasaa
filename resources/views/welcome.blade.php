@@ -145,7 +145,7 @@
 
         <section class="py-20 bg-green-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h2 class="text-3xl font-bold text-gray-900">Bagaimana Caranya?</h2>
+                <h2 class="text-3xl font-bold text-gray-900">Bagaimana Cara Setor Sampah?</h2>
                 <p class="mt-2 text-gray-600">Hanya dengan 3 langkah mudah.</p>
                 <div class="mt-12 grid gap-8 md:grid-cols-3">
                     <div
@@ -180,6 +180,11 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div
                     class="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-8 md:p-12">
+                    <div class="text-center max-w-3xl mx-auto mb-16">
+                        <h2 class="text-3xl font-extrabold text-gray-900">Dampak Nyata SIMBASA</h2>
+                        <p class="mt-4 text-lg text-gray-500">Transparansi data untuk membangun kepercayaan masyarakat
+                            Desa Sukapura.</p>
+                    </div>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-gray-100 text-center">
 
                         <div class="group">
@@ -191,7 +196,7 @@
                                     </path>
                                 </svg>
                             </div>
-                            <dt class="text-3xl font-extrabold text-gray-900 mb-1">250+</dt>
+                            <dt class="text-3xl font-extrabold text-gray-900 mb-1">{{ $totalUser ?? '0' }}</dt>
                             <dd class="text-xs font-bold text-gray-400 uppercase tracking-widest">Pengguna</dd>
                         </div>
 
@@ -204,7 +209,7 @@
                                     </path>
                                 </svg>
                             </div>
-                            <dt class="text-3xl font-extrabold text-gray-900 mb-1">1.2T</dt>
+                            <dt class="text-3xl font-extrabold text-gray-900 mb-1">{{ $totalSampah ?? '0' }}</dt>
                             <dd class="text-xs font-bold text-gray-400 uppercase tracking-widest">Sampah (Kg)</dd>
                         </div>
 
@@ -217,7 +222,11 @@
                                     </path>
                                 </svg>
                             </div>
-                            <dt class="text-3xl font-extrabold text-gray-900 mb-1">Rp 50jt</dt>
+                            <dt
+                                class="text-3xl font-extrabold text-gray-900 mb-2 flex justify-center items-baseline gap-1">
+                                <span class="text-2xl font-medium text-gray-400">Rp</span>
+                                {{ number_format($totalDanaCair, 0, ',', '.') }}
+                            </dt>
                             <dd class="text-xs font-bold text-gray-400 uppercase tracking-widest">Dana Cair</dd>
                         </div>
 
@@ -230,7 +239,7 @@
                                     </path>
                                 </svg>
                             </div>
-                            <dt class="text-3xl font-extrabold text-gray-900 mb-1">50+</dt>
+                            <dt class="text-3xl font-extrabold text-gray-900 mb-1">{{ $totalKonten ?? '0' }}</dt>
                             <dd class="text-xs font-bold text-gray-400 uppercase tracking-widest">Konten</dd>
                         </div>
 
@@ -392,7 +401,7 @@
 
         <section class="py-20 bg-gray-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h2 class="text-3xl font-bold text-gray-900 mb-4">Apa Saja yang Bisa Ditabung?</h2>
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Sampah Apa Saja yang Bisa Disetor?</h2>
                 <p class="text-gray-600 mb-12">Kami menerima berbagai jenis sampah anorganik yang bernilai ekonomis.
                 </p>
 

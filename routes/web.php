@@ -52,6 +52,9 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/konten', [HomeController::class, 'allContent'])->name('public.konten.index');
 Route::get('/konten/{id}', [HomeController::class, 'show'])->name('public.konten.show');
 Route::post('/konten/{id}/like', [HomeController::class, 'like'])->name('public.konten.like');
+Route::get('/lupa-password', function () {
+    return view('auth.forgot-password-custom');
+})->name('password.manual_reset');
 
 Route::middleware('auth')->group(function () {
     Route::post('/konten/{id}/comment', [HomeController::class, 'comment'])->name('public.konten.comment');
@@ -70,6 +73,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('desa', DesaController::class);
         Route::resource('users', UserController::class);
         Route::resource('konten', KontenController::class);
+        Route::put('users/{id}/reset-password', [UserController::class, 'resetPassword'])
+            ->name('users.reset_password');
     });
 
     Route::prefix('admin-pusat')->name('admin-pusat.')->group(function () {

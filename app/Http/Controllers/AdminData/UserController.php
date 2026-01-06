@@ -157,4 +157,22 @@ class UserController extends Controller
         return redirect()->route('admin-data.users.index')
             ->with('success', 'User berhasil dinonaktifkan.');
     }
+
+    public function resetPassword(Request $request, $id)
+    {
+        $request->validate([
+            'new_password' => 'required|min:8', 
+        ], [
+            'new_password.required' => 'Password baru wajib diisi!',
+            'new_password.min' => 'Password minimal 8 karakter!',
+        ]);
+
+        $user = User::where('id_user', $id)->firstOrFail();
+
+        $user->update([
+            'password' => Hash::make($request->new_password),
+        ]);
+
+        return back()->with('success', 'Password berhasil direset menjadi: ' . $request->new_password);
+    }
 }

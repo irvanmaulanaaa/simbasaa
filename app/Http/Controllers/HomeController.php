@@ -8,18 +8,36 @@ use App\Models\Komentar;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use App\Models\Like;
+use App\Models\User;
+use App\Models\Penarikan;
 use Illuminate\Database\Eloquent\Builder;
 
 class HomeController extends Controller
 {
     public function index()
     {
-        $kontens = Konten::with('media')
+        $totalUser = User::whereHas('role', fn($q) => $q->where('nama_role', 'warga'))->count();
+
+        // Contoh: Hitung total berat sampah (Jika ada tabel transaksi)
+        // $totalSampah = Transaksi::sum('berat_sampah'); 
+        $totalSampah = 1250; // Dummy dulu kalau belum ada tabel transaksi
+
+        // Hitung total konten
+        $totalKonten = Konten::whereHas('status', fn($q) => $q->where('nama_status', 'published'))->count();
+
+        if (class_exists(Penarikan::class)) {
+             $totalDanaCair = Penarikan::where('status', 'disetujui')->sum('jumlah');
+        } else {
+             $totalDanaCair = 2500000;
+        }
+
+        $kontens = Konten::with(['media', 'user'])
             ->whereHas('status', fn($q) => $q->where('nama_status', 'published'))
             ->latest()
             ->take(10)
             ->get();
-        return view('welcome', compact('kontens'));
+
+        return view('welcome', compact('kontens', 'totalUser', 'totalSampah', 'totalKonten', 'totalDanaCair'));
     }
 
     public function allContent(Request $request)
