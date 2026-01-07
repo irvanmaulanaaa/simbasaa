@@ -48,11 +48,11 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg relative">
                 <div class="p-6 text-gray-900">
 
-                    <form id="userForm" action="{{ route('admin-data.users.store') }}" method="POST">
+                    <form id="userForm" action="{{ route('admin-data.users.store') }}" method="POST" x-data="{ password: '', password_confirmation: '' }">
                         @csrf
 
                         <div class="mb-6">
-                            <h3 class="text-lg font-medium text-gray-900 border-b pb-2 mb-4">Informasi Akun & Pribadi
+                            <h3 class="text-lg font-medium text-gray-900 border-b pb-2 mb-4">Informasi Akun
                             </h3>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -86,14 +86,19 @@
                                 </div>
 
                                 <div>
-                                    <x-input-label for="password">
-                                        Password <span class="text-red-500">*</span> <span
-                                            class="text-xs text-gray-500 font-normal ml-1">(Min. 8 Karakter)</span>
+                                    <x-input-label for="password" class="flex justify-between items-center w-full">
+                                        <span>Password <span class="text-red-500">*</span></span>
+
+                                        <span class="text-xs font-bold transition-colors duration-200"
+                                            :class="password.length >= 8 ? 'text-green-600' : 'text-red-500'">
+                                            <span x-text="password.length"></span> / 8 Karakter 
+                                        </span>
                                     </x-input-label>
+
                                     <div class="relative mt-1">
                                         <x-text-input id="password"
                                             class="block w-full border-gray-300 focus:border-green-500 focus:ring-green-500 pr-10"
-                                            type="password" name="password" placeholder="contoh: Budi1234" />
+                                            type="password" name="password" placeholder="contoh: Budi1234" x-model="password" />
                                         <button type="button" onclick="togglePassword('password', 'eye-icon-pass')"
                                             class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none">
                                             <svg id="eye-icon-pass" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -112,14 +117,29 @@
                                 </div>
 
                                 <div>
-                                    <x-input-label for="password_confirmation">
-                                        Konfirmasi Password <span class="text-red-500">*</span>
+                                    <x-input-label for="password_confirmation"
+                                        class="flex justify-between items-center w-full">
+                                        <span>Konfirmasi Password <span class="text-red-500">*</span></span>
+
+                                        <template x-if="password_confirmation.length > 0">
+                                            <span>
+                                                <span x-show="password === password_confirmation"
+                                                    class="text-green-600 text-xs font-bold transition-colors duration-200">
+                                                    Cocok 
+                                                </span>
+                                                <span x-show="password !== password_confirmation"
+                                                    class="text-red-500 text-xs font-bold transition-colors duration-200">
+                                                    Tidak Cocok 
+                                                </span>
+                                            </span>
+                                        </template>
                                     </x-input-label>
+
                                     <div class="relative mt-1">
                                         <x-text-input id="password_confirmation"
                                             class="block w-full border-gray-300 focus:border-green-500 focus:ring-green-500 pr-10"
                                             type="password" name="password_confirmation"
-                                            placeholder="Masukkan kembali password" />
+                                            placeholder="Masukkan kembali password" x-model="password_confirmation" />
                                         <button type="button"
                                             onclick="togglePassword('password_confirmation', 'eye-icon-conf')"
                                             class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none">
@@ -139,21 +159,8 @@
                                 </div>
 
                                 <div>
-                                    <x-input-label for="no_telepon">
-                                        Nomor Telepon <span class="text-red-500">*</span>
-                                    </x-input-label>
-                                    <x-text-input id="no_telepon"
-                                        class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500"
-                                        type="text" name="no_telepon" :value="old('no_telepon')"
-                                        placeholder="contoh: 0812xxxxxxxx" />
-                                    @error('no_telepon')
-                                        <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <div>
                                     <x-input-label for="role_id">
-                                        Role <span class="text-red-500">*</span>
+                                        Role Pengguna <span class="text-red-500">*</span>
                                     </x-input-label>
                                     <select id="role_id" name="role_id"
                                         class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm">
@@ -176,12 +183,28 @@
                                     </x-input-label>
                                     <select id="status" name="status"
                                         class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm">
+                                        <option value="">Pilih Status</option>
                                         <option value="aktif" {{ old('status') == 'aktif' ? 'selected' : '' }}>Aktif
                                         </option>
                                         <option value="tidak_aktif"
                                             {{ old('status') == 'tidak_aktif' ? 'selected' : '' }}>Tidak Aktif</option>
                                     </select>
                                     @error('status')
+                                        <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div>
+                                    <x-input-label for="no_telepon">
+                                        Nomor Telepon <span class="text-red-500">*</span> <span
+                                            class="text-xs text-gray-500 font-normal ml-1">(Angka Saja)</span>
+                                    </x-input-label>
+                                    <x-text-input id="no_telepon"
+                                        class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500"
+                                        type="text" name="no_telepon" :value="old('no_telepon')"
+                                        placeholder="contoh: 0812xxxxxxxx"
+                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                                    @error('no_telepon')
                                         <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
                                     @enderror
                                 </div>
@@ -207,11 +230,13 @@
 
                                 <div>
                                     <x-input-label for="rt">
-                                        RT <span class="text-red-500">*</span>
+                                        RT <span class="text-red-500">*</span> <span
+                                            class="text-xs text-gray-500 font-normal ml-1">(Angka Saja)</span>
                                     </x-input-label>
                                     <x-text-input id="rt"
                                         class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500"
-                                        type="text" name="rt" :value="old('rt')" placeholder="contoh: 01" />
+                                        type="text" name="rt" :value="old('rt')" placeholder="contoh: 01"
+                                        maxlength="3" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                                     @error('rt')
                                         <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
                                     @enderror
@@ -219,11 +244,13 @@
 
                                 <div>
                                     <x-input-label for="rw">
-                                        RW <span class="text-red-500">*</span>
+                                        RW <span class="text-red-500">*</span> <span
+                                            class="text-xs text-gray-500 font-normal ml-1">(Angka Saja)</span>
                                     </x-input-label>
                                     <x-text-input id="rw"
                                         class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500"
-                                        type="text" name="rw" :value="old('rw')" placeholder="contoh: 02" />
+                                        type="text" name="rw" :value="old('rw')" placeholder="contoh: 02"
+                                        maxlength="3" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                                     @error('rw')
                                         <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
                                     @enderror
