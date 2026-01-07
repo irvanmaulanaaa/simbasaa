@@ -19,22 +19,25 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $search = $request->input('search');
+        $perPage = $request->input('per_page', 10);
+
+        $roles = Role::all();
 
         $users = User::with(['role', 'desa.kecamatan'])
-            ->where('id_user', '!=', Auth::id())
-            ->when($search, function ($query, $search) {
-                return $query->where(function ($q) use ($search) {
-                    $q->where('nama_lengkap', 'like', "%{$search}%")
-                        ->orWhere('username', 'like', "%{$search}%")
-                        ->orWhere('nik', 'like', "%{$search}%");
+            ->when($request->search, function ($query) use ($request) {
+                $query->where(function ($q) use ($request) {
+                    $q->where('nama_lengkap', 'like', '%' . $request->search . '%')
+                        ->orWhere('username', 'like', '%' . $request->search . '%');
                 });
             })
+            ->when($request->role_id, function ($query) use ($request) {
+                $query->where('role_id', $request->role_id);
+            })
             ->latest()
-            ->paginate(10)
+            ->paginate($perPage)
             ->withQueryString();
 
-        return view('admin-data.users.index', compact('users'));
+        return view('admin-data.users.index', compact('users', 'roles'));
     }
 
     /**
@@ -161,7 +164,7 @@ class UserController extends Controller
     public function resetPassword(Request $request, $id)
     {
         $request->validate([
-            'new_password' => 'required|min:8', 
+            'new_password' => 'required|min:8',
         ], [
             'new_password.required' => 'Password baru wajib diisi!',
             'new_password.min' => 'Password minimal 8 karakter!',
