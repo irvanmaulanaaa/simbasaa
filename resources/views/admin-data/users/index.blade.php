@@ -256,7 +256,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="6" class="text-center py-8">
+                                            <td colspan="10" class="text-center py-8">
                                                 <div class="flex flex-col items-center justify-center text-gray-500">
                                                     <svg class="w-12 h-12 mb-2 text-gray-300" fill="none"
                                                         stroke="currentColor" viewBox="0 0 24 24">
@@ -388,10 +388,6 @@
                             </div>
                         </div>
 
-                    </div>
-
-                    <div class="mt-4">
-                        {{ $users->links() }}
                     </div>
 
                     <div x-show="showResetModal" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;"

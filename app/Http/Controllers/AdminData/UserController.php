@@ -149,7 +149,7 @@ class UserController extends Controller
         $request->merge([
             'username' => strtolower(str_replace(' ', '', $request->username))
         ]);
-        
+
         $request->validate([
             'nama_lengkap' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:100', 'unique:users,username,' . $user->id_user . ',id_user'],
@@ -180,7 +180,7 @@ class UserController extends Controller
         $user->update($data);
 
         return redirect()->back()
-            ->with('success_update', 'User berhasil diperbarui.');
+            ->with('success_update', 'Pengguna berhasil diperbarui.');
     }
 
     /**
