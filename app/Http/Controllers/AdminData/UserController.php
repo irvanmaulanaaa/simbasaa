@@ -20,9 +20,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $perPage = $request->input('per_page', 10);
-
         $roles = Role::all();
-
         $users = User::with(['role', 'desa.kecamatan'])
             ->when($request->search, function ($query) use ($request) {
                 $query->where(function ($q) use ($request) {
@@ -30,8 +28,16 @@ class UserController extends Controller
                         ->orWhere('username', 'like', '%' . $request->search . '%');
                 });
             })
-            ->when($request->role_id, function ($query) use ($request) {
-                $query->where('role_id', $request->role_id);
+            ->when($request->filter, function ($query) use ($request) {
+                $filter = $request->filter;
+
+                if (str_starts_with($filter, 'role_')) {
+                    $roleId = str_replace('role_', '', $filter);
+                    $query->where('role_id', $roleId);
+                } elseif (str_starts_with($filter, 'status_')) {
+                    $status = str_replace('status_', '', $filter);
+                    $query->where('status', $status);
+                }
             })
             ->latest()
             ->paginate($perPage)
@@ -56,6 +62,10 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        $request->merge([
+            'username' => strtolower(str_replace(' ', '', $request->username))
+        ]);
+
         $request->validate([
             'nama_lengkap' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:100', 'unique:users,username'],
@@ -136,17 +146,29 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        $request->merge([
+            'username' => strtolower(str_replace(' ', '', $request->username))
+        ]);
+        
         $request->validate([
             'nama_lengkap' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:100', 'unique:users,username,' . $user->id_user . ',id_user'],
-            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
+            'password' => ['nullable', 'confirmed', 'min:8'],
             'role_id' => ['required', 'exists:roles,id_role'],
+            'kecamatan_id' => ['required'],
             'desa_id' => ['required', 'exists:desa,id_desa'],
             'rt' => ['required', 'string', 'max:5'],
             'rw' => ['required', 'string', 'max:5'],
             'status' => ['required', 'in:aktif,tidak_aktif'],
             'no_telepon' => ['required', 'string', 'max:20'],
             'jalan' => ['required', 'string', 'max:255'],
+        ], [
+            'required' => 'Wajib diisi!',
+            'unique' => 'Username ini sudah terpakai oleh pengguna lain.',
+            'confirmed' => 'Konfirmasi password tidak cocok.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'in' => 'Pilihan status tidak valid.',
+            'exists' => 'Data pilihan tidak valid.'
         ]);
 
         $data = $request->except('password', 'password_confirmation');
@@ -157,19 +179,21 @@ class UserController extends Controller
 
         $user->update($data);
 
-        return redirect()->route('admin-data.users.index')
-            ->with('success', 'User berhasil diperbarui.');
+        return redirect()->back()
+            ->with('success_update', 'User berhasil diperbarui.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $user)
+    public function destroy($id)
     {
+        $user = User::findOrFail($id);
+
         $user->update(['status' => 'tidak_aktif']);
 
         return redirect()->route('admin-data.users.index')
-            ->with('success', 'User berhasil dinonaktifkan.');
+            ->with('success', 'Pengguna berhasil dinonaktifkan!');
     }
 
     public function resetPassword(Request $request, $id)

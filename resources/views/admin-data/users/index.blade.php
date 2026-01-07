@@ -35,14 +35,6 @@
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-
-                    @if ($message = Session::get('success'))
-                        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
-                            <p class="font-bold">Sukses!</p>
-                            <p>{{ $message }}</p>
-                        </div>
-                    @endif
-
                     <div class="flex flex-col md:flex-row justify-between items-center mb-4 space-y-4 md:space-y-0">
 
                         <a href="{{ route('admin-data.users.create') }}"
@@ -63,7 +55,6 @@
                                 },
                                 clearSearch() {
                                     this.search = '';
-                                    // Kita pakai timeout kecil agar input benar-benar kosong sebelum submit
                                     setTimeout(() => { this.submitForm(); }, 100);
                                 }
                             }">
@@ -80,15 +71,27 @@
                                 </option>
                             </select>
 
-                            <select name="role_id" onchange="this.form.submit()"
-                                class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm md:w-40">
-                                <option value="">Semua Role</option>
-                                @foreach ($roles as $role)
-                                    <option value="{{ $role->id_role }}"
-                                        {{ request('role_id') == $role->id_role ? 'selected' : '' }}>
-                                        {{ $role->nama_role }}
+                            <select name="filter" onchange="this.form.submit()"
+                                class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm md:w-48">
+                                <option value="">Semua</option>
+
+                                <optgroup label="Berdasarkan Role">
+                                    @foreach ($roles as $role)
+                                        <option value="role_{{ $role->id_role }}"
+                                            {{ request('filter') == 'role_' . $role->id_role ? 'selected' : '' }}>
+                                            {{ $role->nama_role }}
+                                        </option>
+                                    @endforeach
+                                </optgroup>
+
+                                <optgroup label="Berdasarkan Status">
+                                    <option value="status_aktif"
+                                        {{ request('filter') == 'status_aktif' ? 'selected' : '' }}>Aktif
                                     </option>
-                                @endforeach
+                                    <option value="status_tidak_aktif"
+                                        {{ request('filter') == 'status_tidak_aktif' ? 'selected' : '' }}>Tidak
+                                        Aktif</option>
+                                </optgroup>
                             </select>
 
                             <div class="relative w-full md:w-64">
@@ -99,7 +102,6 @@
                                             stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
                                     </svg>
                                 </div>
-
                                 <input type="text" name="search" x-model="search"
                                     class="block w-full p-2 pl-10 pr-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-green-500 focus:border-green-500"
                                     placeholder="Cari nama / username...">
@@ -118,7 +120,6 @@
                     </div>
 
                     <div x-data="{
-                        // 1. STATE RESET PASSWORD
                         showResetModal: false,
                         resetActionUrl: '',
                         resetUserName: '',
@@ -128,7 +129,6 @@
                             this.showResetModal = true;
                         },
                     
-                        // 2. STATE HAPUS USER (BARU)
                         showDeleteModal: false,
                         deleteActionUrl: '',
                         deleteUserName: '',
@@ -147,6 +147,8 @@
                                         <th class="py-3 px-6 text-left">Nama Lengkap</th>
                                         <th class="py-3 px-6 text-left">Username</th>
                                         <th class="py-3 px-6 text-left">Role</th>
+                                        <th class="py-3 px-6 text-left">No. Telepon</th>
+                                        <th class="py-3 px-6 text-center">Status</th>
                                         <th class="py-3 px-6 text-left w-1/3">Alamat Lengkap</th>
                                         <th class="py-3 px-6 text-center">Aksi</th>
                                     </tr>
@@ -171,6 +173,25 @@
 
                                             <td class="py-3 px-6 text-left font-bold text-black">
                                                 <span>{{ $user->role->nama_role }}</span>
+                                            </td>
+
+                                            <td class="py-3 px-6 text-left font-medium">
+                                                <span
+                                                    class="text-black whitespace-nowrap">{{ $user->no_telepon ?? '-' }}</span>
+                                            </td>
+
+                                            <td class="py-3 px-6 text-center">
+                                                @if ($user->status == 'aktif')
+                                                    <span
+                                                        class="bg-green-100 text-green-800 py-1 px-3 rounded-full text-xs font-bold uppercase tracking-wide whitespace-nowrap">
+                                                        Aktif
+                                                    </span>
+                                                @else
+                                                    <span
+                                                        class="bg-red-100 text-red-800 py-1 px-3 rounded-full text-xs font-bold uppercase tracking-wide whitespace-nowrap">
+                                                        Tidak Aktif
+                                                    </span>
+                                                @endif
                                             </td>
 
                                             <td class="py-3 px-6 text-left text-sm leading-relaxed text-black">
@@ -216,17 +237,19 @@
                                                         <x-heroicon-o-arrow-path class="h-4 w-4" />
                                                     </button>
 
-                                                    <button type="button"
-                                                        @click="openDeleteModal('{{ route('admin-data.users.destroy', $user->id_user) }}', '{{ $user->nama_lengkap }}')"
-                                                        class="w-8 h-8 rounded bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-600 hover:text-white transition"
-                                                        title="Nonaktifkan">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                            viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                        </svg>
-                                                    </button>
+                                                    @if ($user->status == 'aktif')
+                                                        <button type="button"
+                                                            @click="openDeleteModal('{{ route('admin-data.users.destroy', $user->id_user) }}', '{{ $user->nama_lengkap }}')"
+                                                            class="w-8 h-8 rounded bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-600 hover:text-white transition"
+                                                            title="Nonaktifkan">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                                viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                            </svg>
+                                                        </button>
+                                                    @endif
 
                                                 </div>
                                             </td>
@@ -429,4 +452,21 @@
         </div>
     </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: '{{ session('success') }}',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                });
+            @endif
+        });
+    </script>
 </x-app-layout>

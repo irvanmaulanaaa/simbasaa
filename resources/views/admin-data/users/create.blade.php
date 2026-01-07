@@ -51,200 +51,215 @@
                     <form id="userForm" action="{{ route('admin-data.users.store') }}" method="POST">
                         @csrf
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="mb-6">
+                            <h3 class="text-lg font-medium text-gray-900 border-b pb-2 mb-4">Informasi Akun & Pribadi
+                            </h3>
 
-                            <div>
-                                <x-input-label for="nama_lengkap">
-                                    Nama Lengkap <span class="text-red-500">*</span>
-                                </x-input-label>
-                                <x-text-input id="nama_lengkap"
-                                    class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500"
-                                    type="text" name="nama_lengkap" :value="old('nama_lengkap')" />
-                                @error('nama_lengkap')
-                                    <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <x-input-label for="username">
-                                    Username (Login) <span class="text-red-500">*</span>
-                                </x-input-label>
-                                <x-text-input id="username"
-                                    class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500"
-                                    type="text" name="username" :value="old('username')" />
-                                @error('username')
-                                    <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <x-input-label for="password">
-                                    Password <span class="text-red-500">*</span> <span
-                                        class="text-xs text-gray-500 font-normal ml-1">(Min. 8 Karakter)</span>
-                                </x-input-label>
-                                <div class="relative mt-1">
-                                    <x-text-input id="password"
-                                        class="block w-full border-gray-300 focus:border-green-500 focus:ring-green-500 pr-10"
-                                        type="password" name="password" />
-                                    <button type="button" onclick="togglePassword('password', 'eye-icon-pass')"
-                                        class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none">
-                                        <svg id="eye-icon-pass" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                                            class="w-5 h-5">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        </svg>
-                                    </button>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <x-input-label for="nama_lengkap">
+                                        Nama Lengkap <span class="text-red-500">*</span>
+                                    </x-input-label>
+                                    <x-text-input id="nama_lengkap"
+                                        class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500"
+                                        type="text" name="nama_lengkap" :value="old('nama_lengkap')"
+                                        placeholder="contoh: Budi Santoso" />
+                                    @error('nama_lengkap')
+                                        <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                                    @enderror
                                 </div>
-                                @error('password')
-                                    <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
-                                @enderror
-                            </div>
 
-                            <div>
-                                <x-input-label for="password_confirmation">
-                                    Konfirmasi Password <span class="text-red-500">*</span>
-                                </x-input-label>
-                                <div class="relative mt-1">
-                                    <x-text-input id="password_confirmation"
-                                        class="block w-full border-gray-300 focus:border-green-500 focus:ring-green-500 pr-10"
-                                        type="password" name="password_confirmation" />
-                                    <button type="button"
-                                        onclick="togglePassword('password_confirmation', 'eye-icon-conf')"
-                                        class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none">
-                                        <svg id="eye-icon-conf" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                                            class="w-5 h-5">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        </svg>
-                                    </button>
+                                <div>
+                                    <x-input-label for="username">
+                                        Username <span class="text-red-500">*</span>
+                                        <span class="text-xs text-gray-500 font-normal ml-1">(Huruf kecil, tanpa
+                                            spasi)</span>
+                                    </x-input-label>
+                                    <x-text-input id="username"
+                                        class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500"
+                                        type="text" name="username" :value="old('username')"
+                                        oninput="this.value = this.value.toLowerCase().replace(/\s/g, '')"
+                                        placeholder="contoh: budisantoso" />
+                                    @error('username')
+                                        <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                                    @enderror
                                 </div>
-                                @error('password_confirmation')
-                                    <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
-                                @enderror
+
+                                <div>
+                                    <x-input-label for="password">
+                                        Password <span class="text-red-500">*</span> <span
+                                            class="text-xs text-gray-500 font-normal ml-1">(Min. 8 Karakter)</span>
+                                    </x-input-label>
+                                    <div class="relative mt-1">
+                                        <x-text-input id="password"
+                                            class="block w-full border-gray-300 focus:border-green-500 focus:ring-green-500 pr-10"
+                                            type="password" name="password" placeholder="contoh: Budi1234" />
+                                        <button type="button" onclick="togglePassword('password', 'eye-icon-pass')"
+                                            class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none">
+                                            <svg id="eye-icon-pass" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                                class="w-5 h-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    @error('password')
+                                        <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div>
+                                    <x-input-label for="password_confirmation">
+                                        Konfirmasi Password <span class="text-red-500">*</span>
+                                    </x-input-label>
+                                    <div class="relative mt-1">
+                                        <x-text-input id="password_confirmation"
+                                            class="block w-full border-gray-300 focus:border-green-500 focus:ring-green-500 pr-10"
+                                            type="password" name="password_confirmation"
+                                            placeholder="Masukkan kembali password" />
+                                        <button type="button"
+                                            onclick="togglePassword('password_confirmation', 'eye-icon-conf')"
+                                            class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none">
+                                            <svg id="eye-icon-conf" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                                class="w-5 h-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    @error('password_confirmation')
+                                        <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div>
+                                    <x-input-label for="no_telepon">
+                                        Nomor Telepon <span class="text-red-500">*</span>
+                                    </x-input-label>
+                                    <x-text-input id="no_telepon"
+                                        class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500"
+                                        type="text" name="no_telepon" :value="old('no_telepon')"
+                                        placeholder="contoh: 0812xxxxxxxx" />
+                                    @error('no_telepon')
+                                        <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div>
+                                    <x-input-label for="role_id">
+                                        Role <span class="text-red-500">*</span>
+                                    </x-input-label>
+                                    <select id="role_id" name="role_id"
+                                        class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm">
+                                        <option value="">Pilih Role</option>
+                                        @foreach ($roles as $role)
+                                            <option value="{{ $role->id_role }}"
+                                                {{ old('role_id') == $role->id_role ? 'selected' : '' }}>
+                                                {{ $role->nama_role }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('role_id')
+                                        <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div>
+                                    <x-input-label for="status">
+                                        Status <span class="text-red-500">*</span>
+                                    </x-input-label>
+                                    <select id="status" name="status"
+                                        class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm">
+                                        <option value="aktif" {{ old('status') == 'aktif' ? 'selected' : '' }}>Aktif
+                                        </option>
+                                        <option value="tidak_aktif"
+                                            {{ old('status') == 'tidak_aktif' ? 'selected' : '' }}>Tidak Aktif</option>
+                                    </select>
+                                    @error('status')
+                                        <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                                    @enderror
+                                </div>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                            <div>
-                                <x-input-label for="no_telepon">
-                                    Nomor Telepon <span class="text-red-500">*</span>
-                                </x-input-label>
-                                <x-text-input id="no_telepon"
-                                    class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500"
-                                    type="text" name="no_telepon" :value="old('no_telepon')" />
-                                @error('no_telepon')
-                                    <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
-                                @enderror
-                            </div>
+                        <div class="mb-6">
+                            <h3 class="text-lg font-medium text-gray-900 border-b pb-2 mb-4">Alamat Lengkap</h3>
 
-                            <div>
-                                <x-input-label for="jalan">
-                                    Nama Jalan <span class="text-red-500">*</span>
-                                </x-input-label>
-                                <x-text-input id="jalan"
-                                    class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500"
-                                    type="text" name="jalan" :value="old('jalan')" />
-                                @error('jalan')
-                                    <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
-                                @enderror
-                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="md:col-span-2">
+                                    <x-input-label for="jalan">
+                                        Nama Jalan <span class="text-red-500">*</span>
+                                    </x-input-label>
+                                    <x-text-input id="jalan"
+                                        class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500"
+                                        type="text" name="jalan" :value="old('jalan')"
+                                        placeholder="contoh: Jalan Sukabirus No. 12" />
+                                    @error('jalan')
+                                        <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                                    @enderror
+                                </div>
 
-                            <div>
-                                <x-input-label for="kecamatan_id">
-                                    Kecamatan <span class="text-red-500">*</span>
-                                </x-input-label>
-                                <select id="kecamatan_id" name="kecamatan_id"
-                                    class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm">
-                                    <option value="">Pilih Kecamatan</option>
-                                    @foreach ($kecamatans as $kecamatan)
-                                        <option value="{{ $kecamatan->id_kecamatan }}"
-                                            {{ old('kecamatan_id') == $kecamatan->id_kecamatan ? 'selected' : '' }}>
-                                            {{ $kecamatan->nama_kecamatan }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('kecamatan_id')
-                                    <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
-                                @enderror
-                            </div>
+                                <div>
+                                    <x-input-label for="rt">
+                                        RT <span class="text-red-500">*</span>
+                                    </x-input-label>
+                                    <x-text-input id="rt"
+                                        class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500"
+                                        type="text" name="rt" :value="old('rt')" placeholder="contoh: 01" />
+                                    @error('rt')
+                                        <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                                    @enderror
+                                </div>
 
-                            <div>
-                                <x-input-label for="desa_id">
-                                    Desa <span class="text-red-500">*</span>
-                                </x-input-label>
-                                <select id="desa_id" name="desa_id"
-                                    class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm">
-                                    <option value="">Pilih Desa (Pilih Kecamatan Dulu)</option>
-                                </select>
-                                @error('desa_id')
-                                    <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
-                                @enderror
-                            </div>
+                                <div>
+                                    <x-input-label for="rw">
+                                        RW <span class="text-red-500">*</span>
+                                    </x-input-label>
+                                    <x-text-input id="rw"
+                                        class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500"
+                                        type="text" name="rw" :value="old('rw')" placeholder="contoh: 02" />
+                                    @error('rw')
+                                        <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                                    @enderror
+                                </div>
 
-                            <div>
-                                <x-input-label for="rt">
-                                    RT <span class="text-red-500">*</span>
-                                </x-input-label>
-                                <x-text-input id="rt"
-                                    class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500"
-                                    type="text" name="rt" :value="old('rt')" />
-                                @error('rt')
-                                    <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
-                                @enderror
-                            </div>
+                                <div>
+                                    <x-input-label for="kecamatan_id">
+                                        Kecamatan <span class="text-red-500">*</span>
+                                    </x-input-label>
+                                    <select id="kecamatan_id" name="kecamatan_id"
+                                        class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm">
+                                        <option value="">Pilih Kecamatan</option>
+                                        @foreach ($kecamatans as $kecamatan)
+                                            <option value="{{ $kecamatan->id_kecamatan }}"
+                                                {{ old('kecamatan_id') == $kecamatan->id_kecamatan ? 'selected' : '' }}>
+                                                {{ $kecamatan->nama_kecamatan }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('kecamatan_id')
+                                        <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                                    @enderror
+                                </div>
 
-                            <div>
-                                <x-input-label for="rw">
-                                    RW <span class="text-red-500">*</span>
-                                </x-input-label>
-                                <x-text-input id="rw"
-                                    class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500"
-                                    type="text" name="rw" :value="old('rw')" />
-                                @error('rw')
-                                    <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <x-input-label for="role_id">
-                                    Role <span class="text-red-500">*</span>
-                                </x-input-label>
-                                <select id="role_id" name="role_id"
-                                    class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm">
-                                    <option value="">Pilih Role</option>
-                                    @foreach ($roles as $role)
-                                        <option value="{{ $role->id_role }}"
-                                            {{ old('role_id') == $role->id_role ? 'selected' : '' }}>
-                                            {{ $role->nama_role }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('role_id')
-                                    <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <x-input-label for="status">
-                                    Status <span class="text-red-500">*</span>
-                                </x-input-label>
-                                <select id="status" name="status"
-                                    class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm">
-                                    <option value="">Pilih Status</option>
-                                    <option value="aktif" {{ old('status') == 'aktif' ? 'selected' : '' }}>Aktif
-                                    </option>
-                                    <option value="tidak_aktif"
-                                        {{ old('status') == 'tidak_aktif' ? 'selected' : '' }}>Tidak Aktif</option>
-                                </select>
-                                @error('status')
-                                    <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
-                                @enderror
+                                <div>
+                                    <x-input-label for="desa_id">
+                                        Desa <span class="text-red-500">*</span>
+                                    </x-input-label>
+                                    <select id="desa_id" name="desa_id"
+                                        class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm">
+                                        <option value="">Pilih Desa (Pilih Kecamatan Dulu)</option>
+                                    </select>
+                                    @error('desa_id')
+                                        <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                                    @enderror
+                                </div>
                             </div>
                         </div>
 
@@ -296,16 +311,16 @@
                 loadingOverlay.classList.add('flex');
             });
 
-            @if(session('success_create'))
-                loadingOverlay.classList.add('hidden'); 
-                
+            @if (session('success_create'))
+                loadingOverlay.classList.add('hidden');
+
                 Swal.fire({
                     icon: 'success',
                     title: 'Berhasil!',
                     text: '{{ session('success_create') }}',
                     showConfirmButton: false,
-                    timer: 2000, 
-                    timerProgressBar: true 
+                    timer: 2000,
+                    timerProgressBar: true
                 }).then((result) => {
                     window.location.href = "{{ route('admin-data.users.index') }}";
                 });
@@ -314,7 +329,7 @@
             @if (session('error'))
                 loadingOverlay.classList.add('hidden');
                 Swal.fire({
-                    icon: 'error', 
+                    icon: 'error',
                     title: 'Gagal!',
                     text: '{{ session('error') }}',
                     confirmButtonColor: '#dc2626'
