@@ -59,14 +59,25 @@ class UserController extends Controller
         $request->validate([
             'nama_lengkap' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:100', 'unique:users,username'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password' => ['required', 'string', 'min:8'],
+            'password_confirmation' => ['required', 'same:password'],
             'role_id' => ['required', 'exists:roles,id_role'],
+            'kecamatan_id' => ['required', 'exists:kecamatan,id_kecamatan'],
             'desa_id' => ['required', 'exists:desa,id_desa'],
             'rt' => ['required', 'string', 'max:5'],
             'rw' => ['required', 'string', 'max:5'],
             'status' => ['required', 'in:aktif,tidak_aktif'],
             'no_telepon' => ['required', 'string', 'max:20'],
             'jalan' => ['required', 'string', 'max:255'],
+        ], [
+            'required' => 'Wajib diisi!',
+            'role_id.required' => 'Role wajib dipilih!',
+            'kecamatan_id.required' => 'Kecamatan wajib dipilih!',
+            'desa_id.required' => 'Desa wajib dipilih!',
+            'status.required' => 'Status wajib dipilih!',
+            'password.min' => 'Password belum 8 karakter (Minimal 8 karakter)',
+            'password_confirmation.same' => 'Konfirmasi password tidak cocok dengan password di atas',
+            'unique' => 'Username ini sudah terpakai, Gunakan username lain!',
         ]);
 
         $user = User::create([
@@ -82,12 +93,12 @@ class UserController extends Controller
             'status' => $request->status,
         ]);
 
-        if ($user->role->nama_role == 'warga') {
+        if ($user->role && $user->role->nama_role == 'warga') {
             $user->saldo()->create(['jumlah_saldo' => 0]);
         }
 
-        return redirect()->route('admin-data.users.index')
-            ->with('success', 'User berhasil ditambahkan.');
+        return redirect()->back()
+            ->with('success_create', 'Pengguna berhasil ditambahkan');
     }
 
     public function getDesa(Request $request)
