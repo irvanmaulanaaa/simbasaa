@@ -61,11 +61,22 @@
                             </button>
 
                             <form method="GET" action="{{ route('admin-data.desa.index') }}"
-                                class="flex flex-wrap md:flex-nowrap gap-2 w-full md:w-auto items-center justify-end">
+                                class="flex flex-wrap md:flex-nowrap gap-2 w-full md:w-auto items-center justify-end"
+                                x-data="{
+                                    search: '{{ request('search') }}',
+                                    submitForm() {
+                                        $el.submit();
+                                    },
+                                    clearSearch() {
+                                        this.search = '';
+                                        setTimeout(() => { this.submitForm(); }, 100);
+                                    }
+                                }">
 
                                 <div class="relative">
                                     <select name="per_page" onchange="this.form.submit()"
-                                        class="rounded-lg border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 cursor-pointer bg-gray-50">
+                                        class="rounded-lg border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 cursor-pointer bg-gray-50"
+                                        title="Jumlah data per halaman">
                                         <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 Data
                                         </option>
                                         <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 Data
@@ -96,19 +107,20 @@
                                                 stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
                                         </svg>
                                     </div>
-                                    <input type="text" name="search" value="{{ request('search') }}"
+
+                                    <input type="text" name="search" x-model="search"
                                         class="block w-full p-2 pl-10 pr-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
                                         placeholder="Cari Nama Desa...">
-                                    @if (request('search'))
-                                        <a href="{{ route('admin-data.desa.index', array_merge(request()->except('search'), ['search' => null])) }}"
-                                            class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-900 transition">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M6 18L18 6M6 6l12 12"></path>
-                                            </svg>
-                                        </a>
-                                    @endif
+
+                                    <button type="button" @click="clearSearch()" x-show="search.length > 0"
+                                        style="display: none;"
+                                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-red-500 focus:outline-none transition"
+                                        title="Hapus pencarian">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -177,7 +189,8 @@
         </div>
 
         <footer class="mt-auto py-6 text-center text-sm text-gray-500 bg-gray-50 border-t border-gray-200">
-            <p>&copy; {{ date('Y') }} <span class="font-bold text-green-600">SIMBASA Developed by</span> Irvan Maulana. All
+            <p>&copy; {{ date('Y') }} <span class="font-bold text-green-600">SIMBASA Developed by</span> Irvan
+                Maulana. All
                 rights reserved.</p>
         </footer>
 

@@ -31,6 +31,13 @@ class KontenController extends Controller
             $query->where('status_id', $request->status_id);
         }
 
+        if ($request->filled('start_date')) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+        if ($request->filled('end_date')) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
         $kontens = $query->latest()->paginate(10)->withQueryString();
 
         return view('admin-data.konten.index', compact('kontens', 'statuses'));

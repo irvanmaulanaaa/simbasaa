@@ -38,66 +38,106 @@
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg relative">
                     <div class="p-6 text-gray-900">
 
-                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
+                        <div class="mb-4">
                             <a href="{{ route('admin-data.konten.create') }}"
-                                class="w-full md:w-auto inline-flex items-center justify-center px-4 py-2 bg-blue-600 border border-transparent rounded-lg font-semibold text-base text-white hover:bg-blue-700 transition shadow-md">
+                                class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 border border-transparent rounded-lg font-semibold text-base text-white hover:bg-blue-700 transition shadow-md">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 4v16m8-8H4"></path>
                                 </svg>
                                 Tambah Konten
                             </a>
+                        </div>
 
-                            <form method="GET" action="{{ route('admin-data.konten.index') }}"
-                                class="flex flex-wrap md:flex-nowrap gap-2 w-full md:w-auto items-center justify-end">
-                                <div class="relative">
-                                    <select name="per_page" onchange="this.form.submit()"
-                                        class="rounded-lg border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 cursor-pointer bg-gray-50"
-                                        title="Jumlah data per halaman">
-                                        <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 Data
-                                        </option>
-                                        <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 Data
-                                        </option>
-                                        <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 Data
-                                        </option>
-                                    </select>
-                                </div>
+                        <form method="GET" action="{{ route('admin-data.konten.index') }}"
+                            class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6 grid grid-cols-1 md:grid-cols-12 gap-4 items-end"
+                            x-data="{
+                                search: '{{ request('search') }}',
+                                submitForm() {
+                                    $el.submit();
+                                },
+                                clearSearch() {
+                                    this.search = '';
+                                    setTimeout(() => { this.submitForm(); }, 100);
+                                }
+                            }">
 
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Tampilkan</label>
+                                <select name="per_page" onchange="this.form.submit()"
+                                    class="w-full rounded-lg border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 cursor-pointer">
+                                    <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 Data
+                                    </option>
+                                    <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 Data
+                                    </option>
+                                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 Data
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Status</label>
                                 <select name="status_id" onchange="this.form.submit()"
-                                    class="rounded-lg border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 cursor-pointer w-full md:w-auto">
-                                    <option value="">Semua Status</option>
+                                    class="w-full rounded-lg border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 cursor-pointer">
+                                    <option value="">Semua</option>
                                     @foreach ($statuses as $status)
                                         <option value="{{ $status->id_status }}"
                                             {{ request('status_id') == $status->id_status ? 'selected' : '' }}>
                                             {{ ucfirst($status->nama_status) }}</option>
                                     @endforeach
                                 </select>
+                            </div>
 
-                                <div class="relative w-full md:w-64">
+                            <div class="md:col-span-4 grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Dari Tanggal</label>
+                                    <input type="date" name="start_date" value="{{ request('start_date') }}"
+                                        onchange="this.form.submit()"
+                                        class="w-full rounded-lg border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 text-gray-600">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Sampai Tanggal</label>
+                                    <input type="date" name="end_date" value="{{ request('end_date') }}"
+                                        onchange="this.form.submit()"
+                                        class="w-full rounded-lg border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 text-gray-600">
+                                </div>
+                            </div>
+
+                            <div class="md:col-span-3">
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Cari Judul</label>
+                                <div class="relative">
                                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                        <svg class="w-4 h-4 text-gray-500" aria-hidden="true"
-                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                         </svg>
                                     </div>
-                                    <input type="text" name="search" value="{{ request('search') }}"
-                                        class="block w-full p-2 pl-10 pr-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
-                                        placeholder="Cari Judul...">
-                                    @if (request('search'))
-                                        <a href="{{ route('admin-data.konten.index', array_merge(request()->except('search'), ['search' => null])) }}"
-                                            class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-900 transition duration-200"
-                                            title="Hapus pencarian">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M6 18L18 6M6 6l12 12"></path>
-                                            </svg>
-                                        </a>
-                                    @endif
+
+                                    <input type="text" name="search" x-model="search"
+                                        class="w-full pl-10 pr-10 rounded-lg border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="Kata kunci...">
+
+                                    <button type="button" @click="clearSearch()" x-show="search.length > 0"
+                                        style="display: none;"
+                                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-red-500 focus:outline-none transition"
+                                        title="Hapus pencarian">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
                                 </div>
-                            </form>
-                        </div>
+                            </div>
+
+                            <div class="md:col-span-1">
+                                <a href="{{ route('admin-data.konten.index') }}"
+                                    class="flex items-center justify-center w-full px-3 py-2 bg-green-200 text-gray-700 rounded-lg hover:bg-green-300 transition text-sm font-semibold"
+                                    title="Reset Filter">
+                                    <span>Reset</span>
+                                </a>
+                            </div>
+                        </form>
 
                         <div class="overflow-x-auto rounded-lg shadow border border-gray-200">
                             <table class="min-w-full bg-white">
@@ -106,8 +146,8 @@
                                         <th class="py-3 px-6 text-center w-12">No</th>
                                         <th class="py-3 px-6 text-left">Judul Konten</th>
                                         <th class="py-3 px-6 text-left">Pembuat</th>
-                                        <th class="py-3 px-6 text-center">Tanggal</th>
                                         <th class="py-3 px-6 text-center">Status</th>
+                                        <th class="py-3 px-6 text-center">Tanggal Upload</th>
                                         <th class="py-3 px-6 text-center">Aksi</th>
                                     </tr>
                                 </thead>
@@ -124,12 +164,6 @@
                                                     <span>{{ $konten->user->nama_lengkap ?? 'Tidak Diketahui' }}</span>
                                                 </div>
                                             </td>
-
-                                            <td class="py-3 px-6 text-center">
-                                                <span
-                                                    class="block text-gray-900 font-medium">{{ $konten->created_at->format('d M Y') }}</span>
-                                            </td>
-
                                             <td class="py-3 px-6 text-center">
                                                 @php
                                                     $statusName = strtolower($konten->status->nama_status ?? '');
@@ -141,7 +175,10 @@
                                                 <span
                                                     class="bg-{{ $color }}-100 text-{{ $color }}-800 py-1 px-3 rounded-full text-xs font-bold uppercase tracking-wide">{{ $konten->status->nama_status }}</span>
                                             </td>
-
+                                            <td class="py-3 px-6 text-center">
+                                                <span
+                                                    class="block text-gray-900 font-medium">{{ $konten->created_at->format('d M Y') }}</span>
+                                            </td>
                                             <td class="py-3 px-6 text-center">
                                                 <div class="flex item-center justify-center space-x-2">
 
@@ -173,14 +210,7 @@
                                                         {!! nl2br(e($konten->deskripsi)) !!}</div>
 
                                                     <button type="button"
-                                                        onclick="openDetailModal(
-                                                            '{{ $konten->judul }}', 
-                                                            '{{ $konten->user->nama_lengkap }}', 
-                                                            '{{ $konten->status->nama_status }}', 
-                                                            'desc-{{ $konten->id_konten }}',
-                                                            '{{ $mediaUrl }}',
-                                                            '{{ $mediaType }}'
-                                                        )"
+                                                        onclick="openDetailModal('{{ $konten->judul }}', '{{ $konten->user->nama_lengkap }}', '{{ $konten->status->nama_status }}', 'desc-{{ $konten->id_konten }}', '{{ $mediaUrl }}', '{{ $mediaType }}')"
                                                         class="w-8 h-8 rounded bg-yellow-100 text-gray-600 flex items-center justify-center hover:bg-yellow-200 transition"
                                                         title="Lihat Detail">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor"
@@ -246,7 +276,6 @@
         <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
             <div
                 class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-2xl">
-
                 <div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-between items-center border-b">
                     <h3 class="text-lg font-semibold leading-6 text-gray-900" id="modal-title">Detail Konten</h3>
                     <button type="button" onclick="closeDetailModal()" class="text-gray-400 hover:text-gray-500">
@@ -256,7 +285,6 @@
                         </svg>
                     </button>
                 </div>
-
                 <div class="px-4 py-5 sm:p-6 max-h-[80vh] overflow-y-auto">
                     <div id="modal-media-container"
                         class="mb-4 rounded-lg overflow-hidden bg-black flex justify-center items-center w-full"></div>
