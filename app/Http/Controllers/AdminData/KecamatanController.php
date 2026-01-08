@@ -11,9 +11,18 @@ class KecamatanController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $kecamatans = Kecamatan::latest()->paginate(10);
+        $query = Kecamatan::query();
+
+        if ($request->has('search') && $request->search != '') {
+            $query->where('nama_kecamatan', 'like', '%' . $request->search . '%');
+        }
+
+        $perPage = $request->input('per_page', 10);
+
+        $kecamatans = $query->latest()->paginate($perPage)->withQueryString();
+
         return view('admin-data.kecamatan.index', compact('kecamatans'));
     }
 
@@ -31,14 +40,15 @@ class KecamatanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama_kecamatan' => 'required|string|max:100',
-            'kab_kota' => 'required|string|max:100',
+            'nama_kecamatan' => 'required|string|max:255',
         ]);
 
-        Kecamatan::create($request->all());
+        Kecamatan::create([
+            'nama_kecamatan' => $request->nama_kecamatan,
+            'kab_kota' => 'Kabupaten Bandung',
+        ]);
 
-        return redirect()->route('admin-data.kecamatan.index')
-                         ->with('success', 'Data kecamatan berhasil ditambahkan.');
+        return redirect()->route('admin-data.kecamatan.index')->with('success', 'Kecamatan berhasil ditambahkan!');
     }
 
     /**
@@ -64,13 +74,14 @@ class KecamatanController extends Controller
     {
         $request->validate([
             'nama_kecamatan' => 'required|string|max:100',
-            'kab_kota' => 'required|string|max:100',
         ]);
 
-        $kecamatan->update($request->all());
+        $kecamatan->update([
+            'nama_kecamatan' => $request->nama_kecamatan,
+        ]);
 
         return redirect()->route('admin-data.kecamatan.index')
-                         ->with('success', 'Data kecamatan berhasil diperbarui.');
+            ->with('success', 'Data kecamatan berhasil diperbarui.');
     }
 
     /**
@@ -81,6 +92,6 @@ class KecamatanController extends Controller
         $kecamatan->delete();
 
         return redirect()->route('admin-data.kecamatan.index')
-                         ->with('success', 'Data kecamatan berhasil dihapus.');
+            ->with('success', 'Data kecamatan berhasil dihapus.');
     }
 }
