@@ -12,10 +12,24 @@ class DesaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $desas = Desa::with('kecamatan')->latest()->paginate(10);
-        return view('admin-data.desa.index', compact('desas'));
+        $kecamatans = Kecamatan::orderBy('nama_kecamatan', 'asc')->get();
+
+        $query = Desa::with('kecamatan');
+
+        if ($request->has('search') && $request->search != '') {
+            $query->where('nama_desa', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->has('kecamatan_id') && $request->kecamatan_id != '') {
+            $query->where('kecamatan_id', $request->kecamatan_id);
+        }
+
+        $perPage = $request->input('per_page', 10);
+        $desas = $query->latest()->paginate($perPage)->withQueryString();
+
+        return view('admin-data.desa.index', compact('desas', 'kecamatans'));
     }
 
     /**
@@ -34,13 +48,13 @@ class DesaController extends Controller
     {
         $request->validate([
             'nama_desa' => 'required|string|max:100',
-            'kecamatan_id' => 'required|exists:kecamatan,id_kecamatan', 
+            'kecamatan_id' => 'required|exists:kecamatan,id_kecamatan',
         ]);
 
         Desa::create($request->all());
 
         return redirect()->route('admin-data.desa.index')
-                         ->with('success', 'Data desa berhasil ditambahkan.');
+            ->with('success', 'Data desa berhasil ditambahkan.');
     }
 
     /**
@@ -73,7 +87,7 @@ class DesaController extends Controller
         $desa->update($request->all());
 
         return redirect()->route('admin-data.desa.index')
-                         ->with('success', 'Data desa berhasil diperbarui.');
+            ->with('success', 'Data desa berhasil diperbarui.');
     }
 
     /**
@@ -84,6 +98,6 @@ class DesaController extends Controller
         $desa->delete();
 
         return redirect()->route('admin-data.desa.index')
-                         ->with('success', 'Data desa berhasil dihapus.');
+            ->with('success', 'Data desa berhasil dihapus.');
     }
 }
