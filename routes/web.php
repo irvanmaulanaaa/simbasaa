@@ -72,7 +72,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('kecamatan', KecamatanController::class);
         Route::resource('desa', DesaController::class);
         Route::resource('users', UserController::class);
-        Route::resource('konten', KontenController::class);
+        Route::resource('konten', KontenController::class)->except(['show']);
         Route::put('users/{id}/reset-password', [UserController::class, 'resetPassword'])
             ->name('users.reset_password');
     });

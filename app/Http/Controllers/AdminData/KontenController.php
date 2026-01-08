@@ -14,10 +14,26 @@ class KontenController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $kontens = Konten::with(['user', 'status'])->latest()->paginate(10);
-        return view('admin-data.konten.index', compact('kontens'));
+        $statuses = StatusKonten::all();
+
+        $query = Konten::with(['user', 'status']);
+
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('judul', 'like', '%' . $search . '%');
+            });
+        }
+
+        if ($request->has('status_id') && $request->status_id != '') {
+            $query->where('status_id', $request->status_id);
+        }
+
+        $kontens = $query->latest()->paginate(10)->withQueryString();
+
+        return view('admin-data.konten.index', compact('kontens', 'statuses'));
     }
 
     /**
@@ -72,8 +88,7 @@ class KontenController extends Controller
      */
     public function show(Konten $konten)
     {
-        $konten->load(['user', 'status', 'media']);
-        return view('admin-data.konten.show', compact('konten'));
+        //
     }
 
     /**
@@ -152,16 +167,16 @@ class KontenController extends Controller
     public function destroy(Konten $konten)
     {
         foreach ($konten->media as $media) {
-        if (!filter_var($media->gambar, FILTER_VALIDATE_URL)) {
-            Storage::disk('public')->delete($media->gambar);
+            if (!filter_var($media->gambar, FILTER_VALIDATE_URL)) {
+                Storage::disk('public')->delete($media->gambar);
+            }
         }
-    }
 
-    $konten->media()->delete(); 
+        $konten->media()->delete();
 
-    $konten->delete(); 
+        $konten->delete();
 
-    return redirect()->route('admin-data.konten.index')
-                     ->with('success', 'Konten berhasil dihapus.');
+        return redirect()->route('admin-data.konten.index')
+            ->with('success', 'Konten berhasil dihapus.');
     }
 }
