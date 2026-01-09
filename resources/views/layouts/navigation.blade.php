@@ -32,21 +32,23 @@
                     </svg>
                 </button>
 
-                <a href="{{ route('profile.show') }}"
-                    class="flex items-center space-x-2 text-sm font-medium text-gray-500 hover:text-gray-700"
-                    title="Profile">
+                <div class="flex items-center space-x-3 cursor-default select-none pl-2 border-l border-gray-200">
+
                     <div
-                        class="h-8 w-8 rounded-full bg-green-600 flex items-center justify-center text-white font-bold flex-shrink-0">
+                        class="h-9 w-9 rounded-full bg-green-600 flex items-center justify-center text-white font-bold text-sm shadow-sm border-2 border-white ring-1 ring-gray-100">
                         {{ substr(Auth::user()->nama_lengkap, 0, 1) }}
                     </div>
+
                     <div class="hidden sm:flex flex-col text-left">
-                        <span class="font-semibold text-gray-800 leading-tight">{{ Auth::user()->nama_lengkap }}</span>
-                        <span class="text-xs text-gray-500 leading-tight">{{ Auth::user()->role->nama_role }}</span>
+                        <span class="font-bold text-sm text-gray-800 leading-tight">
+                            {{ Auth::user()->nama_lengkap }}
+                        </span>
+                        <span class="text-xs text-gray-500 font-medium">
+                            {{ Auth::user()->username }} </span>
                     </div>
-                </a>
+                </div>
             </div>
 
         </div>
     </div>
-
 </nav>

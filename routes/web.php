@@ -62,7 +62,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/komentar/{id}', [HomeController::class, 'deleteComment'])->name('public.komentar.delete');
 
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile/edit', [ProfileController::class, 'show'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
