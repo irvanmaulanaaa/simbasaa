@@ -11,6 +11,7 @@ use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Kecamatan;
 use App\Models\Desa;
+use App\Models\User;
 
 class ProfileController extends Controller
 {
@@ -19,11 +20,13 @@ class ProfileController extends Controller
      */
     public function show(Request $request): View
     {
+        $user = $request->user()->load('desa');
+
         $kecamatans = Kecamatan::all();
         $allDesas = Desa::all();
 
         return view('profile.show', [
-            'user' => $request->user(),
+            'user' => $user,
             'kecamatans' => $kecamatans,
             'allDesas' => $allDesas,
         ]);
@@ -34,7 +37,7 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-  
+
         $request->user()->fill($request->validated());
 
         if ($request->hasFile('profile_photo')) {
@@ -69,5 +72,19 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    /**
+     * Cek ketersediaan username secara realtime via AJAX.
+     */
+    public function checkUsername(Request $request)
+    {
+        $request->validate(['username' => 'required|string']);
+
+        $exists = User::where('username', $request->username)
+            ->where('id_user', '!=', $request->user()->id_user)
+            ->exists();
+
+        return response()->json(['status' => $exists ? 'taken' : 'available']);
     }
 }

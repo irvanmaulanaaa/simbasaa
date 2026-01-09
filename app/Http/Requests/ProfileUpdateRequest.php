@@ -23,6 +23,8 @@ class ProfileUpdateRequest extends FormRequest
             'rt' => ['nullable', 'string', 'max:5'],
             'rw' => ['nullable', 'string', 'max:5'],
             'profile_photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'desa_id' => ['nullable', 'exists:desa,id_desa'],
+            'kecamatan_id' => ['nullable', 'exists:kecamatan,id_kecamatan'],
         ];
     }
 }
