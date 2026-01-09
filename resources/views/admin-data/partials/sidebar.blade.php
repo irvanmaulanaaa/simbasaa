@@ -77,9 +77,7 @@
         <a href="{{ route('logout') }}"
             class="flex items-center px-3 py-3 text-lg font-medium text-red-600 hover:bg-red-600 hover:text-white rounded-md"
             onclick="event.preventDefault(); this.closest('form').submit();">
-
             <x-heroicon-o-arrow-right-start-on-rectangle class="h-6 w-6 mr-3" />
-
             {{ __('Keluar') }}
         </a>
     </form>

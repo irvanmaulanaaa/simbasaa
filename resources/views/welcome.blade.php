@@ -59,17 +59,25 @@
 
                         <div class="flex items-center pl-6 border-l border-slate-200">
                             <a href="{{ route('profile.show') }}" class="flex items-center space-x-3 group" title="profile">
-                                <div
-                                    class="h-8 w-8 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white font-bold shadow-md ring-4 ring-white group-hover:scale-105 transition transform">
-                                    {{ substr(Auth::user()->nama_lengkap, 0, 1) }}
-                                </div>
+
+                                @if (Auth::user()->profile_photo_path)
+                                    <img src="{{ Storage::url(Auth::user()->profile_photo_path) }}"
+                                        alt="{{ Auth::user()->nama_lengkap }}"
+                                        class="h-8 w-8 rounded-full object-cover shadow-md ring-4 ring-white group-hover:scale-105 transition transform">
+                                @else
+                                    <div
+                                        class="h-8 w-8 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white font-bold shadow-md ring-4 ring-white group-hover:scale-105 transition transform">
+                                        {{ substr(Auth::user()->nama_lengkap, 0, 1) }}
+                                    </div>
+                                @endif
+
                                 <div class="hidden sm:flex flex-col text-left">
                                     <span
-                                        class="font-bold text-slate-800 text-sm leading-tight group-hover:text-green-600 transition">
+                                        class="font-bold text-sm text-gray-800 leading-tight group-hover:text-green-600 transition">
                                         {{ Auth::user()->nama_lengkap }}
                                     </span>
-                                    <span class="text-[8px] font-bold uppercase tracking-wider text-slate-400">
-                                        {{ Auth::user()->role->nama_role }}
+                                    <span class="text-xs text-gray-500 font-medium">
+                                        {{ Auth::user()->username }}
                                     </span>
                                 </div>
                             </a>

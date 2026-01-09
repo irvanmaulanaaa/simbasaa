@@ -1,4 +1,5 @@
 <x-app-layout>
+    {{-- 1. INCLUDE SWEETALERT --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     @php
@@ -19,6 +20,18 @@
             $sidebarView = 'warga.partials.sidebar';
             $dashboardRoute = route('warga.dashboard');
         }
+
+        // Logic untuk mencegah modal edit terbuka jika error dari foto
+        $hasProfileErrors = $errors->hasAny([
+            'username', 
+            'nama_lengkap', 
+            'no_telp', 
+            'jalan', 
+            'rt', 
+            'rw', 
+            'kecamatan_id', 
+            'desa_id'
+        ]);
     @endphp
 
     <x-slot name="sidebar">
@@ -35,17 +48,22 @@
 
     <div class="flex flex-col min-h-screen bg-gray-50/50" 
          x-data="{ 
-            isEditing: {{ $errors->any() ? 'true' : 'false' }},
-            isSaving: false,
+            // Hanya aktifkan mode edit jika error spesifik profil
+            isEditing: {{ $hasProfileErrors ? 'true' : 'false' }},
             
+            showPhotoModal: false, // State Modal Foto
+
+            // Logic Realtime Username
             usernameQuery: '{{ Auth::user()->username }}',
-            usernameStatus: '', // 'checking', 'available', 'taken', ''
+            usernameStatus: '',
             isUsernameValid: true,
 
+            // Logic Password Show/Hide
             showCurrentPassword: false,
             showNewPassword: false,
             showConfirmPassword: false,
 
+            // Data Desa User
             userDesaId: String('{{ Auth::user()->desa_id ?? '' }}'),
             selectedKecamatan: '',
             selectedDesa: '',
@@ -75,37 +93,29 @@
             },
 
             checkUsername() {
-                if (this.usernameQuery === '{{ Auth::user()->username }}') {
+               if (this.usernameQuery === '{{ Auth::user()->username }}') {
                     this.usernameStatus = '';
                     this.isUsernameValid = true;
                     return;
                 }
-                
                 if (this.usernameQuery.length < 3) {
                     this.usernameStatus = '';
-                    this.isUsernameValid = false; 
+                    this.isUsernameValid = false;
                     return;
                 }
-
                 this.usernameStatus = 'checking';
                 
                 fetch('{{ route('profile.check-username') }}', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                     body: JSON.stringify({ username: this.usernameQuery })
                 })
                 .then(response => response.json())
                 .then(data => {
-                    this.usernameStatus = data.status; 
+                    this.usernameStatus = data.status;
                     this.isUsernameValid = (data.status === 'available');
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                    this.usernameStatus = '';
-                });
+                .catch(error => { console.error('Error:', error); this.usernameStatus = ''; });
             },
 
             updateDesaList() {
@@ -115,54 +125,76 @@
             }
          }">
 
-        <div x-show="isSaving" style="display: none;" class="fixed inset-0 z-[9999] flex items-center justify-center bg-gray-900/60 backdrop-blur-sm transition-opacity">
-            <div class="bg-white p-6 rounded-2xl shadow-2xl flex flex-col items-center">
-                <div class="animate-spin rounded-full h-14 w-14 border-t-4 border-b-4 border-green-600 mb-4"></div>
-                <p class="text-gray-800 font-bold">Loading...</p>
-            </div>
-        </div>
-
         <div class="flex-grow py-8 px-4 sm:px-0">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
 
+                {{-- Breadcrumb --}}
                 <nav class="flex mb-4" aria-label="Breadcrumb">
                     <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
-                        <li class="inline-flex items-center"><a href="{{ $dashboardRoute }}" class="inline-flex items-center text-lg font-medium text-gray-700 hover:text-green-600 transition">Home</a></li>
-                        <li aria-current="page"><div class="flex items-center"><svg class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4" /></svg><span class="ms-1 text-lg font-medium text-gray-500 md:ms-2">Profile</span></div></li>
+                        <li class="inline-flex items-center">
+                            <a href="{{ $dashboardRoute }}" class="inline-flex items-center text-lg font-medium text-gray-700 hover:text-green-600 transition">
+                                Home
+                            </a>
+                        </li>
+                        <li aria-current="page">
+                            <div class="flex items-center">
+                                <svg class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4" /></svg>
+                                <span class="ms-1 text-lg font-medium text-gray-500 md:ms-2">Profile</span>
+                            </div>
+                        </li>
                     </ol>
                 </nav>
 
+                {{-- KARTU PROFIL --}}
                 <div class="bg-white rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden relative">
                     <div class="h-40 bg-gradient-to-r from-emerald-600 to-red-700 relative overflow-hidden">
                         <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 mix-blend-overlay"></div>
                     </div>
 
                     <div class="relative px-6 pb-2 flex flex-col items-center -mt-20">
-                        <div class="relative group">
-                            <div class="w-40 h-40 rounded-full border-[6px] border-white shadow-2xl overflow-hidden bg-white flex items-center justify-center relative z-10">
+                        {{-- Z-30 AGAR FOTO BISA DIKLIK (DI ATAS HEADER) --}}
+                        <div class="relative group cursor-pointer z-30" @click="showPhotoModal = true">
+                            {{-- FOTO PROFIL --}}
+                            <div class="w-40 h-40 rounded-full border-[6px] border-white shadow-2xl overflow-hidden bg-white flex items-center justify-center relative z-10 transition transform group-hover:scale-105 duration-500">
                                 @if (Auth::user()->profile_photo_path)
-                                    <img src="{{ Storage::url(Auth::user()->profile_photo_path) }}" alt="Foto Profil" class="w-full h-full object-cover transition transform group-hover:scale-105 duration-500">
+                                    <img src="{{ Storage::url(Auth::user()->profile_photo_path) }}" alt="Foto Profil" class="w-full h-full object-cover">
                                 @else
-                                    <div class="w-full h-full bg-green-600 flex items-center justify-center text-white text-6xl font-bold select-none">{{ strtoupper(substr(Auth::user()->nama_lengkap, 0, 1)) }}</div>
+                                    <div class="w-full h-full bg-green-600 flex items-center justify-center text-white text-6xl font-bold select-none">
+                                        {{ strtoupper(substr(Auth::user()->nama_lengkap, 0, 1)) }}
+                                    </div>
                                 @endif
+                                
+                                {{-- Overlay Ikon Kamera --}}
+                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
+                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                      </svg>
+                                </div>
                             </div>
-                            <form id="photoForm" method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" onsubmit="showLoading()">
-                                @csrf @method('patch')
-                                <input type="file" id="profile_photo" name="profile_photo" class="hidden" onchange="document.getElementById('photoForm').submit();">
-                                <button type="button" onclick="document.getElementById('profile_photo').click();" class="absolute bottom-3 right-3 z-20 w-10 h-10 bg-white text-green-600 rounded-full shadow-lg border-2 border-gray-100 flex items-center justify-center hover:bg-green-600 hover:text-white hover:border-green-600 transition-all duration-300 transform hover:scale-110" title="Ganti Foto Profil">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                                </button>
+
+                            {{-- Form Upload Foto Hidden --}}
+                            <form id="photoForm" method="POST" action="{{ route('profile.photo.update') }}" enctype="multipart/form-data">
+                                @csrf
+                                @method('patch')
+                                <input type="file" id="profile_photo" name="profile_photo" class="hidden" 
+                                       onchange="showLoading(); document.getElementById('photoForm').submit();" 
+                                       accept="image/*">
                             </form>
                         </div>
+
                         <div class="mt-4 text-center">
                             <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">{{ Auth::user()->nama_lengkap }}</h1>
+                            <p class="text-sm text-gray-500">Klik foto untuk mengubah atau menghapus</p>
                         </div>
                     </div>
 
                     <div class="border-t border-gray-100 mx-8 mt-6"></div>
 
+                    {{-- FORM EDIT PROFIL --}}
                     <form method="post" action="{{ route('profile.update') }}" class="px-8 py-8 bg-white" onsubmit="showLoading()">
-                        @csrf @method('patch')
+                        @csrf
+                        @method('patch')
 
                         <div class="flex flex-row justify-between items-center mb-8">
                             <h3 class="text-xl font-bold text-gray-900 flex items-center">
@@ -171,11 +203,13 @@
                             </h3>
                             <div class="flex gap-2">
                                 <button type="button" x-show="!isEditing" @click="isEditing = true" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg font-semibold text-sm text-gray-700 hover:bg-gray-50 hover:text-green-600 transition shadow-sm">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg> Edit
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
+                                    Edit
                                 </button>
                                 <div x-show="isEditing" class="flex gap-2" style="display: none;">
                                     <button type="button" @click="isEditing = false; init()" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg font-semibold text-sm text-gray-700 hover:bg-gray-50 transition shadow-sm">Batal</button>
                                     
+                                    {{-- Tombol Simpan --}}
                                     <button type="submit" 
                                             class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-lg font-semibold text-sm text-white hover:bg-green-700 transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
                                             :disabled="!isUsernameValid">
@@ -187,29 +221,29 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                             
+                            {{-- Username (Realtime Check) --}}
                             <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-green-200 transition group">
                                 <label class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Username</label>
                                 <div x-show="!isEditing" class="flex items-center text-gray-900 font-semibold text-base">{{ Auth::user()->username }}</div>
-                                
                                 <div x-show="isEditing" style="display: none;">
                                     <input type="text" name="username" 
-                                           x-model="usernameQuery"
-                                           @input.debounce.500ms="checkUsername()"
-                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
+                                           x-model="usernameQuery" 
+                                           @input.debounce.500ms="checkUsername()" 
+                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm" 
                                            :class="{'border-red-500 focus:border-red-500 focus:ring-red-500': usernameStatus === 'taken', 'border-green-500 focus:border-green-500': usernameStatus === 'available'}">
                                     
                                     <div class="mt-1 text-xs font-bold flex items-center">
                                         <span x-show="usernameStatus === 'checking'" class="text-yellow-600 flex items-center">
                                             <svg class="animate-spin h-3 w-3 mr-1" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                            Memeriksa ketersediaan...
+                                            Memeriksa...
                                         </span>
                                         <span x-show="usernameStatus === 'available'" class="text-green-600 flex items-center">
                                             <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                            Username tersedia!
+                                            Tersedia!
                                         </span>
                                         <span x-show="usernameStatus === 'taken'" class="text-red-600 flex items-center">
                                             <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                            Username sudah dipakai orang lain.
+                                            Sudah dipakai.
                                         </span>
                                     </div>
                                     <x-input-error class="mt-1" :messages="$errors->get('username')" />
@@ -249,6 +283,7 @@
                             </div>
                         </div>
 
+                        {{-- ALAMAT LENGKAP --}}
                         <div class="p-6 rounded-2xl bg-gradient-to-br from-white to-blue-50 border border-blue-100 relative overflow-hidden">
                             <div class="absolute top-0 right-0 p-4 opacity-10"><svg class="w-24 h-24 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" /></svg></div>
                             <div class="relative z-10">
@@ -306,6 +341,7 @@
                     </div>
                 </div>
 
+                {{-- KEAMANAN AKUN (Menggunakan onsubmit="showLoading()") --}}
                 <div class="bg-white rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
                     <div class="px-8 py-6 border-b border-gray-100 bg-gray-50/30 flex items-center">
                         <div class="p-2 bg-blue-100 rounded-lg text-blue-600 mr-3">
@@ -358,9 +394,7 @@
                             </div>
 
                             <div class="md:col-span-3 flex items-center justify-end gap-4 mt-2">
-                                <button type="submit" class="inline-flex items-center px-6 py-2.5 bg-green-600 border border-transparent rounded-lg font-semibold text-lg text-white hover:bg-gray-800 transition shadow-lg shadow-gray-300/50">
-                                    Simpan Password
-                                </button>
+                                <button type="submit" class="inline-flex items-center px-6 py-2.5 bg-gray-900 border border-transparent rounded-lg font-semibold text-sm text-white hover:bg-gray-800 transition shadow-lg shadow-gray-300/50">Simpan Password</button>
                             </div>
                         </form>
                     </div>
@@ -373,37 +407,79 @@
             <p>&copy; {{ date('Y') }} <span class="font-bold text-green-600">SIMBASA Developed by</span> Irvan Maulana. All rights reserved.</p>
         </footer>
 
+        {{-- MODAL FOTO PROFIL FULL (Pop-up Change/Delete Photo) --}}
+        <div x-show="showPhotoModal" 
+             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+             class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/80 backdrop-blur-sm p-4"
+             style="display: none;">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden flex flex-col" @click.away="showPhotoModal = false">
+                <div class="p-4 flex justify-between items-center border-b">
+                    <h3 class="text-lg font-bold text-gray-900">Foto Profil</h3>
+                    <button @click="showPhotoModal = false" class="text-gray-400 hover:text-gray-600"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+                </div>
+                <div class="p-6 flex justify-center items-center bg-gray-100">
+                    @if (Auth::user()->profile_photo_path)
+                        <img src="{{ Storage::url(Auth::user()->profile_photo_path) }}" class="max-h-[60vh] max-w-full object-contain rounded-lg shadow-sm">
+                    @else
+                        <div class="w-64 h-64 bg-green-600 flex items-center justify-center text-white text-8xl font-bold select-none rounded-full shadow-lg">{{ strtoupper(substr(Auth::user()->nama_lengkap, 0, 1)) }}</div>
+                    @endif
+                </div>
+                <div class="p-4 border-t flex justify-end space-x-3">
+                    {{-- Tombol Ubah --}}
+                    <button @click="document.getElementById('profile_photo').click(); showPhotoModal = false;" class="inline-flex justify-center px-4 py-2 bg-blue-600 border border-transparent rounded-lg font-semibold text-sm text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg> Ubah Foto
+                    </button>
+                    {{-- Tombol Hapus --}}
+                    @if (Auth::user()->profile_photo_path)
+                        {{-- PERBAIKAN: onsubmit memanggil showLoading() --}}
+                        {{-- FIX: Menambahkan showPhotoModal = false agar modal tertutup saat loading muncul --}}
+                        <form method="POST" action="{{ route('current-user-photo.destroy') }}" onsubmit="showLoading(); showPhotoModal = false;">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="inline-flex justify-center px-4 py-2 bg-red-600 border border-transparent rounded-lg font-semibold text-sm text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg> Hapus Foto
+                            </button>
+                        </form>
+                    @endif
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <div id="loadingOverlay" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 hidden flex-col items-center justify-center">
+    {{-- OVERLAY LOADING (Sama Persis dengan Index Konten) --}}
+    {{-- FIX: z-[9999] agar muncul di atas modal foto --}}
+    <div id="loadingOverlay" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-[9999] hidden flex-col items-center justify-center">
         <div class="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center">
-            <div class="animate-spin rounded-full h-14 w-14 border-t-4 border-b-4 border-red-600 mb-4"></div>
+            <div class="animate-spin rounded-full h-14 w-14 border-t-4 border-b-4 border-green-600 mb-4"></div>
             <p class="text-gray-800 font-bold">Loading...</p>
         </div>
     </div>
 
+    {{-- SCRIPT: Loading & SweetAlert (Sama Persis dengan Index Konten) --}}
     <script>
         function showLoading() {
             document.getElementById('loadingOverlay').classList.remove('hidden');
             document.getElementById('loadingOverlay').classList.add('flex');
         }
 
-        @if (session('status') === 'profile-updated' || session('status') === 'password-updated')
+        // SWAL: Jika Berhasil
+        @if (session('status') === 'profile-updated' || session('status') === 'password-updated' || session('status') === 'photo-deleted')
             Swal.fire({
                 icon: 'success',
                 title: 'Berhasil!',
-                text: '{{ session('status') === 'profile-updated' ? 'Profil berhasil diperbarui.' : 'Password berhasil diubah.' }}',
+                text: '{{ session('status') === 'profile-updated' ? 'Profil berhasil diperbarui.' : (session('status') === 'password-updated' ? 'Password berhasil diubah.' : 'Foto profil berhasil dihapus.') }}',
                 showConfirmButton: false,
                 timer: 2000,
                 timerProgressBar: true
             });
         @endif
 
+        // SWAL: Jika Gagal (Validasi Error)
         @if ($errors->any())
             Swal.fire({
                 icon: 'error',
                 title: 'Gagal!',
-                text: 'Periksa kembali inputan Anda.',
+                text: '{{ $errors->first() }}', // Menampilkan pesan error spesifik
                 showConfirmButton: true
             });
         @endif

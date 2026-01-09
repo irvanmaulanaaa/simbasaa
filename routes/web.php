@@ -66,6 +66,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/check-username', [ProfileController::class, 'checkUsername'])->name('profile.check-username');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::delete('/profile/photo', [ProfileController::class, 'deletePhoto'])->name('current-user-photo.destroy');
+    Route::patch('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo.update');
 
     Route::prefix('admin-data')->name('admin-data.')->group(function () {
         Route::get('dashboard', [AdminDataDashboard::class, 'index'])->name('dashboard');

@@ -87,4 +87,51 @@ class ProfileController extends Controller
 
         return response()->json(['status' => $exists ? 'taken' : 'available']);
     }
+
+    /**
+     * Update foto profil saja.
+     */
+    public function updatePhoto(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'profile_photo' => ['required', 'image', 'max:2048'],
+        ], [
+            'profile_photo.max' => 'Ukuran foto maksimal 2MB',
+            'profile_photo.image' => 'File harus berupa gambar',
+        ]);
+
+        $user = $request->user();
+
+        if ($request->hasFile('profile_photo')) {
+            if ($user->profile_photo_path) {
+                Storage::disk('public')->delete($user->profile_photo_path);
+            }
+
+            $path = $request->file('profile_photo')->store('profile-photos', 'public');
+            
+            $user->forceFill([
+                'profile_photo_path' => $path,
+            ])->save();
+        }
+
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    }
+
+    /**
+     * Menghapus foto profil pengguna.
+     */
+    public function deletePhoto(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        if ($user->profile_photo_path) {
+            Storage::disk('public')->delete($user->profile_photo_path);
+            
+            $user->forceFill([
+                'profile_photo_path' => null,
+            ])->save();
+        }
+
+        return Redirect::route('profile.edit')->with('status', 'photo-deleted');
+    }
 }

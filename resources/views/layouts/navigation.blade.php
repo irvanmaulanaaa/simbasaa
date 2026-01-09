@@ -3,6 +3,7 @@
         <div class="flex justify-between h-16">
 
             <div class="flex items-center">
+                {{-- Hamburger Menu untuk Mobile --}}
                 <div class="flex items-center lg:hidden">
                     <button @click="sidebarOpen = !sidebarOpen"
                         class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
@@ -10,6 +11,7 @@
                     </button>
                 </div>
 
+                {{-- Breadcrumbs / Header --}}
                 <div class="ml-3 lg:ml-0">
                     @if (isset($breadcrumbs))
                         <nav class="flex" aria-label="Breadcrumb">
@@ -25,6 +27,7 @@
 
             <div class="flex items-center sm:ms-6 space-x-3">
 
+                {{-- Tombol Notifikasi (Lonceng) --}}
                 <button class="p-1 rounded-full text-gray-400 hover:text-gray-600 focus:outline-none">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -32,19 +35,30 @@
                     </svg>
                 </button>
 
+                {{-- Bagian Profil User --}}
                 <div class="flex items-center space-x-3 cursor-default select-none pl-2 border-l border-gray-200">
 
-                    <div
-                        class="h-9 w-9 rounded-full bg-green-600 flex items-center justify-center text-white font-bold text-sm shadow-sm border-2 border-white ring-1 ring-gray-100">
-                        {{ substr(Auth::user()->nama_lengkap, 0, 1) }}
-                    </div>
+                    {{-- LOGIKA FOTO PROFIL VS INISIAL --}}
+                    @if (Auth::user()->profile_photo_path)
+                        {{-- JIKA ADA FOTO --}}
+                        <img src="{{ Storage::url(Auth::user()->profile_photo_path) }}" 
+                             alt="{{ Auth::user()->nama_lengkap }}"
+                             class="h-9 w-9 rounded-full object-cover shadow-sm border-2 border-white ring-1 ring-gray-100">
+                    @else
+                        {{-- JIKA TIDAK ADA FOTO (Inisial) --}}
+                        <div class="h-9 w-9 rounded-full bg-green-600 flex items-center justify-center text-white font-bold text-sm shadow-sm border-2 border-white ring-1 ring-gray-100">
+                            {{ strtoupper(substr(Auth::user()->nama_lengkap, 0, 1)) }}
+                        </div>
+                    @endif
 
+                    {{-- Nama & Username --}}
                     <div class="hidden sm:flex flex-col text-left">
                         <span class="font-bold text-sm text-gray-800 leading-tight">
                             {{ Auth::user()->nama_lengkap }}
                         </span>
                         <span class="text-xs text-gray-500 font-medium">
-                            {{ Auth::user()->username }} </span>
+                            {{ Auth::user()->username }} 
+                        </span>
                     </div>
                 </div>
             </div>
