@@ -33,6 +33,22 @@
         select::-ms-expand {
             display: none;
         }
+
+        .hamburger-line {
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-open .line-1 {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger-open .line-2 {
+            opacity: 0;
+        }
+
+        .hamburger-open .line-3 {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
     </style>
 </head>
 
@@ -74,11 +90,12 @@
 
                 <div class="md:hidden flex items-center">
                     <button id="mobile-menu-btn"
-                        class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 focus:outline-none transition">
-                        <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
+                        class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 focus:outline-none transition relative w-10 h-10 flex items-center justify-center">
+                        <div class="w-6 h-5 flex flex-col justify-between">
+                            <span class="hamburger-line line-1 block h-0.5 w-full bg-current rounded-full"></span>
+                            <span class="hamburger-line line-2 block h-0.5 w-full bg-current rounded-full"></span>
+                            <span class="hamburger-line line-3 block h-0.5 w-full bg-current rounded-full"></span>
+                        </div>
                     </button>
                 </div>
             </div>
@@ -312,7 +329,7 @@
                             </div>
 
                             <p class="text-slate-500 text-sm line-clamp-3 mb-6 flex-grow leading-relaxed">
-                                {{ Str::limit(strip_tags($item->deskripsi ?? $item->isi), 30) }}
+                                {{ Str::limit(strip_tags($item->deskripsi ?? $item->isi), 35) }}
                             </p>
 
                             <div class="flex items-center justify-between mt-auto pt-5 border-t border-slate-50">
@@ -423,6 +440,7 @@
         const menu = document.getElementById('mobile-menu');
         btn.addEventListener('click', () => {
             menu.classList.toggle('hidden');
+            btn.classList.toggle('hamburger-open');
         });
     </script>
 

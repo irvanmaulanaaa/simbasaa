@@ -11,7 +11,6 @@ return new class extends Migration {
     public function up()
     {
         Schema::table('konten', function (Blueprint $table) {
-            // Kolom penghubung, boleh kosong (nullable) dulu biar data lama aman
             $table->foreignId('id_kategori')
                 ->nullable()
                 ->after('id_konten')
