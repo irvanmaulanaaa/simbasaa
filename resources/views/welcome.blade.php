@@ -22,6 +22,27 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
         }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+            will-change: opacity, transform;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 
@@ -59,7 +80,6 @@
 
                         <div class="flex items-center pl-6 border-l border-slate-200">
                             <a href="{{ route('profile.show') }}" class="flex items-center space-x-3 group" title="profile">
-
                                 @if (Auth::user()->profile_photo_path)
                                     <img src="{{ Storage::url(Auth::user()->profile_photo_path) }}"
                                         alt="{{ Auth::user()->nama_lengkap }}"
@@ -131,7 +151,7 @@
     </nav>
 
     <main>
-        <section class="bg-white">
+        <section class="bg-white reveal">
             <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-8 items-center">
                 <div class="text-center md:text-left">
                     <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">Ubah Sampah Menjadi
@@ -151,7 +171,7 @@
             </div>
         </section>
 
-        <section class="py-20 bg-green-50">
+        <section class="py-20 bg-green-50 reveal">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <h2 class="text-3xl font-bold text-gray-900">Bagaimana Cara Setor Sampah?</h2>
                 <p class="mt-2 text-gray-600">Hanya dengan 3 langkah mudah.</p>
@@ -184,7 +204,7 @@
             </div>
         </section>
 
-        <section class="py-12 bg-white relative z-20 -mt-8">
+        <section class="py-12 bg-white relative z-20 -mt-8 reveal">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div
                     class="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-8 md:p-12">
@@ -256,64 +276,59 @@
             </div>
         </section>
 
-        <section id="konten" class="py-24 bg-green-50 border-t border-gray-100 relative">
-            <style>
-                .no-scrollbar::-webkit-scrollbar {
-                    display: none;
-                }
-
-                .no-scrollbar {
-                    -ms-overflow-style: none;
-                    scrollbar-width: none;
-                }
-            </style>
-
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" x-data="{
+        <section id="konten" class="py-24 bg-green-50 border-t border-gray-100 relative reveal" 
+            x-data="{
+                activeSlide: 0,
+                totalSlides: {{ isset($kontens) ? $kontens->count() : 0 }},
+                cardWidth: 340, // Lebar card (320px) + gap (20px)
+                
                 scrollLeft() {
-                        this.$refs.slider.scrollBy({ left: -370, behavior: 'smooth' });
-                    },
-                    scrollRight() {
-                        this.$refs.slider.scrollBy({ left: 370, behavior: 'smooth' });
-                    }
+                    this.$refs.slider.scrollBy({ left: -this.cardWidth, behavior: 'smooth' });
+                },
+                scrollRight() {
+                    this.$refs.slider.scrollBy({ left: this.cardWidth, behavior: 'smooth' });
+                },
+                scrollToSlide(index) {
+                    this.$refs.slider.scrollTo({ left: index * this.cardWidth, behavior: 'smooth' });
+                },
+                updateActiveSlide() {
+                    let scrollLeft = this.$refs.slider.scrollLeft;
+                    this.activeSlide = Math.round(scrollLeft / this.cardWidth);
+                }
             }">
+            
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
                 <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
                     <div class="text-center md:text-left w-full md:w-auto">
                         <h2 class="text-3xl font-extrabold text-gray-900">Konten Edukasi </h2>
                         <p class="mt-2 text-gray-500">Wawasan terkini untuk lingkungan yang lebih baik.</p>
                     </div>
-
                     <div class="flex items-center gap-4">
                         <a href="{{ route('public.konten.index') }}"
                             class="hidden md:inline-flex items-center text-green-600 font-bold hover:text-green-800 transition mr-4 text-lg">
                             Lihat Semua Konten
                         </a>
-
-                        <div class="hidden md:flex gap-2">
-                            <button @click="scrollLeft"
-                                class="p-3 rounded-full bg-white border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-green-600 hover:border-green-200 transition shadow-sm focus:outline-none">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 19l-7-7 7-7"></path>
-                                </svg>
-                            </button>
-                            <button @click="scrollRight"
-                                class="p-3 rounded-full bg-white border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-green-600 hover:border-green-200 transition shadow-sm focus:outline-none">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7"></path>
-                                </svg>
-                            </button>
-                        </div>
                     </div>
                 </div>
 
                 @if (isset($kontens) && $kontens->count() > 0)
-                    <div class="relative -mx-4 px-4 sm:mx-0 sm:px-0">
-                        <div x-ref="slider"
-                            class="flex gap-6 overflow-x-auto no-scrollbar pb-8 snap-x snap-mandatory scroll-smooth">
-                            @foreach ($kontens as $item)
-                                <div
-                                    class="min-w-[320px] w-[320px] md:min-w-[370px] md:w-[370px] snap-center flex-shrink-0">
+                    <div class="relative group/slider">
+                        
+                        <button @click="scrollLeft" 
+                            class="absolute left-0 top-1/2 -translate-y-1/2 -ml-5 z-20 bg-white/80 backdrop-blur-sm border border-gray-200 text-gray-600 p-3 rounded-full shadow-lg hover:bg-green-600 hover:text-white transition-all duration-300 opacity-0 group-hover/slider:opacity-100 hidden md:block">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+                        </button>
+
+                        <button @click="scrollRight" 
+                            class="absolute right-0 top-1/2 -translate-y-1/2 -mr-5 z-20 bg-white/80 backdrop-blur-sm border border-gray-200 text-gray-600 p-3 rounded-full shadow-lg hover:bg-green-600 hover:text-white transition-all duration-300 opacity-0 group-hover/slider:opacity-100 hidden md:block">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+
+                        <div x-ref="slider" @scroll.debounce.50ms="updateActiveSlide"
+                            class="flex gap-6 overflow-x-auto no-scrollbar pb-8 snap-x snap-mandatory scroll-smooth px-2">
+                            
+                            @foreach ($kontens as $index => $item)
+                                <div class="min-w-[320px] w-[320px] md:min-w-[370px] md:w-[370px] snap-center flex-shrink-0">
                                     <a href="{{ route('public.konten.show', $item->id_konten) }}"
                                         class="group flex flex-col h-full bg-white rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
 
@@ -321,63 +336,62 @@
                                             @php
                                                 $media = $item->media->first();
                                                 $imagePath = null;
+                                                $isVideo = false;
                                                 if ($media) {
-                                                    $isUrl = filter_var($media->gambar, FILTER_VALIDATE_URL);
-                                                    $imagePath = $isUrl
-                                                        ? $media->gambar
-                                                        : Illuminate\Support\Facades\Storage::url($media->gambar);
+                                                    if ($media->tipe == 'youtube' || (strpos($media->gambar, 'youtube.com') !== false || strpos($media->gambar, 'youtu.be') !== false)) {
+                                                        $isVideo = true;
+                                                        preg_match("/^(?:http(?:s)?:\/\/)?(?:www\.)?(?:m\.)?(?:youtu\.be\/|youtube\.com\/(?:(?:watch)?\?(?:.*&)?v(?:i)?=|(?:embed|v|vi|user|shorts)\/))([^\?&\"'>]+)/", $media->gambar, $matches);
+                                                        $videoId = $matches[1] ?? null;
+                                                        $imagePath = $videoId ? "https://img.youtube.com/vi/{$videoId}/hqdefault.jpg" : null;
+                                                    } else {
+                                                        $isUrl = filter_var($media->gambar, FILTER_VALIDATE_URL);
+                                                        $imagePath = $isUrl ? $media->gambar : Illuminate\Support\Facades\Storage::url($media->gambar);
+                                                    }
                                                 }
                                             @endphp
 
                                             @if ($imagePath)
                                                 <img src="{{ $imagePath }}" alt="{{ $item->judul }}"
                                                     class="w-full h-full object-cover transform group-hover:scale-105 transition duration-500">
+                                                
+                                                @if($isVideo)
+                                                    <div class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-all">
+                                                        <div class="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
+                                                            <svg class="w-6 h-6 text-red-600 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                                        </div>
+                                                    </div>
+                                                @endif
                                             @else
                                                 <div class="flex items-center justify-center h-full text-gray-300">
-                                                    <svg class="w-12 h-12" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="1.5"
-                                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                                        </path>
+                                                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                                     </svg>
                                                 </div>
                                             @endif
 
-                                            <div
-                                                class="absolute top-4 right-4 bg-white/90 backdrop-blur text-gray-800 text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                                            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur text-gray-800 text-xs font-bold px-3 py-1 rounded-full shadow-sm">
                                                 {{ \Carbon\Carbon::parse($item->created_at)->format('d M Y') }}
                                             </div>
                                         </div>
 
                                         <div class="p-6 flex flex-col flex-grow">
-                                            <h3
-                                                class="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-green-600 transition-colors">
+                                            <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-green-600 transition-colors">
                                                 {{ $item->judul }}
                                             </h3>
-                                            <p
-                                                class="text-gray-500 text-sm mb-6 line-clamp-3 flex-grow leading-relaxed">
+                                            <p class="text-gray-500 text-sm mb-6 line-clamp-3 flex-grow leading-relaxed">
                                                 {{ Str::limit(strip_tags($item->deskripsi ?? $item->isi), 100) }}
                                             </p>
 
-                                            <div
-                                                class="mt-auto pt-4 border-t border-gray-50 flex justify-between items-center">
-                                                <div
-                                                    class="flex items-center gap-1.5 text-lg font-bold text-red-500 transition-colors">
+                                            <div class="mt-auto pt-4 border-t border-gray-50 flex justify-between items-center">
+                                                <div class="flex items-center gap-1.5 text-lg font-bold text-red-500 transition-colors">
                                                     <svg class="w-6 h-6 fill-current" viewBox="0 0 20 20">
-                                                        <path
-                                                            d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
+                                                        <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
                                                     </svg>
                                                     <span>{{ $item->jumlah_like }}</span>
                                                 </div>
 
-                                                <span
-                                                    class="text-lg font-medium text-green-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                                                    Baca Selengkapnya <svg class="w-6 h-6" fill="none"
-                                                        stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                                    </svg>
+                                                <span class="text-lg font-medium text-green-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                                                    Baca Selengkapnya <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                                                 </span>
                                             </div>
                                         </div>
@@ -386,19 +400,27 @@
                             @endforeach
                         </div>
                     </div>
+
+                    <div class="flex justify-center items-center gap-2 mt-4">
+                        @foreach ($kontens as $index => $item)
+                            <button @click="scrollToSlide({{ $index }})" 
+                                class="w-3 h-3 rounded-full transition-all duration-300 focus:outline-none"
+                                :class="activeSlide === {{ $index }} ? 'bg-green-600 w-8' : 'bg-gray-300 hover:bg-gray-400'"
+                                aria-label="Go to slide {{ $index + 1 }}">
+                            </button>
+                        @endforeach
+                    </div>
+
                 @else
                     <div class="text-center py-16 bg-gray-50 rounded-2xl border border-dashed border-gray-300">
-                        <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z">
-                            </path>
+                        <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
                         </svg>
                         <p class="text-gray-500 font-medium">Belum ada konten berita saat ini.</p>
                     </div>
                 @endif
 
-                <div class="mt-4 text-center md:hidden">
+                <div class="mt-8 text-center md:hidden">
                     <a href="{{ route('public.konten.index') }}"
                         class="inline-flex items-center text-green-600 font-bold hover:text-green-800 transition text-lg">
                         Lihat Semua Konten
@@ -407,39 +429,34 @@
             </div>
         </section>
 
-        <section class="py-20 bg-gray-50">
+        <section class="py-20 bg-gray-50 reveal">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <h2 class="text-3xl font-bold text-gray-900 mb-4">Sampah Apa Saja yang Bisa Disetor?</h2>
                 <p class="text-gray-600 mb-12">Kami menerima berbagai jenis sampah anorganik yang bernilai ekonomis.
                 </p>
 
                 <div class="flex flex-wrap justify-center gap-6">
-                    <div
-                        class="bg-white px-8 py-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center w-40 hover:shadow-md transition">
+                    <div class="bg-white px-8 py-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center w-40 hover:shadow-md transition">
                         <div class="text-4xl mb-3">🥤</div>
                         <h4 class="font-bold text-gray-800">Plastik</h4>
                         <span class="text-xs text-gray-500 mt-1">Botol, Gelas</span>
                     </div>
-                    <div
-                        class="bg-white px-8 py-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center w-40 hover:shadow-md transition">
+                    <div class="bg-white px-8 py-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center w-40 hover:shadow-md transition">
                         <div class="text-4xl mb-3">📦</div>
                         <h4 class="font-bold text-gray-800">Kardus</h4>
                         <span class="text-xs text-gray-500 mt-1">Box Bekas</span>
                     </div>
-                    <div
-                        class="bg-white px-8 py-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center w-40 hover:shadow-md transition">
+                    <div class="bg-white px-8 py-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center w-40 hover:shadow-md transition">
                         <div class="text-4xl mb-3">📰</div>
                         <h4 class="font-bold text-gray-800">Kertas</h4>
                         <span class="text-xs text-gray-500 mt-1">Koran, HVS</span>
                     </div>
-                    <div
-                        class="bg-white px-8 py-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center w-40 hover:shadow-md transition">
+                    <div class="bg-white px-8 py-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center w-40 hover:shadow-md transition">
                         <div class="text-4xl mb-3">🔧</div>
                         <h4 class="font-bold text-gray-800">Logam</h4>
                         <span class="text-xs text-gray-500 mt-1">Besi, Kaleng</span>
                     </div>
-                    <div
-                        class="bg-white px-8 py-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center w-40 hover:shadow-md transition">
+                    <div class="bg-white px-8 py-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center w-40 hover:shadow-md transition">
                         <div class="text-4xl mb-3">🧴</div>
                         <h4 class="font-bold text-gray-800">Botol Kaca</h4>
                         <span class="text-xs text-gray-500 mt-1">Kecap, Sirup</span>
@@ -448,7 +465,7 @@
             </div>
         </section>
 
-        <section class="py-20 bg-white">
+        <section class="py-20 bg-white reveal">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid md:grid-cols-2 gap-12 items-center">
                     <div>
@@ -500,7 +517,7 @@
             </div>
         </section>
 
-        <section class="py-20 bg-green-500">
+        <section class="py-20 bg-green-500 reveal">
             <div class="max-w-4xl mx-auto px-4 text-center text-white">
                 <h2 class="text-3xl font-bold mb-6">Siap Menjadi Pahlawan Lingkungan?</h2>
                 <p class="text-green-100 text-lg mb-10 max-w-2xl mx-auto">
@@ -571,6 +588,29 @@
     </div>
 
     <script src="//unpkg.com/alpinejs" defer></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1 
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    } else {
+                        entry.target.classList.remove('active');
+                    }
+                });
+            }, observerOptions);
+
+            const reveals = document.querySelectorAll('.reveal');
+            reveals.forEach((el) => observer.observe(el));
+        });
+    </script>
 </body>
 
 </html>

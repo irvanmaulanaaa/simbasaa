@@ -188,23 +188,40 @@
                         class="group relative bg-white rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-green-900/5 hover:-translate-y-2 transition-all duration-500 flex flex-col h-full overflow-hidden">
 
                         <div
-                            class="h-64 bg-gradient-to-b from-slate-50 to-white relative overflow-hidden flex items-center justify-center p-6">
+                            class="h-64 bg-gradient-to-b from-slate-50 to-white relative overflow-hidden flex items-center justify-center p-0">
                             <div
                                 class="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300 z-10">
                             </div>
 
                             @php
                                 $media = $item->media->first();
-                                $path = $media
-                                    ? ($media->gambar && filter_var($media->gambar, FILTER_VALIDATE_URL)
-                                        ? $media->gambar
-                                        : Illuminate\Support\Facades\Storage::url($media->gambar))
-                                    : null;
+                                $imagePath = null;
+                                $isVideo = false;
+
+                                if ($media) {
+                                    if ($media->tipe == 'youtube' || (strpos($media->gambar, 'youtube.com') !== false || strpos($media->gambar, 'youtu.be') !== false)) {
+                                        $isVideo = true;
+                                        preg_match("/^(?:http(?:s)?:\/\/)?(?:www\.)?(?:m\.)?(?:youtu\.be\/|youtube\.com\/(?:(?:watch)?\?(?:.*&)?v(?:i)?=|(?:embed|v|vi|user|shorts)\/))([^\?&\"'>]+)/", $media->gambar, $matches);
+                                        $videoId = $matches[1] ?? null;
+                                        $imagePath = $videoId ? "https://img.youtube.com/vi/{$videoId}/hqdefault.jpg" : null;
+                                    } else {
+                                        $isUrl = filter_var($media->gambar, FILTER_VALIDATE_URL);
+                                        $imagePath = $isUrl ? $media->gambar : Illuminate\Support\Facades\Storage::url($media->gambar);
+                                    }
+                                }
                             @endphp
 
-                            @if ($path)
-                                <img src="{{ $path }}"
-                                    class="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-700 ease-in-out relative z-0 filter drop-shadow-md">
+                            @if ($imagePath)
+                                <img src="{{ $imagePath }}"
+                                    class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-in-out relative z-0">
+                                
+                                @if($isVideo)
+                                    <div class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-all duration-300 z-10">
+                                        <div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition duration-300">
+                                            <svg class="w-7 h-7 text-red-600 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                        </div>
+                                    </div>
+                                @endif
                             @else
                                 <div class="text-slate-300 flex flex-col items-center">
                                     <svg class="w-16 h-16 mb-3" fill="none" stroke="currentColor"
@@ -219,7 +236,7 @@
 
                             <div class="absolute top-4 left-4 z-20">
                                 <span
-                                    class="bg-white/80 backdrop-blur text-slate-800 text-[10px] font-extrabold px-3 py-1 rounded-full border border-slate-200 uppercase tracking-wider shadow-sm">
+                                    class="bg-white/90 backdrop-blur text-slate-800 text-[10px] font-extrabold px-3 py-1 rounded-full border border-slate-200 uppercase tracking-wider shadow-sm">
                                     Konten
                                 </span>
                             </div>
@@ -240,7 +257,7 @@
                                     {{ \Carbon\Carbon::parse($item->created_at)->format('d M Y') }}
                                 </span>
                                 <h3
-                                    class="text-xl font-bold text-slate-900 group-hover:text-green-600 transition-colors duration-300 leading-snug tracking-tight">
+                                    class="text-xl font-bold text-slate-900 group-hover:text-green-600 transition-colors duration-300 leading-snug tracking-tight line-clamp-2">
                                     {{ $item->judul }}
                                 </h3>
                             </div>
@@ -251,25 +268,27 @@
 
                             <div class="flex items-center justify-between mt-auto pt-5 border-t border-slate-50">
                                 <div class="flex items-center gap-2">
-                                    <div
-                                        class="w-8 h-8 rounded-full bg-gradient-to-tr from-green-400 to-emerald-500 flex items-center justify-center text-white text-xs font-bold shadow-sm">
-                                        {{ substr($item->user->nama_lengkap ?? 'A', 0, 1) }}
-                                    </div>
-                                    <span
-                                        class="text-xs font-semibold text-slate-600">{{ $item->user->nama_lengkap ?? 'Admin' }}</span>
+                                    @if($item->user && $item->user->profile_photo_path)
+                                        <img src="{{ Storage::url($item->user->profile_photo_path) }}" class="w-8 h-8 rounded-full object-cover shadow-sm border border-slate-100">
+                                    @else
+                                        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-green-400 to-emerald-500 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                                            {{ substr($item->user->nama_lengkap ?? 'A', 0, 1) }}
+                                        </div>
+                                    @endif
+                                    <span class="text-xs font-semibold text-slate-600">{{ $item->user->nama_lengkap ?? 'Admin' }}</span>
                                 </div>
 
                                 <div class="flex items-center gap-4 text-base font-bold text-slate-400">
                                     <div class="flex items-center gap-1 text-red-500 transition-colors">
-                                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
                                             <path
                                                 d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
                                         </svg>
                                         {{ $item->jumlah_like }}
                                     </div>
                                     <span
-                                        class="text-green-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                                        Baca <svg class="w-6 h-6" fill="none" stroke="currentColor"
+                                        class="text-green-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform text-sm font-bold">
+                                        Baca <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M9 5l7 7-7 7"></path>
