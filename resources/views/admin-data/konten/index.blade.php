@@ -62,15 +62,14 @@
                                 }
                             }">
 
-                            <div class="md:col-span-2">
+                            <div class="md:col-span-1">
                                 <label class="block text-xs font-medium text-gray-700 mb-1">Tampilkan</label>
                                 <select name="per_page" onchange="this.form.submit()"
                                     class="w-full rounded-lg border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 cursor-pointer">
-                                    <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 Data
-                                    </option>
-                                    <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 Data
-                                    </option>
-                                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 Data
+                                    <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
+                                    <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                                    <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100
                                     </option>
                                 </select>
                             </div>
@@ -79,7 +78,7 @@
                                 <label class="block text-xs font-medium text-gray-700 mb-1">Status</label>
                                 <select name="status_id" onchange="this.form.submit()"
                                     class="w-full rounded-lg border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 cursor-pointer">
-                                    <option value="">Semua</option>
+                                    <option value="">Semua Status</option>
                                     @foreach ($statuses as $status)
                                         <option value="{{ $status->id_status }}"
                                             {{ request('status_id') == $status->id_status ? 'selected' : '' }}>
@@ -88,15 +87,29 @@
                                 </select>
                             </div>
 
-                            <div class="md:col-span-4 grid grid-cols-2 gap-2">
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Kategori</label>
+                                <select name="id_kategori" onchange="this.form.submit()"
+                                    class="w-full rounded-lg border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 cursor-pointer">
+                                    <option value="">Semua Kategori</option>
+                                    @foreach (\App\Models\KategoriKonten::all() as $cat)
+                                        <option value="{{ $cat->id_kategori }}"
+                                            {{ request('id_kategori') == $cat->id_kategori ? 'selected' : '' }}>
+                                            {{ $cat->nama_kategori }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="md:col-span-3 grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Dari Tanggal</label>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Dari</label>
                                     <input type="date" name="start_date" value="{{ request('start_date') }}"
                                         onchange="this.form.submit()"
                                         class="w-full rounded-lg border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 text-gray-600">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Sampai Tanggal</label>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Sampai</label>
                                     <input type="date" name="end_date" value="{{ request('end_date') }}"
                                         onchange="this.form.submit()"
                                         class="w-full rounded-lg border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 text-gray-600">
@@ -113,11 +126,9 @@
                                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                         </svg>
                                     </div>
-
                                     <input type="text" name="search" x-model="search"
                                         class="w-full pl-10 pr-10 rounded-lg border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500"
                                         placeholder="Kata kunci...">
-
                                     <button type="button" @click="clearSearch()" x-show="search.length > 0"
                                         style="display: none;"
                                         class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-red-500 focus:outline-none transition"
@@ -145,9 +156,10 @@
                                     <tr>
                                         <th class="py-3 px-6 text-center w-12">No</th>
                                         <th class="py-3 px-6 text-left">Judul Konten</th>
+                                        <th class="py-3 px-6 text-center">Kategori</th>
                                         <th class="py-3 px-6 text-left">Pembuat</th>
                                         <th class="py-3 px-6 text-center">Status</th>
-                                        <th class="py-3 px-6 text-center">Tanggal Upload</th>
+                                        <th class="py-3 px-6 text-center">Tanggal</th>
                                         <th class="py-3 px-6 text-center">Aksi</th>
                                     </tr>
                                 </thead>
@@ -158,7 +170,21 @@
                                                 {{ ($kontens->currentPage() - 1) * $kontens->perPage() + $loop->iteration }}
                                             </td>
                                             <td class="py-3 px-6 text-left font-medium text-gray-900">
-                                                {{ $konten->judul }}</td>
+                                                {{ $konten->judul }}
+                                            </td>
+
+                                            {{-- ISI KOLOM KATEGORI --}}
+                                            <td class="py-3 px-6 text-center">
+                                                @if ($konten->kategoriKonten)
+                                                    <span
+                                                        class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+                                                        {{ $konten->kategoriKonten->nama_kategori }}
+                                                    </span>
+                                                @else
+                                                    <span class="text-gray-400 italic text-xs">-</span>
+                                                @endif
+                                            </td>
+
                                             <td class="py-3 px-6 text-left">
                                                 <div class="flex items-center">
                                                     <span>{{ $konten->user->nama_lengkap ?? 'Tidak Diketahui' }}</span>
@@ -173,15 +199,19 @@
                                                             : 'yellow';
                                                 @endphp
                                                 <span
-                                                    class="bg-{{ $color }}-100 text-{{ $color }}-800 py-1 px-3 rounded-full text-xs font-bold uppercase tracking-wide">{{ $konten->status->nama_status }}</span>
+                                                    class="bg-{{ $color }}-100 text-{{ $color }}-800 py-1 px-3 rounded-full text-xs font-bold uppercase tracking-wide">
+                                                    {{ $konten->status->nama_status }}
+                                                </span>
                                             </td>
                                             <td class="py-3 px-6 text-center">
-                                                <span
-                                                    class="block text-gray-900 font-medium">{{ $konten->created_at->format('d M Y') }}</span>
+                                                <span class="block text-gray-900 font-medium">
+                                                    {{ $konten->created_at->format('d M Y') }}
+                                                </span>
                                             </td>
                                             <td class="py-3 px-6 text-center">
                                                 <div class="flex item-center justify-center space-x-2">
 
+                                                    {{-- LOGIKA MEDIA (Tetap Sama) --}}
                                                     @php
                                                         $media = $konten->media->first();
                                                         $mediaUrl = '';
@@ -192,16 +222,8 @@
                                                             $mediaUrl = $isUrl ? $rawUrl : asset('storage/' . $rawUrl);
                                                             if (preg_match('/(youtube\.com|youtu\.?be)/', $rawUrl)) {
                                                                 $mediaType = 'youtube';
-                                                            } elseif (
-                                                                Str::endsWith(strtolower($rawUrl), [
-                                                                    '.mp4',
-                                                                    '.mov',
-                                                                    '.avi',
-                                                                ])
-                                                            ) {
-                                                                $mediaType = 'video';
                                                             } else {
-                                                                $mediaType = 'image';
+                                                                $mediaType = 'image'; // Default image karena video dihapus
                                                             }
                                                         }
                                                     @endphp
@@ -251,7 +273,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="6" class="text-center py-8 text-gray-500">Data konten
+                                            <td colspan="7" class="text-center py-8 text-gray-500">Data konten
                                                 tidak ditemukan.</td>
                                         </tr>
                                     @endforelse

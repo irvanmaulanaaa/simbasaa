@@ -120,8 +120,9 @@
                 sini.
             </p>
 
-            <form action="{{ route('public.konten.index') }}" method="GET" class="max-w-5xl mx-auto relative z-30">
+            <form action="{{ route('public.konten.index') }}" method="GET" class="max-w-6xl mx-auto relative z-30">
                 <div class="flex flex-col md:flex-row gap-4">
+
                     <div
                         class="flex-grow p-2 bg-white rounded-[20px] shadow-xl shadow-slate-200/60 border border-slate-100 transition focus-within:ring-4 focus-within:ring-green-100 focus-within:border-green-400">
                         <div class="relative group h-full">
@@ -139,15 +140,44 @@
                     </div>
 
                     <div
-                        class="md:w-1/3 p-2 bg-white rounded-[20px] shadow-xl shadow-slate-200/60 border border-slate-100 transition focus-within:ring-4 focus-within:ring-green-100 focus-within:border-green-400">
+                        class="md:w-1/4 p-2 bg-white rounded-[20px] shadow-xl shadow-slate-200/60 border border-slate-100 transition focus-within:ring-4 focus-within:ring-green-100 focus-within:border-green-400">
                         <div class="relative h-full">
+                            <select name="kategori" onchange="this.form.submit()"
+                                style="-webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: none;"
+                                class="peer block w-full h-full pl-5 pr-10 py-4 bg-transparent border-0 text-slate-700 font-semibold cursor-pointer focus:ring-0">
 
+                                <option value="">Semua Kategori</option>
+                                @foreach ($kategori_konten as $kategori)
+                                    <option value="{{ $kategori->id_kategori }}"
+                                        {{ request('kategori') == $kategori->id_kategori ? 'selected' : '' }}>
+                                        {{ $kategori->nama_kategori }}
+                                    </option>
+                                @endforeach
+
+                            </select>
+
+                            <div
+                                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-green-600 transition-transform duration-300 peer-focus:rotate-180">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="md:w-1/4 p-2 bg-white rounded-[20px] shadow-xl shadow-slate-200/60 border border-slate-100 transition focus-within:ring-4 focus-within:ring-green-100 focus-within:border-green-400">
+                        <div class="relative h-full">
                             <select name="filter" onchange="this.form.submit()"
                                 style="-webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: none;"
                                 class="peer block w-full h-full pl-5 pr-10 py-4 bg-transparent border-0 text-slate-700 font-semibold cursor-pointer focus:ring-0">
-                                <option value="terbaru" {{ request('filter') == 'terbaru' ? 'selected' : '' }}>Terbaru</option>
-                                <option value="terlama" {{ request('filter') == 'terlama' ? 'selected' : '' }}>Terlama</option>
-                                <option value="populer" {{ request('filter') == 'populer' ? 'selected' : '' }}>Populer</option>
+                                <option value="terbaru" {{ request('filter') == 'terbaru' ? 'selected' : '' }}>Terbaru
+                                </option>
+                                <option value="terlama" {{ request('filter') == 'terlama' ? 'selected' : '' }}>Terlama
+                                </option>
+                                <option value="populer" {{ request('filter') == 'populer' ? 'selected' : '' }}>Populer
+                                </option>
                             </select>
 
                             <div
@@ -161,7 +191,9 @@
                     </div>
 
                     <button type="submit"
-                        class="md:hidden w-full bg-green-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-green-200 mt-2">Cari</button>
+                        class="md:hidden w-full bg-green-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-green-200 mt-2">
+                        Terapkan Filter
+                    </button>
                 </div>
             </form>
         </div>
@@ -199,14 +231,26 @@
                                 $isVideo = false;
 
                                 if ($media) {
-                                    if ($media->tipe == 'youtube' || (strpos($media->gambar, 'youtube.com') !== false || strpos($media->gambar, 'youtu.be') !== false)) {
+                                    if (
+                                        $media->tipe == 'youtube' ||
+                                        (strpos($media->gambar, 'youtube.com') !== false ||
+                                            strpos($media->gambar, 'youtu.be') !== false)
+                                    ) {
                                         $isVideo = true;
-                                        preg_match("/^(?:http(?:s)?:\/\/)?(?:www\.)?(?:m\.)?(?:youtu\.be\/|youtube\.com\/(?:(?:watch)?\?(?:.*&)?v(?:i)?=|(?:embed|v|vi|user|shorts)\/))([^\?&\"'>]+)/", $media->gambar, $matches);
+                                        preg_match(
+                                            "/^(?:http(?:s)?:\/\/)?(?:www\.)?(?:m\.)?(?:youtu\.be\/|youtube\.com\/(?:(?:watch)?\?(?:.*&)?v(?:i)?=|(?:embed|v|vi|user|shorts)\/))([^\?&\"'>]+)/",
+                                            $media->gambar,
+                                            $matches,
+                                        );
                                         $videoId = $matches[1] ?? null;
-                                        $imagePath = $videoId ? "https://img.youtube.com/vi/{$videoId}/hqdefault.jpg" : null;
+                                        $imagePath = $videoId
+                                            ? "https://img.youtube.com/vi/{$videoId}/hqdefault.jpg"
+                                            : null;
                                     } else {
                                         $isUrl = filter_var($media->gambar, FILTER_VALIDATE_URL);
-                                        $imagePath = $isUrl ? $media->gambar : Illuminate\Support\Facades\Storage::url($media->gambar);
+                                        $imagePath = $isUrl
+                                            ? $media->gambar
+                                            : Illuminate\Support\Facades\Storage::url($media->gambar);
                                     }
                                 }
                             @endphp
@@ -214,11 +258,16 @@
                             @if ($imagePath)
                                 <img src="{{ $imagePath }}"
                                     class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-in-out relative z-0">
-                                
-                                @if($isVideo)
-                                    <div class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-all duration-300 z-10">
-                                        <div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition duration-300">
-                                            <svg class="w-7 h-7 text-red-600 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+
+                                @if ($isVideo)
+                                    <div
+                                        class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-all duration-300 z-10">
+                                        <div
+                                            class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition duration-300">
+                                            <svg class="w-7 h-7 text-red-600 ml-1" fill="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path d="M8 5v14l11-7z" />
+                                            </svg>
                                         </div>
                                     </div>
                                 @endif
@@ -236,8 +285,8 @@
 
                             <div class="absolute top-4 left-4 z-20">
                                 <span
-                                    class="bg-white/90 backdrop-blur text-slate-800 text-[10px] font-extrabold px-3 py-1 rounded-full border border-slate-200 uppercase tracking-wider shadow-sm">
-                                    Konten
+                                    class="bg-green-200 backdrop-blur text-slate-800 text-[10px] font-extrabold px-3 py-1 rounded-full border border-slate-200 uppercase tracking-wider shadow-sm">
+                                    {{ $item->kategoriKonten->nama_kategori }}
                                 </span>
                             </div>
                         </div>
@@ -258,24 +307,27 @@
                                 </span>
                                 <h3
                                     class="text-xl font-bold text-slate-900 group-hover:text-green-600 transition-colors duration-300 leading-snug tracking-tight line-clamp-2">
-                                    {{ $item->judul }}
+                                    {{ Str::limit($item->judul, 20) }}
                                 </h3>
                             </div>
 
                             <p class="text-slate-500 text-sm line-clamp-3 mb-6 flex-grow leading-relaxed">
-                                {{ Str::limit(strip_tags($item->deskripsi ?? $item->isi), 120) }}
+                                {{ Str::limit(strip_tags($item->deskripsi ?? $item->isi), 30) }}
                             </p>
 
                             <div class="flex items-center justify-between mt-auto pt-5 border-t border-slate-50">
                                 <div class="flex items-center gap-2">
-                                    @if($item->user && $item->user->profile_photo_path)
-                                        <img src="{{ Storage::url($item->user->profile_photo_path) }}" class="w-8 h-8 rounded-full object-cover shadow-sm border border-slate-100">
+                                    @if ($item->user && $item->user->profile_photo_path)
+                                        <img src="{{ Storage::url($item->user->profile_photo_path) }}"
+                                            class="w-8 h-8 rounded-full object-cover shadow-sm border border-slate-100">
                                     @else
-                                        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-green-400 to-emerald-500 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-gradient-to-tr from-green-400 to-emerald-500 flex items-center justify-center text-white text-xs font-bold shadow-sm">
                                             {{ substr($item->user->nama_lengkap ?? 'A', 0, 1) }}
                                         </div>
                                     @endif
-                                    <span class="text-xs font-semibold text-slate-600">{{ $item->user->nama_lengkap ?? 'Admin' }}</span>
+                                    <span
+                                        class="text-xs font-semibold text-slate-600">{{ $item->user->nama_lengkap ?? 'Admin' }}</span>
                                 </div>
 
                                 <div class="flex items-center gap-4 text-base font-bold text-slate-400">

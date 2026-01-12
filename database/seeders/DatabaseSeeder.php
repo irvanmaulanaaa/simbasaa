@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             RolesSeeder::class, 
             StatusKontenSeeder::class,
             UserSeeder::class,
+            KategoriKontenSeeder::class,
         ]);
     }
 }

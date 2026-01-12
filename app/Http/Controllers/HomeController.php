@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\KategoriKonten;
 use Illuminate\Http\Request;
 use App\Models\Konten;
 use App\Models\Komentar;
@@ -18,11 +19,8 @@ class HomeController extends Controller
     {
         $totalUser = User::whereHas('role', fn($q) => $q->where('nama_role', 'warga'))->count();
 
-        // Contoh: Hitung total berat sampah (Jika ada tabel transaksi)
-        // $totalSampah = Transaksi::sum('berat_sampah'); 
-        $totalSampah = 1250; // Dummy dulu kalau belum ada tabel transaksi
+        $totalSampah = 1250; 
 
-        // Hitung total konten
         $totalKonten = Konten::whereHas('status', fn($q) => $q->where('nama_status', 'published'))->count();
 
         if (class_exists(Penarikan::class)) {
@@ -31,7 +29,7 @@ class HomeController extends Controller
              $totalDanaCair = 2500000;
         }
 
-        $kontens = Konten::with(['media', 'user'])
+        $kontens = Konten::with(['media', 'user', 'kategoriKonten'])
             ->whereHas('status', fn($q) => $q->where('nama_status', 'published'))
             ->latest()
             ->take(10)
@@ -42,11 +40,15 @@ class HomeController extends Controller
 
     public function allContent(Request $request)
     {
-        $query = Konten::with('media')
+        $query = Konten::with('media', 'user', 'kategoriKonten')
             ->whereHas('status', fn($q) => $q->where('nama_status', 'published'));
 
         if ($request->has('cari')) {
             $query->where('judul', 'like', '%' . $request->cari . '%');
+        }
+
+        if ($request->filled('kategori')) {
+            $query->where('id_kategori', $request->kategori);
         }
 
         $filter = $request->get('filter', 'terbaru');
@@ -61,12 +63,14 @@ class HomeController extends Controller
 
         $kontens = $query->paginate(9)->withQueryString();
 
-        return view('public.konten.index', compact('kontens'));
+        $kategori_konten = KategoriKonten::all();
+
+        return view('public.konten.index', compact('kontens', 'kategori_konten'));
     }
 
     public function show($id)
     {
-        $konten = Konten::with(['media', 'komentars.user', 'user'])->findOrFail($id);
+        $konten = Konten::with(['media', 'komentars.user', 'user', 'kategoriKonten'])->findOrFail($id);
 
         if (Auth::check()) {
             $isLiked = Like::where('user_id', Auth::id())->where('id_konten', $id)->exists();
@@ -74,7 +78,7 @@ class HomeController extends Controller
             $isLiked = session()->has('liked_konten_' . $id);
         }
 
-        $beritaLain = Konten::with('media')
+        $beritaLain = Konten::with('media', 'user', 'kategoriKonten')
             ->where('id_konten', '!=', $id)
             ->whereHas('status', fn($q) => $q->where('nama_status', 'published'))
             ->latest()->take(4)->get();

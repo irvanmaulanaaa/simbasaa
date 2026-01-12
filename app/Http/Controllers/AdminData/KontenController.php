@@ -5,6 +5,7 @@ namespace App\Http\Controllers\AdminData;
 use App\Http\Controllers\Controller;
 use App\Models\Konten;
 use App\Models\StatusKonten;
+use App\Models\KategoriKonten;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -18,7 +19,7 @@ class KontenController extends Controller
     {
         $statuses = StatusKonten::all();
 
-        $query = Konten::with(['user', 'status']);
+        $query = Konten::with(['user', 'status', 'kategoriKonten']);
 
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
@@ -29,6 +30,10 @@ class KontenController extends Controller
 
         if ($request->has('status_id') && $request->status_id != '') {
             $query->where('status_id', $request->status_id);
+        }
+
+        if ($request->filled('id_kategori')) {
+            $query->where('id_kategori', $request->id_kategori);
         }
 
         if ($request->filled('start_date')) {
@@ -49,7 +54,8 @@ class KontenController extends Controller
     public function create()
     {
         $statuses = StatusKonten::all();
-        return view('admin-data.konten.create', compact('statuses'));
+        $kategori_konten = KategoriKonten::all();
+        return view('admin-data.konten.create', compact('statuses', 'kategori_konten'));
     }
 
     /**
@@ -59,10 +65,11 @@ class KontenController extends Controller
     {
         $request->validate([
             'judul' => 'required|string|max:255',
+            'id_kategori' => 'required|exists:kategori_kontens,id_kategori',
             'deskripsi' => 'required|string',
             'status_id' => 'required|exists:status_konten,id_status',
             'media_type' => 'required|in:upload,url',
-            'media_file' => 'nullable|required_if:media_type,upload|image|mimes:jpeg,png,jpg,gif,mp4,mov,avi|max:20480',
+            'media_file' => 'nullable|required_if:media_type,upload|image|mimes:jpeg,png,jpg,gif|max:2048',
             'media_url' => 'nullable|required_if:media_type,url|url:https',
         ]);
 
@@ -70,6 +77,7 @@ class KontenController extends Controller
             'judul' => $request->judul,
             'deskripsi' => $request->deskripsi,
             'status_id' => $request->status_id,
+            'id_kategori' => $request->id_kategori,
             'user_id' => Auth::id(),
         ]);
 
@@ -105,6 +113,7 @@ class KontenController extends Controller
     {
         $konten->load('media');
         $statuses = StatusKonten::all();
+        $kategori_konten = KategoriKonten::all();
 
         $currentMedia = $konten->media->first();
         $mediaType = 'upload';
@@ -119,7 +128,7 @@ class KontenController extends Controller
             }
         }
 
-        return view('admin-data.konten.edit', compact('konten', 'statuses', 'mediaType', 'mediaValue'));
+        return view('admin-data.konten.edit', compact('konten', 'statuses', 'kategori_konten', 'mediaType', 'mediaValue'));
     }
 
     /**
@@ -130,6 +139,7 @@ class KontenController extends Controller
         $request->validate([
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
+            'id_kategori' => 'required|exists:kategori_kontens,id_kategori',
             'status_id' => 'required|exists:status_konten,id_status',
             'media_type' => 'required|in:upload,url',
             'media_file' => 'nullable|image|mimes:jpeg,png,jpg,gif,mp4,mov,avi|max:20480',
@@ -140,6 +150,7 @@ class KontenController extends Controller
             'judul' => $request->judul,
             'deskripsi' => $request->deskripsi,
             'status_id' => $request->status_id,
+            'id_kategori' => $request->id_kategori,
         ]);
 
         $currentMedia = $konten->media->first();

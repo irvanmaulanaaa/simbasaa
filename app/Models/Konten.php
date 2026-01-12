@@ -14,6 +14,7 @@ class Konten extends Model
     protected $fillable = [
         'judul',
         'deskripsi',
+        'id_kategori',
         'status_id',
         'user_id'
     ];
@@ -36,5 +37,10 @@ class Konten extends Model
     public function komentars()
     {
         return $this->hasMany(Komentar::class, 'konten_id', 'id_konten');
+    }
+
+    public function kategoriKonten()
+    {
+        return $this->belongsTo(KategoriKonten::class, 'id_kategori', 'id_kategori');
     }
 }

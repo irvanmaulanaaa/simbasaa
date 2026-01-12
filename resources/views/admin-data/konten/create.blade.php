@@ -160,8 +160,10 @@
                             <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
                                 Detail Informasi
                             </h3>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div class="md:col-span-2">
+
+                            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+
+                                <div class="md:col-span-12">
                                     <x-input-label for="judul" :value="__('Judul Konten')" />
                                     <x-text-input id="judul"
                                         class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500"
@@ -171,10 +173,34 @@
                                         <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
                                     @enderror
                                 </div>
-                                <div>
+
+                                <div class="md:col-span-6">
+                                    <x-input-label for="id_kategori" :value="__('Kategori Konten')" />
+
+                                    <select id="id_kategori" name="id_kategori"
+                                        class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm bg-white cursor-pointer"
+                                        required>
+
+                                        <option value="">Pilih Kategori</option>
+
+                                        @foreach ($kategori_konten as $cat)
+                                            <option value="{{ $cat->id_kategori }}"
+                                                {{ old('id_kategori') == $cat->id_kategori ? 'selected' : '' }}>
+                                                {{ $cat->nama_kategori }}
+                                            </option>
+                                        @endforeach
+
+                                    </select>
+
+                                    @error('id_kategori')
+                                        <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div class="md:col-span-6">
                                     <x-input-label for="status_id" :value="__('Status Publikasi')" />
                                     <select id="status_id" name="status_id"
-                                        class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm bg-white"
+                                        class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm bg-white cursor-pointer"
                                         required>
                                         <option value="">Pilih Status</option>
                                         @foreach ($statuses as $status)
@@ -188,6 +214,7 @@
                                         <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
                                     @enderror
                                 </div>
+
                             </div>
                         </div>
 

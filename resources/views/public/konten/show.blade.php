@@ -182,7 +182,11 @@
                     <header class="mb-10">
                         <div class="flex items-center justify-between mb-6">
                             <div class="flex items-center space-x-3">
-                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold text-xs uppercase tracking-wider">Konten</span>
+
+                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold text-xs uppercase tracking-wider">
+                                    {{ $konten->kategoriKonten->nama_kategori }}
+                                </span>
+
                                 <span class="text-slate-400 text-sm font-semibold flex items-center">
                                     <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                     {{ \Carbon\Carbon::parse($konten->created_at)->format('d F Y') }}
@@ -204,7 +208,7 @@
 
                     <div class="bg-white rounded-[2rem] p-8 md:p-10 shadow-sm border border-gray-100">
                         <div class="flex items-center justify-between mb-8">
-                            <h3 class="text-2xl font-black text-slate-900">Diskusi</h3>
+                            <h3 class="text-2xl font-black text-slate-900">Komentar</h3>
                             <span class="bg-green-100 text-green-700 font-bold px-3 py-1 rounded-full text-sm">{{ $konten->komentars->count() }} Komentar</span>
                         </div>
 
@@ -219,7 +223,7 @@
                                 <div class="flex-grow">
                                     <textarea name="isi_komentar" rows="3" class="w-full border-gray-200 bg-slate-50 rounded-2xl focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:bg-white p-4 transition text-slate-700 placeholder:text-slate-400 resize-none shadow-inner" placeholder="Bagikan pendapat Anda..." required></textarea>
                                     <div class="mt-3 flex justify-end">
-                                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-green-200 transition transform hover:-translate-y-0.5">Kirim Komentar</button>
+                                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-green-200 transition transform hover:-translate-y-0.5">Kirim</button>
                                     </div>
                                 </div>
                             </form>
