@@ -5,7 +5,7 @@
 
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard Overview') }}
+            {{ __('Dashboard') }}
         </h2>
     </x-slot>
 
@@ -115,12 +115,12 @@
 
                 <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col">
                     <div class="p-6 border-b border-gray-100 flex justify-between items-center">
-                        <h4 class="text-lg font-bold text-gray-800">Konten Terbaru Ditambahkan</h4>
+                        <h4 class="text-lg font-bold text-gray-800">Konten Terbaru</h4>
                         <a href="{{ route('admin-data.konten.index') }}"
                             class="text-sm text-blue-600 hover:text-blue-800 font-medium">Lihat Semua</a>
                     </div>
                     <div class="p-0 overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
+                        <table class="w-full text-left border-collapse whitespace-nowrap">
                             <thead class="bg-gray-50 text-gray-500 text-xs uppercase font-semibold">
                                 <tr>
                                     <th class="px-6 py-4">Judul Konten</th>
@@ -133,7 +133,7 @@
                                 @forelse($recentKonten as $konten)
                                     <tr class="hover:bg-gray-50 transition">
                                         <td class="px-6 py-4 font-medium text-gray-800">
-                                            {{ Str::limit($konten->judul, 40) }}
+                                            {{ Str::limit($konten->judul, 20) }}
                                         </td>
                                         <td class="px-6 py-4 text-gray-600">
                                             {{ $konten->user->nama_lengkap ?? 'Unknown' }}
@@ -204,8 +204,7 @@
         </div>
 
         <footer class="mt-auto py-6 text-center text-sm text-gray-500 bg-gray-50 border-t border-gray-200">
-            <p>&copy; {{ date('Y') }} <span class="font-bold text-green-600">SIMBASA Developed by</span> Irvan Maulana. All
-                rights reserved.</p>
+            <p>&copy; {{ date('Y') }} <span class="font-bold text-green-600">SIMBASA Developed by</span> Irvan Maulana.</p>
         </footer>
     </div>
 

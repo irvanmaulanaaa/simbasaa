@@ -151,7 +151,7 @@
                         </form>
 
                         <div class="overflow-x-auto rounded-lg shadow border border-gray-200">
-                            <table class="min-w-full bg-white">
+                            <table class="min-w-full bg-white whitespace-nowrap">
                                 <thead class="bg-gray-100 text-gray-700 uppercase text-xs font-bold leading-normal">
                                     <tr>
                                         <th class="py-3 px-6 text-center w-12">No</th>
@@ -169,11 +169,11 @@
                                             <td class="py-3 px-6 text-center font-medium">
                                                 {{ ($kontens->currentPage() - 1) * $kontens->perPage() + $loop->iteration }}
                                             </td>
+
                                             <td class="py-3 px-6 text-left font-medium text-gray-900">
                                                 {{ $konten->judul }}
                                             </td>
 
-                                            {{-- ISI KOLOM KATEGORI --}}
                                             <td class="py-3 px-6 text-center">
                                                 @if ($konten->kategoriKonten)
                                                     <span
@@ -211,7 +211,6 @@
                                             <td class="py-3 px-6 text-center">
                                                 <div class="flex item-center justify-center space-x-2">
 
-                                                    {{-- LOGIKA MEDIA (Tetap Sama) --}}
                                                     @php
                                                         $media = $konten->media->first();
                                                         $mediaUrl = '';
@@ -223,7 +222,7 @@
                                                             if (preg_match('/(youtube\.com|youtu\.?be)/', $rawUrl)) {
                                                                 $mediaType = 'youtube';
                                                             } else {
-                                                                $mediaType = 'image'; // Default image karena video dihapus
+                                                                $mediaType = 'image';
                                                             }
                                                         }
                                                     @endphp
@@ -287,8 +286,7 @@
         </div>
 
         <footer class="mt-auto py-6 text-center text-sm text-gray-500 bg-gray-50 border-t border-gray-200">
-            <p>&copy; {{ date('Y') }} <span class="font-bold text-green-600">SIMBASA Developed by</span> Irvan
-                Maulana. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} <span class="font-bold text-green-600">SIMBASA Developed by</span> Irvan Maulana.</p>
         </footer>
 
     </div>
