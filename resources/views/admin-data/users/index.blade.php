@@ -118,9 +118,11 @@
                             showResetModal: false,
                             resetActionUrl: '',
                             resetUserName: '',
+                            resetPasswordInput: '',
                             openResetModal(url, name) {
                                 this.resetActionUrl = url;
                                 this.resetUserName = name;
+                                this.resetPasswordInput = '';
                                 this.showResetModal = true;
                             },
                             showDeleteModal: false,
@@ -255,8 +257,10 @@
                                 x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
                                 x-transition:leave="transition ease-in duration-200"
                                 x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+
                                 <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
                                     @click="showResetModal = false"></div>
+
                                 <div class="flex items-center justify-center min-h-screen p-4 text-center">
                                     <div
                                         class="relative bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:max-w-lg w-full">
@@ -280,22 +284,63 @@
                                                             <p class="text-sm text-gray-500 mb-4">Masukkan password
                                                                 baru untuk: <span class="font-bold text-gray-800"
                                                                     x-text="resetUserName"></span></p>
+
                                                             <label
                                                                 class="block text-sm font-medium text-gray-700 mb-1">Password
                                                                 Baru</label>
+
                                                             <input type="text" name="new_password" required
-                                                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50"
-                                                                placeholder="Contoh: 123456" minlength="6">
+                                                                x-model="resetPasswordInput"
+                                                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 transition duration-150 ease-in-out"
+                                                                placeholder="Minimal 8 karakter" minlength="8">
+
+                                                            <div class="mt-1">
+                                                                <p x-show="resetPasswordInput.length > 0 && resetPasswordInput.length < 8"
+                                                                    class="text-xs text-red-500 font-semibold flex items-center">
+                                                                    <svg class="w-3 h-3 mr-1" fill="none"
+                                                                        stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round"
+                                                                            stroke-linejoin="round" stroke-width="2"
+                                                                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                                                        </path>
+                                                                    </svg>
+                                                                    Kurang 
+                                                                    <span x-text="8 - resetPasswordInput.length" class="mx-1"></span>
+                                                                    karakter lagi.
+                                                                </p>
+                                                                <p x-show="resetPasswordInput.length >= 8"
+                                                                    class="text-xs text-green-600 font-semibold flex items-center">
+                                                                    <svg class="w-3 h-3 mr-1" fill="none"
+                                                                        stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round"
+                                                                            stroke-linejoin="round" stroke-width="2"
+                                                                            d="M5 13l4 4L19 7"></path>
+                                                                    </svg>
+                                                                    Password valid.
+                                                                </p>
+                                                                <p x-show="resetPasswordInput.length === 0"
+                                                                    class="text-xs text-gray-400">
+                                                                    Wajib minimal 8 karakter.
+                                                                </p>
+                                                            </div>
+
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                                                <button type="submit"
-                                                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-yellow-600 text-base font-medium text-white hover:bg-yellow-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm transition">Reset
-                                                    Password</button>
+                                                {{-- TOMBOL SUBMIT (DISABLED JIKA < 8) --}}
+                                                <button type="submit" :disabled="resetPasswordInput.length < 8"
+                                                    :class="{ 'opacity-50 cursor-not-allowed': resetPasswordInput.length <
+                                                        8, 'hover:bg-yellow-700': resetPasswordInput.length >= 8 }"
+                                                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-yellow-600 text-base font-medium text-white focus:outline-none sm:ml-3 sm:w-auto sm:text-sm transition">
+                                                    Reset Password
+                                                </button>
+
                                                 <button type="button" @click="showResetModal = false"
-                                                    class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition">Batal</button>
+                                                    class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition">
+                                                    Batal
+                                                </button>
                                             </div>
                                         </form>
                                     </div>
@@ -358,7 +403,8 @@
         </div>
 
         <footer class="mt-auto py-6 text-center text-sm text-gray-500 bg-gray-50 border-t border-gray-200">
-            <p>&copy; {{ date('Y') }} <span class="font-bold text-green-600">SIMBASA Developed by</span> Irvan Maulana.</p>
+            <p>&copy; {{ date('Y') }} <span class="font-bold text-green-600">SIMBASA Developed by</span> Irvan
+                Maulana.</p>
         </footer>
 
     </div>

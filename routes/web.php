@@ -72,6 +72,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('admin-data')->name('admin-data.')->group(function () {
         Route::get('dashboard', [AdminDataDashboard::class, 'index'])->name('dashboard');
         Route::get('/users/get-desa', [UserController::class, 'getDesa'])->name('users.get-desa');
+
         Route::resource('kecamatan', KecamatanController::class);
         Route::resource('desa', DesaController::class);
         Route::resource('users', UserController::class);
@@ -82,9 +83,13 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('admin-pusat')->name('admin-pusat.')->group(function () {
         Route::get('dashboard', [AdminPusatDashboard::class, 'index'])->name('dashboard');
+        Route::get('sampah/check-code', [SampahController::class, 'checkCode'])
+            ->name('sampah.check-code');
+            
         Route::resource('sampah', SampahController::class);
         Route::resource('jadwal', JadwalPenimbanganController::class);
         Route::resource('kategori-sampah', KategoriSampahController::class);
+        
     });
 
     Route::prefix('ketua')->name('ketua.')->middleware(['auth'])->group(function () {

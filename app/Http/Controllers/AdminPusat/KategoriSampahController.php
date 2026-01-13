@@ -11,9 +11,17 @@ class KategoriSampahController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $kategoris = KategoriSampah::latest()->paginate(10);
+        $query = KategoriSampah::query();
+
+        // Tambahan fitur search kategori
+        if ($request->has('search')) {
+            $query->where('nama_kategori', 'like', '%' . $request->search . '%');
+        }
+
+        $kategoris = $query->latest()->paginate(10);
+        
         return view('admin-pusat.kategori.index', compact('kategoris'));
     }
 
