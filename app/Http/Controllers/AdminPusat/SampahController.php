@@ -28,20 +28,22 @@ class SampahController extends Controller
             });
         }
 
-        // 3. Logika Filter Kategori
+        // 3. Ambil input 'per_page' dari dropdown, default 10 jika tidak ada
+        $perPage = $request->input('per_page', 10);
+
+        // 4. Logika Filter Kategori
         if ($request->filled('kategori_id')) {
             $query->where('kategori_id', $request->kategori_id);
         }
 
-        // 4. Logika Filter Status
+        // 5. Logika Filter Status
         if ($request->filled('status')) {
             $query->where('status_sampah', $request->status);
         }
 
-        // 5. Eksekusi query dengan pagination
-        $sampahs = $query->latest()->paginate(10)->withQueryString();
+        $sampahs = $query->latest()->paginate($perPage)->withQueryString();
 
-        // 6. Ambil data kategori untuk dropdown filter di View
+        // 7. Ambil data kategori untuk dropdown filter di View
         $kategoris = KategoriSampah::all();
 
         return view('admin-pusat.sampah.index', compact('sampahs', 'kategoris'));
