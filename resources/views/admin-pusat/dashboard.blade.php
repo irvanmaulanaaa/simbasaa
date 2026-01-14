@@ -202,26 +202,30 @@
                         @if (is_object($edukasi))
                             <div
                                 class="flex gap-4 items-start p-3 rounded-lg hover:bg-gray-50 transition border border-transparent hover:border-gray-100">
-                                <div class="w-16 h-16 flex-shrink-0 bg-gray-200 rounded-lg overflow-hidden relative shadow-sm group-hover:shadow-md transition">
+                                <div
+                                    class="w-16 h-16 flex-shrink-0 bg-gray-200 rounded-lg overflow-hidden relative shadow-sm group-hover:shadow-md transition">
                                     @php
                                         $mediaItem = $edukasi->media->first();
                                         $path = $mediaItem ? $mediaItem->gambar : null;
-                                        
+
                                         $imageUrl = null;
                                         $isVideo = false;
 
                                         if ($path) {
                                             if (Str::contains($path, ['youtube.com', 'youtu.be'])) {
                                                 $isVideo = true;
-                                                preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $path, $match);
+                                                preg_match(
+                                                    '%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i',
+                                                    $path,
+                                                    $match,
+                                                );
                                                 $videoId = $match[1] ?? null;
-                                                
+
                                                 if ($videoId) {
                                                     $imageUrl = "https://img.youtube.com/vi/{$videoId}/mqdefault.jpg";
                                                 }
-                                            } 
-                                            elseif (Str::startsWith($path, ['http://', 'https://'])) {
-                                                $imageUrl = $path; 
+                                            } elseif (Str::startsWith($path, ['http://', 'https://'])) {
+                                                $imageUrl = $path;
                                             } else {
                                                 $imageUrl = Storage::url($path);
                                             }
@@ -230,23 +234,39 @@
 
                                     @if ($imageUrl)
                                         <img src="{{ $imageUrl }}"
-                                             class="w-full h-full object-cover transform group-hover:scale-110 transition duration-300"
-                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                        
-                                        @if($isVideo)
-                                            <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20 group-hover:bg-opacity-10 transition">
+                                            class="w-full h-full object-cover transform group-hover:scale-110 transition duration-300"
+                                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+
+                                        @if ($isVideo)
+                                            <div
+                                                class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20 group-hover:bg-opacity-10 transition">
                                                 <div class="bg-white rounded-full p-1 shadow-sm">
-                                                    <svg class="w-3 h-3 text-red-600 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                                    <svg class="w-3 h-3 text-red-600 ml-0.5" fill="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path d="M8 5v14l11-7z" />
+                                                    </svg>
                                                 </div>
                                             </div>
                                         @endif
 
-                                        <div class="w-full h-full items-center justify-center text-gray-400 bg-gray-100 hidden">
-                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                        <div
+                                            class="w-full h-full items-center justify-center text-gray-400 bg-gray-100 hidden">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                                </path>
+                                            </svg>
                                         </div>
                                     @else
-                                        <div class="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100">
-                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                        <div
+                                            class="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                                </path>
+                                            </svg>
                                         </div>
                                     @endif
                                 </div>
@@ -285,4 +305,8 @@
             </div>
         </div>
     </div>
+
+    <footer class="mt-auto py-6 text-center text-sm text-gray-500 bg-gray-50 border-t border-gray-200">
+        <p>&copy; {{ date('Y') }} <span class="font-bold text-green-600">SIMBASA Developed by</span> Irvan Maulana.</p>
+    </footer>
 </x-app-layout>

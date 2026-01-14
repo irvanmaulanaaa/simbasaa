@@ -19,7 +19,7 @@
         <p class="text-red-700 font-bold text-lg animate-pulse">Menghapus Data...</p>
     </div>
 
-    <div class="py-6 px-4 sm:px-0" 
+    <div class="py-6 px-4 sm:px-0 min-h-screen" 
         x-data="{ 
             showModal: false, 
             isEdit: false, 
@@ -261,6 +261,10 @@
         </div>
 
     </div>
+
+    <footer class="mt-auto py-6 text-center text-sm text-gray-500 bg-gray-50 border-t border-gray-200">
+        <p>&copy; {{ date('Y') }} <span class="font-bold text-green-600">SIMBASA Developed by</span> Irvan Maulana.</p>
+    </footer>
 
     <script>
         @if (session('success'))

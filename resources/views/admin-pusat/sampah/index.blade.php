@@ -9,7 +9,7 @@
         </h2>
     </x-slot>
 
-    <div class="py-6 px-4 sm:px-0">
+    <div class="py-6 px-4 sm:px-0 min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
             <nav class="flex mb-4" aria-label="Breadcrumb">
@@ -228,6 +228,10 @@
             </div>
         </div>
     </div>
+
+    <footer class="mt-auto py-6 text-center text-sm text-gray-500 bg-gray-50 border-t border-gray-200">
+        <p>&copy; {{ date('Y') }} <span class="font-bold text-green-600">SIMBASA Developed by</span> Irvan Maulana.</p>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
