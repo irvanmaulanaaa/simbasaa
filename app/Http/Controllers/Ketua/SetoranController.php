@@ -9,44 +9,52 @@ use App\Models\Sampah;
 use App\Models\Setoran;
 use App\Models\DetailSetoran;
 use App\Models\Saldo;
-use App\Models\Transaksi;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class SetoranController extends Controller
 {
     /**
-     * Menampilkan form input setoran.
+     * Halaman Utama (Index) dengan Filter & Pagination
      */
-    public function create()
+    public function index(Request $request)
     {
         $ketua = Auth::user();
 
-        $wargas = User::whereHas('role', function ($q) {
-            $q->where('nama_role', 'warga');
-        })
-            ->where('desa_id', $ketua->desa_id)
-            ->where('rw', $ketua->rw)
-            ->where('status', 'aktif')
-            ->get();
+        $query = Setoran::with(['warga', 'detail'])
+            ->where(function($q) use ($ketua) {
+                $q->where('ketua_id', $ketua->id_user)
+                  ->orWhereHas('warga', function ($subQ) use ($ketua) {
+                      $subQ->where('desa_id', $ketua->desa_id)->where('rw', $ketua->rw);
+                  });
+            });
 
+        if ($request->filled('search')) {
+            $query->whereHas('warga', function($q) use ($request) {
+                $q->where('nama_lengkap', 'like', "%{$request->search}%");
+            });
+        }
+
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('tgl_setor', [$request->start_date, $request->end_date]);
+        }
+
+        $setorans = $query->latest('tgl_setor')->paginate(10);
+
+        $wargas = User::whereHas('role', function ($q) { $q->where('nama_role', 'warga'); })
+            ->where('desa_id', $ketua->desa_id)->where('rw', $ketua->rw)->where('status', 'aktif')->get();
+        
         $sampahs = Sampah::where('status_sampah', 'aktif')->get();
 
-        return view('ketua.setoran.create', compact('wargas', 'sampahs'));
+        return view('ketua.setoran.index', compact('setorans', 'wargas', 'sampahs'));
     }
 
     /**
-     * Menyimpan data setoran.
+     * Simpan Data Setoran Baru
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'warga_id' => 'required|exists:users,id_user',
-            'sampah_id' => 'required|array',
-            'sampah_id.*' => 'exists:sampah,id_sampah',
-            'berat' => 'required|array',
-            'berat.*' => 'numeric|min:0.1',
-        ]);
+        $this->validateRequest($request);
 
         DB::transaction(function () use ($request) {
             $totalSetoran = 0;
@@ -55,15 +63,10 @@ class SetoranController extends Controller
             foreach ($request->sampah_id as $index => $sampahId) {
                 $berat = $request->berat[$index];
                 $sampah = Sampah::find($sampahId);
-
                 $subtotal = $berat * $sampah->harga_anggota;
                 $totalSetoran += $subtotal;
 
-                $details[] = [
-                    'sampah_id' => $sampahId,
-                    'berat' => $berat,
-                    'subtotal' => $subtotal,
-                ];
+                $details[] = ['sampah_id' => $sampahId, 'berat' => $berat, 'subtotal' => $subtotal];
             }
 
             $setoran = Setoran::create([
@@ -77,32 +80,85 @@ class SetoranController extends Controller
                 $setoran->detail()->create($detail);
             }
 
-            $saldo = Saldo::firstOrCreate(
-                ['user_id' => $request->warga_id],
-                ['jumlah_saldo' => 0]
-            );
-
+            $saldo = Saldo::firstOrCreate(['user_id' => $request->warga_id], ['jumlah_saldo' => 0]);
             $saldo->increment('jumlah_saldo', $totalSetoran);
         });
 
-        return redirect()->route('ketua.dashboard')
-            ->with('success', 'Setoran berhasil dicatat dan saldo warga bertambah.');
+        return redirect()->back()->with('success', 'Setoran berhasil ditambahkan.');
     }
 
-    public function show($id_setor)
+    /**
+     * Get Data JSON (Untuk Edit/Detail via Modal AJAX)
+     */
+    public function show($id)
     {
-        $ketua = Auth::user();
-        
-        // Ambil data setoran, pastikan setoran tersebut milik wilayah Ketua
-        $setoran = Setoran::with('warga', 'detail.sampah') // Eager load relasi
-                        ->where('id_setor', $id_setor)
-                        ->where('ketua_id', $ketua->id_user) // Opsional: Hanya setoran yang dicatat ketua sendiri
-                        ->orWhereHas('warga', function($q) use ($ketua) {
-                            $q->where('desa_id', $ketua->desa_id)
-                              ->where('rw', $ketua->rw);
-                        })
-                        ->firstOrFail();
+        $setoran = Setoran::with(['warga', 'detail.sampah'])->findOrFail($id);
+        return response()->json($setoran);
+    }
 
-        return view('ketua.setoran.show', compact('setoran'));
+    /**
+     * Update (Simpan Perubahan)
+     */
+    public function update(Request $request, $id)
+    {
+        $this->validateRequest($request);
+        $setoran = Setoran::findOrFail($id);
+
+        DB::transaction(function () use ($request, $setoran) {
+            $saldo = Saldo::where('user_id', $setoran->warga_id)->first();
+            if ($saldo) $saldo->decrement('jumlah_saldo', $setoran->total_harga);
+
+            $setoran->detail()->delete();
+
+            $totalSetoran = 0;
+            foreach ($request->sampah_id as $index => $sampahId) {
+                $berat = $request->berat[$index];
+                $sampah = Sampah::find($sampahId);
+                $subtotal = $berat * $sampah->harga_anggota;
+                $totalSetoran += $subtotal;
+
+                $setoran->detail()->create([
+                    'sampah_id' => $sampahId, 'berat' => $berat, 'subtotal' => $subtotal
+                ]);
+            }
+
+            $setoran->update([
+                'warga_id' => $request->warga_id,
+                'total_harga' => $totalSetoran,
+            ]);
+
+            $saldoBaru = Saldo::firstOrCreate(['user_id' => $request->warga_id], ['jumlah_saldo' => 0]);
+            $saldoBaru->increment('jumlah_saldo', $totalSetoran);
+        });
+
+        return redirect()->back()->with('success', 'Setoran berhasil diperbarui.');
+    }
+
+    /**
+     * Destroy (Hapus/Batalkan)
+     */
+    public function destroy($id)
+    {
+        $setoran = Setoran::findOrFail($id);
+        
+        DB::transaction(function () use ($setoran) {
+            $saldo = Saldo::where('user_id', $setoran->warga_id)->first();
+            if ($saldo) $saldo->decrement('jumlah_saldo', $setoran->total_harga);
+            
+            $setoran->detail()->delete();
+            $setoran->delete();
+        });
+
+        return redirect()->back()->with('success', 'Data setoran dihapus dan saldo dikembalikan.');
+    }
+
+    private function validateRequest($request) {
+        $request->validate([
+            'warga_id' => 'required|exists:users,id_user',
+            'sampah_id' => 'required|array',
+            'sampah_id.*' => 'exists:sampah,id_sampah',
+            'berat' => 'required|array',
+            'berat.*' => 'numeric|min:0.1',
+        ]);
     }
 }

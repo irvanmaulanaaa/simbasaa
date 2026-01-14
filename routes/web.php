@@ -19,6 +19,7 @@ use App\Http\Controllers\Warga\DashboardController as WargaDashboard;
 use App\Http\Controllers\Warga\PenarikanController as WargaPenarikan;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Ketua\NotifikasiController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -105,15 +106,21 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::prefix('ketua')->name('ketua.')->middleware(['auth'])->group(function () {
-        Route::get('dashboard', [KetuaDashboard::class, 'index'])->name('dashboard');
+    
+    Route::get('dashboard', [KetuaDashboard::class, 'index'])->name('dashboard');
 
-        Route::get('setoran/create', [SetoranController::class, 'create'])->name('setoran.create');
-        Route::post('setoran', [SetoranController::class, 'store'])->name('setoran.store');
-        Route::get('setoran/{id_setor}', [SetoranController::class, 'show'])->name('setoran.show');
+    Route::get('setoran', [SetoranController::class, 'index'])->name('setoran.index');
+    Route::post('setoran', [SetoranController::class, 'store'])->name('setoran.store');
+    Route::get('setoran/{id}', [SetoranController::class, 'show'])->name('setoran.show'); 
+    Route::put('setoran/{id}', [SetoranController::class, 'update'])->name('setoran.update'); 
+    Route::delete('setoran/{id}', [SetoranController::class, 'destroy'])->name('setoran.destroy');
 
-        Route::get('penarikan', [PenarikanController::class, 'index'])->name('penarikan.index');
-        Route::patch('penarikan/{id}', [PenarikanController::class, 'konfirmasi'])->name('penarikan.konfirmasi');
-    });
+    Route::get('penarikan', [PenarikanController::class, 'index'])->name('penarikan.index');
+    Route::patch('penarikan/{id}', [PenarikanController::class, 'konfirmasi'])->name('penarikan.konfirmasi');
+
+    Route::get('/api/count-pending', [NotifikasiController::class, 'countPending'])->name('api.count-pending');
+
+});
 
     Route::prefix('warga')->name('warga.')->middleware(['auth'])->group(function () {
         Route::get('dashboard', [WargaDashboard::class, 'index'])->name('dashboard');

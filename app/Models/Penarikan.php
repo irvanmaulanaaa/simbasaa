@@ -12,7 +12,13 @@ class Penarikan extends Model
     protected $primaryKey = 'id_tarik';
 
     protected $fillable = [
-        'warga_id', 'ketua_id', 'jumlah', 'status', 'tgl_request', 'tgl_konfirmasi'
+        'warga_id',
+        'ketua_id',
+        'jumlah',
+        'status',
+        'tgl_request',
+        'tgl_konfirmasi',
+        'catatan_ketua',
     ];
 
     public function warga()

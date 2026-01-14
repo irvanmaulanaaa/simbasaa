@@ -147,7 +147,7 @@
                             class="px-4 py-3 border-b border-gray-100 bg-gray-50 rounded-t-lg flex justify-between items-center">
                             <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wide">Notifikasi</h3>
                             <span class="text-[10px] bg-blue-100 text-blue-800 py-0.5 px-2 rounded-full"
-                                x-text="count + ' Baru'"></span>
+                                x-text="count + ' Belum Dibaca'"></span>
                         </div>
 
                         <div class="max-h-80 overflow-y-auto custom-scrollbar">
