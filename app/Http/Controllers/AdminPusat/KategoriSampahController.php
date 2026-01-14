@@ -4,7 +4,7 @@ namespace App\Http\Controllers\AdminPusat;
 
 use App\Http\Controllers\Controller;
 use App\Models\KategoriSampah;
-use App\Models\Sampah; // Import Model Sampah untuk cek relasi
+use App\Models\Sampah;
 use Illuminate\Http\Request;
 
 class KategoriSampahController extends Controller
@@ -16,17 +16,15 @@ class KategoriSampahController extends Controller
     {
         $query = KategoriSampah::query();
 
-        // 1. Fitur Search
         if ($request->has('search') && $request->search != '') {
             $query->where('nama_kategori', 'like', '%' . $request->search . '%');
         }
-        
+
         $perPage = $request->input('per_page', 10);
-        
-        // Urutkan berdasarkan nama (A-Z) dan gunakan variabel $perPage
+
         $kategoris = $query->orderBy('nama_kategori', 'asc')
-                           ->paginate($perPage)
-                           ->withQueryString(); 
+            ->paginate($perPage)
+            ->withQueryString();
 
         return view('admin-pusat.kategori.index', compact('kategoris'));
     }
@@ -38,8 +36,8 @@ class KategoriSampahController extends Controller
     {
         $messages = [
             'nama_kategori.required' => 'Nama Kategori wajib diisi.',
-            'nama_kategori.unique'   => 'Nama Kategori sudah ada, silakan gunakan nama lain.',
-            'nama_kategori.max'      => 'Nama Kategori maksimal 100 karakter.',
+            'nama_kategori.unique' => 'Nama Kategori sudah ada, silakan gunakan nama lain.',
+            'nama_kategori.max' => 'Nama Kategori maksimal 100 karakter.',
         ];
 
         $validated = $request->validate([
@@ -48,7 +46,6 @@ class KategoriSampahController extends Controller
 
         KategoriSampah::create($validated);
 
-        // Redirect kembali ke index (karena pakai Modal)
         return redirect()->route('admin-pusat.kategori-sampah.index')
             ->with('success', 'Kategori sampah berhasil ditambahkan.');
     }
@@ -62,11 +59,10 @@ class KategoriSampahController extends Controller
 
         $messages = [
             'nama_kategori.required' => 'Nama Kategori wajib diisi.',
-            'nama_kategori.unique'   => 'Nama Kategori sudah ada.',
+            'nama_kategori.unique' => 'Nama Kategori sudah ada.',
         ];
 
         $validated = $request->validate([
-            // Unique ignore ID saat ini agar tidak error jika nama tidak diganti
             'nama_kategori' => 'required|string|max:100|unique:kategori_sampah,nama_kategori,' . $id . ',id_kategori',
         ], $messages);
 
@@ -81,16 +77,13 @@ class KategoriSampahController extends Controller
      */
     public function destroy($id)
     {
-        // 1. Cek Relasi: Apakah kategori dipake di tabel sampah?
-        // Kita pakai Model Sampah yang di-use di atas
+
         $isUsed = Sampah::where('kategori_id', $id)->exists();
 
         if ($isUsed) {
-            // Jika dipakai, jangan dihapus. Kembalikan dengan pesan Error.
             return redirect()->back()->with('error', 'Gagal! Kategori ini sedang digunakan oleh Data Sampah.');
         }
 
-        // 2. Jika aman, hapus permanen
         $kategori = KategoriSampah::findOrFail($id);
         $kategori->delete();
 

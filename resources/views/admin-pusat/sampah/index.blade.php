@@ -12,7 +12,6 @@
     <div class="py-6 px-4 sm:px-0">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            {{-- Breadcrumb --}}
             <nav class="flex mb-4" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
                     <li class="inline-flex items-center">
@@ -37,7 +36,6 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
 
-                    {{-- Header Actions --}}
                     <div class="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
                         <a href="{{ route('admin-pusat.sampah.create') }}"
                             class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 active:bg-blue-700 focus:outline-none focus:ring ring-blue-300 transition ease-in-out duration-150 shadow-md w-full md:w-auto justify-center">
@@ -59,7 +57,6 @@
                                 }
                             }">
 
-                            {{-- Dropdown Jumlah Data (Per Page) --}}
                             <select name="per_page" onchange="this.form.submit()"
                                 class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm cursor-pointer md:w-32">
                                 <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 Data</option>
@@ -68,7 +65,6 @@
                                 <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 Data</option>
                             </select>
 
-                            {{-- Filter Kategori --}}
                             <select name="kategori_id" onchange="this.form.submit()"
                                 class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm md:w-40 cursor-pointer">
                                 <option value="">Semua Kategori</option>
@@ -80,7 +76,6 @@
                                 @endforeach
                             </select>
 
-                            {{-- Filter Status --}}
                             <select name="status" onchange="this.form.submit()"
                                 class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm md:w-32 cursor-pointer">
                                 <option value="">Semua Status</option>
@@ -89,7 +84,6 @@
                                     Tidak Aktif</option>
                             </select>
 
-                            {{-- Search Bar --}}
                             <div class="relative w-full md:w-64">
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                     <svg class="w-4 h-4 text-gray-500" aria-hidden="true"
@@ -113,7 +107,6 @@
                         </form>
                     </div>
 
-                    {{-- Tabel Data --}}
                     <div class="overflow-x-auto rounded-lg shadow border border-gray-200">
                         <table class="min-w-full bg-white whitespace-nowrap">
                             <thead class="bg-gray-100 text-gray-700 uppercase text-xs font-bold leading-normal">
@@ -179,11 +172,9 @@
                                             @endif
                                         </td>
                                         
-                                        {{-- KOLOM AKSI --}}
                                         <td class="py-3 px-6 text-center">
                                             <div class="flex item-center justify-center space-x-2">
                                                 
-                                                {{-- Tombol Edit (Selalu Muncul) --}}
                                                 <a href="{{ route('admin-pusat.sampah.edit', $sampah->id_sampah) }}"
                                                     class="w-8 h-8 rounded bg-yellow-50 text-yellow-600 flex items-center justify-center hover:bg-yellow-500 hover:text-white transition"
                                                     title="Edit Data">
@@ -193,7 +184,6 @@
                                                     </svg>
                                                 </a>
 
-                                                {{-- Tombol Nonaktifkan (Ikon Sampah) - HANYA MUNCUL JIKA STATUS AKTIF --}}
                                                 @if ($sampah->status_sampah == 'aktif')
                                                     <button type="button"
                                                         onclick="confirmNonaktif({{ $sampah->id_sampah }}, '{{ $sampah->nama_sampah }}')"
@@ -204,7 +194,6 @@
                                                         </svg>
                                                     </button>
 
-                                                    {{-- Form Delete (Method DELETE, arah ke Route Destroy) --}}
                                                     <form id="delete-form-{{ $sampah->id_sampah }}"
                                                         action="{{ route('admin-pusat.sampah.destroy', $sampah->id_sampah) }}"
                                                         method="POST" class="hidden">
@@ -240,7 +229,6 @@
         </div>
     </div>
 
-    {{-- Script SweetAlert --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         @if (session('success'))
@@ -254,7 +242,6 @@
             });
         @endif
 
-        // Fungsi Konfirmasi Nonaktifkan (Icon Sampah)
         function confirmNonaktif(id, nama) {
             Swal.fire({
                 title: 'Nonaktifkan Sampah?',

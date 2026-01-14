@@ -18,6 +18,7 @@ use App\Http\Controllers\Ketua\PenarikanController;
 use App\Http\Controllers\Warga\DashboardController as WargaDashboard;
 use App\Http\Controllers\Warga\PenarikanController as WargaPenarikan;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NotificationController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -57,6 +58,11 @@ Route::get('/lupa-password', function () {
 })->name('password.manual_reset');
 
 Route::middleware('auth')->group(function () {
+
+    Route::get('/notifications/latest', [NotificationController::class, 'getLatest'])->name('notifications.latest');
+    Route::post('/notifications/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/delete', [NotificationController::class, 'deleteForUser'])->name('notifications.delete');
+
     Route::post('/konten/{id}/comment', [HomeController::class, 'comment'])->name('public.konten.comment');
     Route::put('/komentar/{id}', [HomeController::class, 'updateComment'])->name('public.komentar.update');
     Route::delete('/komentar/{id}', [HomeController::class, 'deleteComment'])->name('public.komentar.delete');
@@ -85,11 +91,17 @@ Route::middleware('auth')->group(function () {
         Route::get('dashboard', [AdminPusatDashboard::class, 'index'])->name('dashboard');
         Route::get('sampah/check-code', [SampahController::class, 'checkCode'])
             ->name('sampah.check-code');
-            
+
         Route::resource('sampah', SampahController::class);
         Route::resource('jadwal', JadwalPenimbanganController::class);
+
+        Route::get('/api/desas/{kecamatanId}', [JadwalPenimbanganController::class, 'getDesasByKecamatan'])
+            ->name('api.desas');
+        Route::get('/api/rws/{desaId}', [JadwalPenimbanganController::class, 'getRwsByDesa'])
+            ->name('api.rws');
+
         Route::resource('kategori-sampah', KategoriSampahController::class);
-        
+
     });
 
     Route::prefix('ketua')->name('ketua.')->middleware(['auth'])->group(function () {

@@ -9,14 +9,12 @@
         </h2>
     </x-slot>
 
-    {{-- CDN Libraries --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <div class="py-6 px-4 sm:px-0">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            {{-- Breadcrumb --}}
             <nav class="flex mb-4" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
                     <li class="inline-flex items-center">
@@ -52,15 +50,12 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 relative">
 
-                    {{-- INIT ALPINE DATA --}}
                     <div x-data="{ 
                         submitting: false,
-                        // Ambil nilai lama dari database untuk inisialisasi
                         code: '{{ old('kode_sampah', $sampah->kode_sampah) }}', 
                         originalCode: '{{ $sampah->kode_sampah }}',
                         isDuplicate: false,
                         checkCode() {
-                            // Jangan cek jika kodenya sama dengan kode aslinya (milik sendiri)
                             if(this.code === this.originalCode) {
                                 this.isDuplicate = false;
                                 return;
@@ -78,7 +73,6 @@
                         }
                     }">
 
-                        {{-- OVERLAY LOADING --}}
                         <div x-show="submitting"
                             class="absolute inset-0 bg-white bg-opacity-80 z-50 flex flex-col items-center justify-center rounded-lg"
                             style="display: none;">
@@ -87,7 +81,6 @@
                             <p class="text-green-700 font-bold text-lg animate-pulse">Memperbarui Data...</p>
                         </div>
 
-                        {{-- FORM START --}}
                         <form action="{{ route('admin-pusat.sampah.update', $sampah->id_sampah) }}" method="POST"
                             @submit="if(isDuplicate){ $event.preventDefault(); return; } submitting = true" novalidate>
                             @csrf
@@ -97,7 +90,6 @@
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
 
-                                {{-- Nama Sampah --}}
                                 <div>
                                     <x-input-label for="nama_sampah">
                                         {{ __('Nama Sampah') }} <span class="text-red-500">*</span>
@@ -107,7 +99,6 @@
                                     <x-input-error :messages="$errors->get('nama_sampah')" class="mt-2" />
                                 </div>
 
-                                {{-- Kategori --}}
                                 <div>
                                     <x-input-label for="kategori_id">
                                         {{ __('Kategori Sampah') }} <span class="text-red-500">*</span>
@@ -126,7 +117,6 @@
                                     <x-input-error :messages="$errors->get('kategori_id')" class="mt-2" />
                                 </div>
 
-                                {{-- Kode Sampah (Internal) --}}
                                 <div>
                                     <x-input-label for="kode_sampah">
                                         {{ __('Kode Sampah') }} <span class="text-red-500">*</span>
@@ -147,7 +137,6 @@
                                     <x-input-error :messages="$errors->get('kode_sampah')" class="mt-2" />
                                 </div>
 
-                                {{-- Kode BSB --}}
                                 <div>
                                     <x-input-label for="kode_bsb">
                                         {{ __('Kode Sampah BSB') }} <span class="text-red-500">*</span>
@@ -167,7 +156,6 @@
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                                {{-- Satuan UOM --}}
                                 <div>
                                     <x-input-label for="UOM">
                                         {{ __('Satuan (UOM)') }} <span class="text-red-500">*</span>
@@ -181,7 +169,6 @@
                                     <x-input-error :messages="$errors->get('UOM')" class="mt-2" />
                                 </div>
 
-                                {{-- Status Sampah --}}
                                 <div>
                                     <x-input-label for="status_sampah">
                                         {{ __('Status Sampah') }} <span class="text-red-500">*</span>
@@ -195,7 +182,6 @@
                                     <x-input-error :messages="$errors->get('status_sampah')" class="mt-2" />
                                 </div>
 
-                                {{-- Harga Beli --}}
                                 <div>
                                     <x-input-label for="harga_anggota">
                                         {{ __('Harga Anggota') }} <span class="text-red-500">*</span>
@@ -211,7 +197,6 @@
                                     <x-input-error :messages="$errors->get('harga_anggota')" class="mt-2" />
                                 </div>
 
-                                {{-- Harga Jual --}}
                                 <div>
                                     <x-input-label for="harga_bsb">
                                         {{ __('Harga BSB') }} <span class="text-red-500">*</span>
@@ -229,7 +214,6 @@
                             </div>
 
                             <div class="flex items-center justify-end mt-8 border-t pt-4">
-                                {{-- TOMBOL BATAL (Style Abu-abu) --}}
                                 <a href="{{ route('admin-pusat.sampah.index') }}"
                                     class="inline-flex items-center px-4 py-2 bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-300 focus:bg-gray-300 active:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                     Batal
@@ -249,7 +233,6 @@
         </div>
     </div>
 
-    {{-- SweetAlert Logic --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             @if ($errors->any())
