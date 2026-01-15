@@ -14,12 +14,13 @@ use App\Http\Controllers\AdminPusat\DashboardController as AdminPusatDashboard;
 use App\Http\Controllers\AdminPusat\KategoriSampahController;
 use App\Http\Controllers\Ketua\DashboardController as KetuaDashboard;
 use App\Http\Controllers\Ketua\SetoranController;
-use App\Http\Controllers\Ketua\PenarikanController;
+use App\Http\Controllers\Ketua\PenarikanController as KetuaPenarikan;
 use App\Http\Controllers\Warga\DashboardController as WargaDashboard;
 use App\Http\Controllers\Warga\PenarikanController as WargaPenarikan;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Ketua\NotifikasiController;
+use App\Http\Controllers\Warga\WargaSetoranController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -106,27 +107,31 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::prefix('ketua')->name('ketua.')->middleware(['auth'])->group(function () {
-    
-    Route::get('dashboard', [KetuaDashboard::class, 'index'])->name('dashboard');
 
-    Route::get('setoran', [SetoranController::class, 'index'])->name('setoran.index');
-    Route::post('setoran', [SetoranController::class, 'store'])->name('setoran.store');
-    Route::get('setoran/{id}', [SetoranController::class, 'show'])->name('setoran.show'); 
-    Route::put('setoran/{id}', [SetoranController::class, 'update'])->name('setoran.update'); 
-    Route::delete('setoran/{id}', [SetoranController::class, 'destroy'])->name('setoran.destroy');
+        Route::get('dashboard', [KetuaDashboard::class, 'index'])->name('dashboard');
 
-    Route::get('penarikan', [PenarikanController::class, 'index'])->name('penarikan.index');
-    Route::patch('penarikan/{id}', [PenarikanController::class, 'konfirmasi'])->name('penarikan.konfirmasi');
+        Route::get('setoran', [SetoranController::class, 'index'])->name('setoran.index');
+        Route::post('setoran', [SetoranController::class, 'store'])->name('setoran.store');
+        Route::get('setoran/{id}', [SetoranController::class, 'show'])->name('setoran.show');
+        Route::put('setoran/{id}', [SetoranController::class, 'update'])->name('setoran.update');
+        Route::delete('setoran/{id}', [SetoranController::class, 'destroy'])->name('setoran.destroy');
 
-    Route::get('/api/count-pending', [NotifikasiController::class, 'countPending'])->name('api.count-pending');
+        Route::get('penarikan', [KetuaPenarikan::class, 'index'])->name('penarikan.index');
+        Route::patch('penarikan/{id}', [KetuaPenarikan::class, 'konfirmasi'])->name('penarikan.konfirmasi');
 
-});
+        Route::get('/api/count-pending', [NotifikasiController::class, 'countPending'])->name('api.count-pending');
+
+    });
 
     Route::prefix('warga')->name('warga.')->middleware(['auth'])->group(function () {
         Route::get('dashboard', [WargaDashboard::class, 'index'])->name('dashboard');
 
-        Route::get('tarik-saldo', [WargaPenarikan::class, 'create'])->name('tarik.create');
         Route::post('tarik-saldo', [WargaPenarikan::class, 'store'])->name('tarik.store');
+
+        Route::get('riwayat-penarikan', [WargaPenarikan::class, 'index'])->name('penarikan.index');
+        Route::get('riwayat-setoran', [WargaSetoranController::class, 'index'])->name('setoran.index');
+
+        Route::post('penarikan/{id}/mark-read', [WargaPenarikan::class, 'markAsRead'])->name('penarikan.markRead');
     });
 });
 

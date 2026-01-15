@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Setoran;
 use App\Models\Konten;
+use App\Models\Penarikan;
 
 class DashboardController extends Controller
 {
@@ -27,7 +28,12 @@ class DashboardController extends Controller
             ->take(3)
             ->get();
 
-        return view('ketua.dashboard', compact('riwayatSetoran', 'kontenTerbaru'));
+        $totalPenarikan = Penarikan::whereHas('warga', function ($q) use ($user) {
+                $q->where('desa_id', $user->desa_id)
+                  ->where('rw', $user->rw);
+            })->count();
+
+        return view('ketua.dashboard', compact('riwayatSetoran', 'kontenTerbaru', 'totalPenarikan'));
     }
 
 }

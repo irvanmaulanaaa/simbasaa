@@ -38,12 +38,12 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition duration-300">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-sm font-medium text-gray-500">Total Setoran Masuk</p>
+                        <p class="text-sm font-medium text-gray-500">Total Pendapatan</p>
                         <h4 class="text-2xl font-bold text-gray-900 mt-2">
                             Rp {{ number_format($riwayatSetoran->sum('total_harga'), 0, ',', '.') }}
                         </h4>
@@ -57,14 +57,13 @@
                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
                         Update Terkini
                     </span>
-                    dari seluruh setoran warga
                 </div>
             </div>
 
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition duration-300">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-sm font-medium text-gray-500">Total Transaksi</p>
+                        <p class="text-sm font-medium text-gray-500">Total Setoran</p>
                         <h4 class="text-2xl font-bold text-gray-900 mt-2">
                             {{ $riwayatSetoran->total() }} <span class="text-sm font-normal text-gray-500">Kali</span>
                         </h4>
@@ -76,21 +75,40 @@
                 <div class="mt-4 flex items-center text-xs text-gray-500">
                     <span class="text-blue-600 font-bold flex items-center mr-1">
                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                        Update Terkini
+                        Data Masuk
                     </span>
-                    dari seluruh transaksi warga
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition duration-300">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Total Request Penarikan</p>
+                        <h4 class="text-2xl font-bold text-gray-900 mt-2">
+                            {{ $totalPenarikan }} <span class="text-sm font-normal text-gray-500">Permintaan</span>
+                        </h4>
+                    </div>
+                    <div class="p-3 bg-orange-50 rounded-lg text-orange-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center text-xs text-gray-500">
+                    <span class="text-orange-600 font-bold flex items-center mr-1">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Riwayat & Pending
+                    </span>
                 </div>
             </div>
 
              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition duration-300 flex flex-col justify-center gap-3">
-                <p class="text-sm font-medium text-gray-500">Aksi Cepat</p>
-                <a href="{{ route('ketua.setoran.index') }}" class="flex items-center justify-between w-full px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition font-medium">
-                    <span>Input Setoran Baru</span>
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <p class="text-sm font-medium text-gray-500 mb-1">Aksi Cepat</p>
+                <a href="{{ route('ketua.setoran.index') }}" class="flex items-center justify-between w-full px-4 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition font-medium text-sm">
+                    <span>Input Setoran</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 </a>
-                <a href="{{ route('ketua.penarikan.index') }}" class="flex items-center justify-between w-full px-4 py-3 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition font-medium">
-                    <span>Cek Validasi Penarikan</span>
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <a href="{{ route('ketua.penarikan.index') }}" class="flex items-center justify-between w-full px-4 py-2 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition font-medium text-sm">
+                    <span>Cek Penarikan</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </a>
             </div>
         </div>

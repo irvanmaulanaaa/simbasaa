@@ -19,6 +19,7 @@ class Penarikan extends Model
         'tgl_request',
         'tgl_konfirmasi',
         'catatan_ketua',
+        'is_read',
     ];
 
     public function warga()
