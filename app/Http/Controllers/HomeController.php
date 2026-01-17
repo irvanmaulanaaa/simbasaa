@@ -7,26 +7,31 @@ use Illuminate\Http\Request;
 use App\Models\Konten;
 use App\Models\Komentar;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 use App\Models\Like;
 use App\Models\User;
 use App\Models\Penarikan;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
+use App\Models\Sampah;
+use App\Models\KategoriSampah;
 
 class HomeController extends Controller
 {
     public function index()
     {
-        $totalUser = User::whereHas('role', fn($q) => $q->where('nama_role', 'warga'))->count();
+        $totalUser = User::whereHas('role', fn($q) => $q->whereIn('nama_role', ['admin_pusat', 'ketua', 'warga']))->count();
 
-        $totalSampah = 1250; 
+        try {
+            $totalSampah = DB::table('detail_setoran')->sum('berat');
+        } catch (\Exception $e) {
+            $totalSampah = 0;
+        }
 
         $totalKonten = Konten::whereHas('status', fn($q) => $q->where('nama_status', 'published'))->count();
 
         if (class_exists(Penarikan::class)) {
-             $totalDanaCair = Penarikan::where('status', 'disetujui')->sum('jumlah');
+            $totalDanaCair = Penarikan::where('status', 'disetujui')->sum('jumlah');
         } else {
-             $totalDanaCair = 2500000;
+            $totalDanaCair = 0;
         }
 
         $kontens = Konten::with(['media', 'user', 'kategoriKonten'])
@@ -35,7 +40,22 @@ class HomeController extends Controller
             ->take(10)
             ->get();
 
-        return view('welcome', compact('kontens', 'totalUser', 'totalSampah', 'totalKonten', 'totalDanaCair'));
+        $sampah = Sampah::with('kategori')
+            ->where('status_sampah', 'aktif') 
+            ->get();
+
+        $kategoriSampah = KategoriSampah::all();
+
+
+        return view('welcome', compact(
+            'kontens',
+            'totalUser',
+            'totalSampah',
+            'totalKonten',
+            'totalDanaCair',
+            'sampah',
+            'kategoriSampah',
+        ));
     }
 
     public function allContent(Request $request)

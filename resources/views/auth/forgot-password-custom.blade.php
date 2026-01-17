@@ -24,8 +24,7 @@
                 </div>
                 <div class="ml-3">
                     <p class="text-sm text-yellow-700">
-                        Silakan hubungi Admin untuk meminta password baru. Admin akan mereset password Anda menjadi
-                        standar (misal: <span class="font-bold">123456</span>).
+                        Silakan hubungi Admin untuk meminta password baru. Admin akan mereset password Anda
                     </p>
                 </div>
             </div>

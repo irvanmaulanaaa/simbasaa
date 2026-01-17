@@ -169,11 +169,6 @@
                             </tbody>
                         </table>
                     </div>
-                    @if($riwayatSetoran->hasPages())
-                        <div class="p-4 border-t border-gray-100 bg-gray-50">
-                            {{ $riwayatSetoran->links() }}
-                        </div>
-                    @endif
                 </div>
             </div>
 

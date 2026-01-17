@@ -77,7 +77,7 @@
                             </select>
 
                             <select name="status" onchange="this.form.submit()"
-                                class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm md:w-32 cursor-pointer">
+                                class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm md:w-40 cursor-pointer">
                                 <option value="">Semua Status</option>
                                 <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
                                 <option value="tidak_aktif" {{ request('status') == 'tidak_aktif' ? 'selected' : '' }}>

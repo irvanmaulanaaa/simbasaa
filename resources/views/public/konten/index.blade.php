@@ -30,8 +30,13 @@
             background-size: 32px 32px;
         }
 
-        select::-ms-expand {
+        .no-scrollbar::-webkit-scrollbar {
             display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
 
         .hamburger-line {
@@ -48,6 +53,10 @@
 
         .hamburger-open .line-3 {
             transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        [x-cloak] {
+            display: none !important;
         }
     </style>
 </head>
@@ -115,8 +124,10 @@
         </div>
     </nav>
 
-    <div class="relative bg-white overflow-hidden shadow-sm">
-        <div class="absolute inset-0 bg-gradient-to-b from-white via-transparent to-transparent z-10"></div>
+    <div class="relative bg-white overflow-visible shadow-sm z-40">
+        <div
+            class="absolute inset-0 bg-gradient-to-b from-white via-transparent to-transparent z-10 pointer-events-none">
+        </div>
         <div
             class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-green-200/20 blur-[100px] rounded-full pointer-events-none">
         </div>
@@ -140,77 +151,141 @@
             <form action="{{ route('public.konten.index') }}" method="GET" class="max-w-6xl mx-auto relative z-30">
                 <div class="flex flex-col md:flex-row gap-4">
 
-                    <div
-                        class="flex-grow p-2 bg-white rounded-[20px] shadow-xl shadow-slate-200/60 border border-slate-100 transition focus-within:ring-4 focus-within:ring-green-100 focus-within:border-green-400">
-                        <div class="relative group h-full">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <div class="flex-grow relative" x-data="{ query: '{{ request('cari') }}' }">
+                        <div
+                            class="relative group h-full bg-white rounded-[20px] shadow-xl shadow-slate-200/60 border border-slate-100 transition focus-within:ring-4 focus-within:ring-green-100 focus-within:border-green-400">
+
+                            <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
                                 <svg class="h-6 w-6 text-slate-400 group-focus-within:text-green-500 transition-colors"
                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                 </svg>
                             </div>
-                            <input type="text" name="cari" value="{{ request('cari') }}"
-                                class="block w-full h-full pl-12 pr-4 py-4 bg-transparent border-0 text-slate-900 placeholder:text-slate-400 font-medium focus:ring-0"
-                                placeholder="Cari topik menarik...">
+
+                            <input type="text" name="cari" x-model="query"
+                                class="block w-full h-full pl-14 pr-12 py-4 bg-transparent border-0 text-slate-900 placeholder:text-slate-400 font-medium focus:ring-0 rounded-[20px]"
+                                placeholder="Cari topik menarik..." autocomplete="off">
+
+                            <button type="button" x-show="query.length > 0"
+                                @click="query = ''; $nextTick(() => { $el.closest('form').submit() })"
+                                class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-red-500 transition cursor-pointer"
+                                style="display: none;">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
                         </div>
                     </div>
 
-                    <div
-                        class="md:w-1/4 p-2 bg-white rounded-[20px] shadow-xl shadow-slate-200/60 border border-slate-100 transition focus-within:ring-4 focus-within:ring-green-100 focus-within:border-green-400">
-                        <div class="relative h-full">
-                            <select name="kategori" onchange="this.form.submit()"
-                                style="-webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: none;"
-                                class="peer block w-full h-full pl-5 pr-10 py-4 bg-transparent border-0 text-slate-700 font-semibold cursor-pointer focus:ring-0">
+                    <div class="md:w-1/4 relative" x-data="{
+                        open: false,
+                        selected: '{{ $kategori_konten->firstWhere('id_kategori', request('kategori'))?->nama_kategori ?? 'Semua Kategori' }}'
+                    }">
+                        <input type="hidden" name="kategori" id="inputKategori" value="{{ request('kategori') }}">
 
-                                <option value="">Semua Kategori</option>
+                        <button type="button" @click="open = !open" @click.away="open = false"
+                            class="relative w-full h-full p-4 bg-white rounded-[20px] shadow-xl shadow-slate-200/60 border border-slate-100 text-left cursor-pointer focus:outline-none focus:ring-4 focus:ring-green-100 focus:border-green-400 transition-all duration-300 group flex items-center justify-between">
+                            <span class="block truncate font-semibold text-slate-700" x-text="selected"></span>
+                            <span class="flex items-center pointer-events-none text-green-600">
+                                <svg class="h-5 w-5 transition-transform duration-300" :class="{ 'rotate-180': open }"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </span>
+                        </button>
+
+                        <div x-show="open" x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                            x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                            x-transition:leave="transition ease-in duration-150"
+                            x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                            x-transition:leave-end="opacity-0 translate-y-2 scale-95"
+                            class="absolute z-[60] w-full mt-2 bg-white rounded-xl shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none overflow-hidden origin-top-right text-left"
+                            style="display: none;">
+
+                            <div class="py-1 max-h-60 overflow-auto no-scrollbar">
+                                <div @click="selected = 'Semua Kategori'; document.getElementById('inputKategori').value = ''; $el.closest('form').submit(); open = false"
+                                    class="cursor-pointer select-none relative py-3 pl-4 pr-9 hover:bg-green-50 transition duration-200 group border-b border-gray-50">
+                                    <span class="text-sm font-medium text-gray-700 group-hover:text-green-700"
+                                        :class="{ 'font-bold text-green-700': '{{ request('kategori') }}' == '' }">Semua
+                                        Kategori</span>
+                                </div>
+
                                 @foreach ($kategori_konten as $kategori)
-                                    <option value="{{ $kategori->id_kategori }}"
-                                        {{ request('kategori') == $kategori->id_kategori ? 'selected' : '' }}>
-                                        {{ $kategori->nama_kategori }}
-                                    </option>
+                                    <div @click="selected = '{{ $kategori->nama_kategori }}'; document.getElementById('inputKategori').value = '{{ $kategori->id_kategori }}'; $el.closest('form').submit(); open = false"
+                                        class="cursor-pointer select-none relative py-3 pl-4 pr-9 hover:bg-green-50 transition duration-200 group border-b border-gray-50">
+                                        <span class="text-sm font-medium text-gray-700 group-hover:text-green-700"
+                                            :class="{
+                                                'font-bold text-green-700': '{{ request('kategori') }}' ==
+                                                    '{{ $kategori->id_kategori }}'
+                                            }">
+                                            {{ $kategori->nama_kategori }}
+                                        </span>
+                                        @if (request('kategori') == $kategori->id_kategori)
+                                            <span
+                                                class="absolute inset-y-0 right-0 flex items-center pr-4 text-green-600">
+                                                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd"
+                                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                            </span>
+                                        @endif
+                                    </div>
                                 @endforeach
-
-                            </select>
-
-                            <div
-                                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-green-600 transition-transform duration-300 peer-focus:rotate-180">
-                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 9l-7 7-7-7"></path>
-                                </svg>
                             </div>
                         </div>
                     </div>
 
-                    <div
-                        class="md:w-1/4 p-2 bg-white rounded-[20px] shadow-xl shadow-slate-200/60 border border-slate-100 transition focus-within:ring-4 focus-within:ring-green-100 focus-within:border-green-400">
-                        <div class="relative h-full">
-                            <select name="filter" onchange="this.form.submit()"
-                                style="-webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: none;"
-                                class="peer block w-full h-full pl-5 pr-10 py-4 bg-transparent border-0 text-slate-700 font-semibold cursor-pointer focus:ring-0">
-                                <option value="terbaru" {{ request('filter') == 'terbaru' ? 'selected' : '' }}>Terbaru
-                                </option>
-                                <option value="terlama" {{ request('filter') == 'terlama' ? 'selected' : '' }}>Terlama
-                                </option>
-                                <option value="populer" {{ request('filter') == 'populer' ? 'selected' : '' }}>Populer
-                                </option>
-                            </select>
+                    <div class="md:w-1/4 relative" x-data="{
+                        open: false,
+                        selected: '{{ request('filter') == 'terlama' ? 'Terlama' : (request('filter') == 'populer' ? 'Populer' : 'Terbaru') }}'
+                    }">
+                        <input type="hidden" name="filter" id="inputFilter" value="{{ request('filter') }}">
 
-                            <div
-                                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-green-600 transition-transform duration-300 peer-focus:rotate-180">
-                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button type="button" @click="open = !open" @click.away="open = false"
+                            class="relative w-full h-full p-4 bg-white rounded-[20px] shadow-xl shadow-slate-200/60 border border-slate-100 text-left cursor-pointer focus:outline-none focus:ring-4 focus:ring-green-100 focus:border-green-400 transition-all duration-300 group flex items-center justify-between">
+                            <span class="block truncate font-semibold text-slate-700" x-text="selected"></span>
+                            <span class="flex items-center pointer-events-none text-green-600">
+                                <svg class="h-5 w-5 transition-transform duration-300" :class="{ 'rotate-180': open }"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M19 9l-7 7-7-7"></path>
                                 </svg>
+                            </span>
+                        </button>
+
+                        <div x-show="open" x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                            x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                            x-transition:leave="transition ease-in duration-150"
+                            x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                            x-transition:leave-end="opacity-0 translate-y-2 scale-95"
+                            class="absolute z-[60] w-full mt-2 bg-white rounded-xl shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none overflow-hidden origin-top-right text-left"
+                            style="display: none;">
+
+                            <div class="py-1">
+                                <div @click="selected = 'Terbaru'; document.getElementById('inputFilter').value = 'terbaru'; $el.closest('form').submit(); open = false"
+                                    class="cursor-pointer select-none relative py-3 pl-4 pr-9 hover:bg-green-50 transition duration-200 group border-b border-gray-50">
+                                    <span
+                                        class="text-sm font-medium text-gray-700 group-hover:text-green-700">Terbaru</span>
+                                </div>
+                                <div @click="selected = 'Terlama'; document.getElementById('inputFilter').value = 'terlama'; $el.closest('form').submit(); open = false"
+                                    class="cursor-pointer select-none relative py-3 pl-4 pr-9 hover:bg-green-50 transition duration-200 group border-b border-gray-50">
+                                    <span
+                                        class="text-sm font-medium text-gray-700 group-hover:text-green-700">Terlama</span>
+                                </div>
+                                <div @click="selected = 'Populer'; document.getElementById('inputFilter').value = 'populer'; $el.closest('form').submit(); open = false"
+                                    class="cursor-pointer select-none relative py-3 pl-4 pr-9 hover:bg-green-50 transition duration-200 group">
+                                    <span
+                                        class="text-sm font-medium text-gray-700 group-hover:text-green-700">Populer</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <button type="submit"
-                        class="md:hidden w-full bg-green-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-green-200 mt-2">
-                        Terapkan Filter
-                    </button>
                 </div>
             </form>
         </div>
@@ -222,10 +297,12 @@
         </div>
     </div>
 
-    <div class="relative max-w-7xl mx-auto px-4 py-16 min-h-[600px]">
+    <div class="relative max-w-7xl mx-auto px-4 py-16 min-h-[600px] z-0">
+
         <div
             class="absolute top-10 left-0 w-72 h-72 bg-purple-200/20 rounded-full blur-[80px] -z-10 pointer-events-none">
         </div>
+
         <div
             class="absolute bottom-10 right-0 w-72 h-72 bg-green-200/20 rounded-full blur-[80px] -z-10 pointer-events-none">
         </div>
