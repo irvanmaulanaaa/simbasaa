@@ -54,4 +54,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Saldo::class, 'user_id', 'id_user');
     }
+
+    public function setoran()
+    {
+        return $this->hasMany(Setoran::class, 'warga_id', 'id_user');
+    }
 }

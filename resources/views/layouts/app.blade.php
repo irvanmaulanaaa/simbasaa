@@ -20,11 +20,11 @@
     <div x-data="{ sidebarOpen: false }" class="h-screen bg-gray-100 flex overflow-hidden">
 
         <div x-show="sidebarOpen" @click="sidebarOpen = false"
-            class="fixed inset-0 z-20 bg-black opacity-50 transition-opacity lg:hidden" x-cloak></div>
+            class="fixed inset-0 z-40 bg-black opacity-50 transition-opacity lg:hidden" x-cloak></div>
 
         @if (isset($sidebar))
             <aside
-                class="fixed inset-y-0 left-0 z-30 w-64 bg-white text-gray-900 border-r border-gray-200 transform transition-transform duration-300 ease-in-out 
+                class="fixed inset-y-0 left-0 z-50 w-64 bg-white text-gray-900 border-r border-gray-200 transform transition-transform duration-300 ease-in-out 
                            lg:relative lg:translate-x-0 lg:flex-shrink-0"
                 :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" x-cloak>
 
@@ -40,7 +40,7 @@
                             </svg>
                         </button>
                     </div>
-                    <nav class="flex-1 py-4 px-4 space-y-2 overflow-y-auto">
+                    <nav class="flex-1 px-4 py-4 space-y-2 overflow-y-auto flex flex-col">
                         {{ $sidebar }}
                     </nav>
                 </div>

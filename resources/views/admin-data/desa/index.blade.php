@@ -11,7 +11,7 @@
         </h2>
     </x-slot>
 
-    <div class="flex flex-col min-h-screen bg-gray-100">
+    <div class="flex flex-col min-h-screen bg-gray-100 relative">
 
         <div class="flex-grow py-6 px-4 sm:px-0">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -64,9 +64,7 @@
                                 class="flex flex-wrap md:flex-nowrap gap-2 w-full md:w-auto items-center justify-end"
                                 x-data="{
                                     search: '{{ request('search') }}',
-                                    submitForm() {
-                                        $el.submit();
-                                    },
+                                    submitForm() { $el.submit(); },
                                     clearSearch() {
                                         this.search = '';
                                         setTimeout(() => { this.submitForm(); }, 100);
@@ -142,9 +140,11 @@
                                                 {{ ($desas->currentPage() - 1) * $desas->perPage() + $loop->iteration }}
                                             </td>
                                             <td class="py-3 px-6 text-left font-medium text-gray-900">
-                                                {{ $desa->nama_desa }}</td>
-                                            <td class="py-3 px-6 text-left"><span
-                                                    class=" text-gray-600 text-sm font-semibold ">{{ $desa->kecamatan->nama_kecamatan ?? '-' }}</span>
+                                                {{ $desa->nama_desa }}
+                                            </td>
+                                            <td class="py-3 px-6 text-left">
+                                                <span
+                                                    class="text-gray-600 text-sm font-semibold">{{ $desa->kecamatan->nama_kecamatan ?? '-' }}</span>
                                             </td>
                                             <td class="py-3 px-6 text-center">
                                                 <div class="flex item-center justify-center space-x-2">
@@ -189,10 +189,12 @@
         </div>
 
         <footer class="mt-auto py-6 text-center text-sm text-gray-500 bg-gray-50 border-t border-gray-200">
-            <p>&copy; {{ date('Y') }} <span class="font-bold text-green-600">SIMBASA Developed by</span> Irvan Maulana.</p>
+            <p>&copy; {{ date('Y') }} <span class="font-bold text-green-600">SIMBASA Developed by</span> Irvan
+                Maulana.</p>
         </footer>
 
     </div>
+
     <div id="createModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title"
         role="dialog" aria-modal="true">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closeModal('createModal')">
@@ -200,7 +202,36 @@
         <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
             <div
                 class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                <form action="{{ route('admin-data.desa.store') }}" method="POST">
+
+                <form id="createForm" action="{{ route('admin-data.desa.store') }}" method="POST" novalidate
+                    @submit.prevent="validateAndSubmit" x-data="{
+                        errors: {},
+                        validateAndSubmit() {
+                            this.errors = {};
+                            let adaError = false;
+                    
+                            const nama = document.getElementById('create_nama_desa');
+                            const kec = document.getElementById('create_kecamatan_id');
+                    
+                            if (!nama.value.trim()) {
+                                this.errors['nama_desa'] = 'Nama Desa wajib diisi.';
+                                adaError = true;
+                            }
+                            if (!kec.value) {
+                                this.errors['kecamatan_id'] = 'Kecamatan wajib dipilih.';
+                                adaError = true;
+                            }
+                    
+                            if (adaError) {
+                                if (!nama.value.trim()) nama.focus();
+                                else kec.focus();
+                                return;
+                            }
+                    
+                            showGlobalLoading();
+                            document.getElementById('createForm').submit();
+                        }
+                    }">
                     @csrf
                     <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                         <div class="sm:flex sm:items-start">
@@ -209,23 +240,32 @@
                                 <div class="mt-4 space-y-4">
                                     <div>
                                         <label for="create_nama_desa"
-                                            class="block text-sm font-medium text-gray-700 text-left">Nama Desa</label>
-                                        <input type="text" name="nama_desa" id="create_nama_desa" required
+                                            class="block text-sm font-medium text-gray-700 text-left">Nama Desa <span
+                                                class="text-red-500">*</span></label>
+                                        <input type="text" name="nama_desa" id="create_nama_desa"
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                                             placeholder="Contoh: Desa Bojongsoang">
+                                        <p x-show="errors.nama_desa" x-text="errors.nama_desa"
+                                            class="text-red-500 text-xs mt-1 font-semibold text-left"
+                                            style="display: none;"></p>
                                     </div>
+
                                     <div>
                                         <label for="create_kecamatan_id"
-                                            class="block text-sm font-medium text-gray-700 text-left">Pilih
-                                            Kecamatan</label>
-                                        <select name="kecamatan_id" id="create_kecamatan_id" required
+                                            class="block text-sm font-medium text-gray-700 text-left">Pilih Kecamatan
+                                            <span class="text-red-500">*</span></label>
+                                        <select name="kecamatan_id" id="create_kecamatan_id"
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                            <option value="">Pilih Kecamatan </option>
+                                            <option value="">Pilih Kecamatan</option>
                                             @foreach ($kecamatans as $kecamatan)
                                                 <option value="{{ $kecamatan->id_kecamatan }}">
-                                                    {{ $kecamatan->nama_kecamatan }}</option>
+                                                    {{ $kecamatan->nama_kecamatan }}
+                                                </option>
                                             @endforeach
                                         </select>
+                                        <p x-show="errors.kecamatan_id" x-text="errors.kecamatan_id"
+                                            class="text-red-500 text-xs mt-1 font-semibold text-left"
+                                            style="display: none;"></p>
                                     </div>
                                 </div>
                             </div>
@@ -235,7 +275,7 @@
                         <button type="submit"
                             class="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-700 sm:ml-3 sm:w-auto">Simpan</button>
                         <button type="button" onclick="closeModal('createModal')"
-                            class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-200 hover:bg-gray-200 sm:mt-0 sm:w-auto">Batal</button>
+                            class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Batal</button>
                     </div>
                 </form>
             </div>
@@ -249,7 +289,36 @@
         <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
             <div
                 class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                <form id="editForm" action="" method="POST">
+
+                <form id="editForm" action="" method="POST" novalidate @submit.prevent="validateAndSubmit"
+                    x-data="{
+                        errors: {},
+                        validateAndSubmit() {
+                            this.errors = {};
+                            let adaError = false;
+                    
+                            const nama = document.getElementById('edit_nama_desa');
+                            const kec = document.getElementById('edit_kecamatan_id');
+                    
+                            if (!nama.value.trim()) {
+                                this.errors['nama_desa'] = 'Nama Desa wajib diisi.';
+                                adaError = true;
+                            }
+                            if (!kec.value) {
+                                this.errors['kecamatan_id'] = 'Kecamatan wajib dipilih.';
+                                adaError = true;
+                            }
+                    
+                            if (adaError) {
+                                if (!nama.value.trim()) nama.focus();
+                                else kec.focus();
+                                return;
+                            }
+                    
+                            showGlobalLoading();
+                            document.getElementById('editForm').submit();
+                        }
+                    }">
                     @csrf
                     @method('PUT')
                     <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
@@ -259,21 +328,31 @@
                                 <div class="mt-4 space-y-4">
                                     <div>
                                         <label for="edit_nama_desa"
-                                            class="block text-sm font-medium text-gray-700 text-left">Nama Desa</label>
-                                        <input type="text" name="nama_desa" id="edit_nama_desa" required
+                                            class="block text-sm font-medium text-gray-700 text-left">Nama Desa <span
+                                                class="text-red-500">*</span></label>
+                                        <input type="text" name="nama_desa" id="edit_nama_desa"
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                        <p x-show="errors.nama_desa" x-text="errors.nama_desa"
+                                            class="text-red-500 text-xs mt-1 font-semibold text-left"
+                                            style="display: none;"></p>
                                     </div>
+
                                     <div>
                                         <label for="edit_kecamatan_id"
-                                            class="block text-sm font-medium text-gray-700 text-left">Kecamatan</label>
-                                        <select name="kecamatan_id" id="edit_kecamatan_id" required
+                                            class="block text-sm font-medium text-gray-700 text-left">Kecamatan <span
+                                                class="text-red-500">*</span></label>
+                                        <select name="kecamatan_id" id="edit_kecamatan_id"
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                             <option value="">Pilih Kecamatan</option>
                                             @foreach ($kecamatans as $kecamatan)
                                                 <option value="{{ $kecamatan->id_kecamatan }}">
-                                                    {{ $kecamatan->nama_kecamatan }}</option>
+                                                    {{ $kecamatan->nama_kecamatan }}
+                                                </option>
                                             @endforeach
                                         </select>
+                                        <p x-show="errors.kecamatan_id" x-text="errors.kecamatan_id"
+                                            class="text-red-500 text-xs mt-1 font-semibold text-left"
+                                            style="display: none;"></p>
                                     </div>
                                 </div>
                             </div>
@@ -291,17 +370,25 @@
     </div>
 
     <form id="delete-form" action="" method="POST" style="display: none;"> @csrf @method('DELETE') </form>
+
     <div id="loadingOverlay"
-        class="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 hidden flex-col items-center justify-center">
-        <div class="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center">
-            <div class="animate-spin rounded-full h-14 w-14 border-t-4 border-b-4 border-red-600 mb-4"></div>
-            <p class="text-gray-800 font-bold">Menghapus Data...</p>
+        class="fixed inset-0 bg-white bg-opacity-80 z-[60] hidden flex-col items-center justify-center backdrop-blur-sm transition-opacity">
+        <div class="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center border border-gray-100">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
+            <p class="text-green-700 font-bold text-lg animate-pulse">Loading...</p>
         </div>
     </div>
 
     <script>
+        function showGlobalLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+        }
+
         function openCreateModal() {
             document.getElementById('createModal').classList.remove('hidden');
+            document.getElementById('createForm').reset();
         }
 
         function openEditModal(url, nama, kecamatanId) {
@@ -338,8 +425,7 @@
                 cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    document.getElementById('loadingOverlay').classList.remove('hidden');
-                    document.getElementById('loadingOverlay').classList.add('flex');
+                    showGlobalLoading();
                     var form = document.getElementById('delete-form');
                     form.action = url;
                     form.submit();

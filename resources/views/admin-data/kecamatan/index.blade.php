@@ -11,7 +11,7 @@
         </h2>
     </x-slot>
 
-    <div class="flex flex-col min-h-screen bg-gray-100">
+    <div class="flex flex-col min-h-screen bg-gray-100 relative">
 
         <div class="flex-grow py-6 px-4 sm:px-0">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -64,9 +64,7 @@
                                 class="flex flex-wrap md:flex-nowrap gap-2 w-full md:w-auto items-center justify-end"
                                 x-data="{
                                     search: '{{ request('search') }}',
-                                    submitForm() {
-                                        $el.submit();
-                                    },
+                                    submitForm() { $el.submit(); },
                                     clearSearch() {
                                         this.search = '';
                                         setTimeout(() => { this.submitForm(); }, 100);
@@ -75,7 +73,7 @@
 
                                 <div class="relative">
                                     <select name="per_page" onchange="this.form.submit()"
-                                        class="rounded-lg border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 cursor-pointer bg-gray-50"
+                                        class="rounded-lg border-gray-300 text-sm focus:ring-green-500 focus:border-green-500 cursor-pointer bg-gray-50"
                                         title="Jumlah data per halaman">
                                         <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 Data
                                         </option>
@@ -96,7 +94,7 @@
                                     </div>
 
                                     <input type="text" name="search" x-model="search"
-                                        class="block w-full p-2 pl-10 pr-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                                        class="block w-full p-2 pl-10 pr-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-green-500 focus:border-green-500"
                                         placeholder="Cari Kecamatan...">
 
                                     <button type="button" @click="clearSearch()" x-show="search.length > 0"
@@ -133,7 +131,7 @@
                                             </td>
                                             <td class="py-3 px-6 text-left">
                                                 <span
-                                                    class=" text-gray-600 text-sm font-semibold">{{ $kecamatan->kab_kota }}</span>
+                                                    class="text-gray-600 text-sm font-semibold">{{ $kecamatan->kab_kota }}</span>
                                             </td>
                                             <td class="py-3 px-6 text-center">
                                                 <div class="flex item-center justify-center space-x-2">
@@ -180,10 +178,12 @@
         </div>
 
         <footer class="mt-auto py-6 text-center text-sm text-gray-500 bg-gray-50 border-t border-gray-200">
-            <p>&copy; {{ date('Y') }} <span class="font-bold text-green-600">SIMBASA Developed by</span> Irvan Maulana.</p>
+            <p>&copy; {{ date('Y') }} <span class="font-bold text-green-600">SIMBASA Developed by</span> Irvan
+                Maulana.</p>
         </footer>
 
     </div>
+
     <div id="createModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title"
         role="dialog" aria-modal="true">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closeModal('createModal')">
@@ -191,7 +191,30 @@
         <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
             <div
                 class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                <form action="{{ route('admin-data.kecamatan.store') }}" method="POST">
+
+                <form id="createForm" action="{{ route('admin-data.kecamatan.store') }}" method="POST" novalidate
+                    @submit.prevent="validateAndSubmit" x-data="{
+                        errors: {},
+                        validateAndSubmit() {
+                            this.errors = {};
+                            let adaError = false;
+                    
+                            const val = document.getElementById('nama_kecamatan').value;
+                    
+                            if (!val || !val.trim()) {
+                                this.errors['nama_kecamatan'] = 'Nama Kecamatan wajib diisi.';
+                                adaError = true;
+                            }
+                    
+                            if (adaError) {
+                                document.getElementById('nama_kecamatan').focus();
+                                return;
+                            }
+                    
+                            showGlobalLoading();
+                            document.getElementById('createForm').submit();
+                        }
+                    }">
                     @csrf
                     <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                         <div class="sm:flex sm:items-start">
@@ -199,22 +222,38 @@
                                 <h3 class="text-lg font-semibold leading-6 text-gray-900">Tambah Kecamatan</h3>
                                 <div class="mt-4">
                                     <label for="nama_kecamatan"
-                                        class="block text-sm font-medium text-gray-700 text-left">Nama
-                                        Kecamatan</label>
-                                    <input type="text" name="nama_kecamatan" required
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                                        class="block text-sm font-medium text-gray-700 text-left">
+                                        Nama Kecamatan <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" id="nama_kecamatan" name="nama_kecamatan"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
                                         placeholder="Contoh: Bojongsoang">
-                                    <p class="text-xs text-gray-500 mt-1 text-left">*Kabupaten otomatis diset:
-                                        Kabupaten Bandung</p>
+
+                                    <p x-show="errors.nama_kecamatan" x-text="errors.nama_kecamatan"
+                                        class="text-red-500 text-xs mt-1 font-semibold text-left"
+                                        style="display: none;"></p>
+                                    @error('nama_kecamatan')
+                                        <p class="text-red-500 text-xs mt-1 font-semibold text-left">{{ $message }}
+                                        </p>
+                                    @enderror
+
+                                    <p
+                                        class="text-xs text-gray-500 mt-2 text-left bg-blue-50 p-2 rounded border border-blue-200">
+                                        Kabupaten otomatis diset: <strong>Kabupaten Bandung</strong>
+                                    </p>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                         <button type="submit"
-                            class="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-700 sm:ml-3 sm:w-auto">Simpan</button>
+                            class="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-700 sm:ml-3 sm:w-auto">
+                            Simpan
+                        </button>
                         <button type="button" onclick="closeModal('createModal')"
-                            class="mt-3 inline-flex w-full justify-center rounded-md bg-gray-300 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-200 sm:mt-0 sm:w-auto">Batal</button>
+                            class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">
+                            Batal
+                        </button>
                     </div>
                 </form>
             </div>
@@ -228,7 +267,30 @@
         <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
             <div
                 class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                <form id="editForm" action="" method="POST">
+
+                <form id="editForm" action="" method="POST" novalidate @submit.prevent="validateAndSubmit"
+                    x-data="{
+                        errors: {},
+                        validateAndSubmit() {
+                            this.errors = {};
+                            let adaError = false;
+                    
+                            const val = document.getElementById('edit_nama_kecamatan').value;
+                    
+                            if (!val || !val.trim()) {
+                                this.errors['nama_kecamatan'] = 'Nama Kecamatan wajib diisi.';
+                                adaError = true;
+                            }
+                    
+                            if (adaError) {
+                                document.getElementById('edit_nama_kecamatan').focus();
+                                return;
+                            }
+                    
+                            showGlobalLoading();
+                            document.getElementById('editForm').submit();
+                        }
+                    }">
                     @csrf
                     @method('PUT')
                     <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
@@ -237,19 +299,28 @@
                                 <h3 class="text-lg font-semibold leading-6 text-gray-900">Edit Nama Kecamatan</h3>
                                 <div class="mt-4">
                                     <label for="edit_nama_kecamatan"
-                                        class="block text-sm font-medium text-gray-700 text-left">Nama
-                                        Kecamatan</label>
-                                    <input type="text" id="edit_nama_kecamatan" name="nama_kecamatan" required
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                        class="block text-sm font-medium text-gray-700 text-left">
+                                        Nama Kecamatan <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" id="edit_nama_kecamatan" name="nama_kecamatan"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm">
+
+                                    <p x-show="errors.nama_kecamatan" x-text="errors.nama_kecamatan"
+                                        class="text-red-500 text-xs mt-1 font-semibold text-left"
+                                        style="display: none;"></p>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                         <button type="submit"
-                            class="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-700 sm:ml-3 sm:w-auto">Ubah</button>
+                            class="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-700 sm:ml-3 sm:w-auto">
+                            Update
+                        </button>
                         <button type="button" onclick="closeModal('editModal')"
-                            class="mt-3 inline-flex w-full justify-center rounded-md bg-gray-300 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-200 sm:mt-0 sm:w-auto">Batal</button>
+                            class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">
+                            Batal
+                        </button>
                     </div>
                 </form>
             </div>
@@ -257,17 +328,25 @@
     </div>
 
     <form id="delete-form" action="" method="POST" style="display: none;"> @csrf @method('DELETE') </form>
+
     <div id="loadingOverlay"
-        class="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 hidden flex-col items-center justify-center">
-        <div class="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center">
-            <div class="animate-spin rounded-full h-14 w-14 border-t-4 border-b-4 border-red-600 mb-4"></div>
-            <p class="text-gray-800 font-bold">Loading...</p>
+        class="fixed inset-0 bg-white bg-opacity-80 z-[60] hidden flex-col items-center justify-center backdrop-blur-sm transition-opacity">
+        <div class="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center border border-gray-100">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
+            <p class="text-green-700 font-bold text-lg animate-pulse">Loading...</p>
         </div>
     </div>
 
     <script>
+        function showGlobalLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+        }
+
         function openCreateModal() {
             document.getElementById('createModal').classList.remove('hidden');
+            document.getElementById('createForm').reset();
         }
 
         function openEditModal(url, nama) {
@@ -294,7 +373,7 @@
         function confirmDelete(url, name) {
             Swal.fire({
                 title: 'Hapus Kecamatan?',
-                text: "Hapus: " + name + "?",
+                text: "Apakah Anda yakin ingin menghapus kecamatan: " + name + "?",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#dc2626',
@@ -303,8 +382,7 @@
                 cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    document.getElementById('loadingOverlay').classList.remove('hidden');
-                    document.getElementById('loadingOverlay').classList.add('flex');
+                    showGlobalLoading(); 
                     var form = document.getElementById('delete-form');
                     form.action = url;
                     form.submit();

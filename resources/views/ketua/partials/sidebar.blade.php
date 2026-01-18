@@ -1,4 +1,4 @@
-<div class="flex flex-col space-y-1">
+<div class="flex-1 flex flex-col space-y-1">
     @php
         $activeClass = 'flex items-center px-3 py-3 text-lg font-medium bg-green-600 text-white rounded-md';
         $inactiveClass =
@@ -39,29 +39,6 @@
         </span>
     </a>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            fetchNotifikasi();
-
-            setInterval(fetchNotifikasi, 10000);
-        });
-
-        function fetchNotifikasi() {
-            fetch("{{ route('ketua.api.count-pending') }}")
-                .then(response => response.json())
-                .then(data => {
-                    const badge = document.getElementById('badge-pending');
-                    if (data.count > 0) {
-                        badge.innerText = data.count > 9 ? '9+' : data.count;
-                        badge.classList.remove('hidden');
-                    } else {
-                        badge.classList.add('hidden'); 
-                    }
-                })
-                .catch(error => console.error('Gagal mengambil notifikasi:', error));
-        }
-    </script>
-
     <h3 class="px-3 pt-4 pb-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">
         Akun Saya
     </h3>
@@ -100,3 +77,26 @@
         </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        fetchNotifikasi();
+
+        setInterval(fetchNotifikasi, 10000);
+    });
+
+    function fetchNotifikasi() {
+        fetch("{{ route('ketua.api.count-pending') }}")
+            .then(response => response.json())
+            .then(data => {
+                const badge = document.getElementById('badge-pending');
+                if (data.count > 0) {
+                    badge.innerText = data.count > 9 ? '9+' : data.count;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            })
+            .catch(error => console.error('Gagal mengambil notifikasi:', error));
+    }
+</script>

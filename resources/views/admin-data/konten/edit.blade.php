@@ -49,9 +49,79 @@
                 <div class="p-8 text-gray-900">
 
                     <form id="kontenForm" action="{{ route('admin-data.konten.update', $konten->id_konten) }}"
-                        method="POST" enctype="multipart/form-data">
+                        method="POST" enctype="multipart/form-data" novalidate @submit.prevent="validateAndSubmit"
+                        x-data="{
+                            mediaType: '{{ old('media_type', $mediaType) }}',
+                            hasExistingImage: {{ $mediaType == 'upload' && $mediaValue ? 'true' : 'false' }},
+                            errors: {},
+                            isLoading: false,
+                        
+                            init() {
+                                if (this.mediaType === 'url') {
+                                    setTimeout(() => checkLinkPreview(), 100);
+                                }
+                            },
+                        
+                            validateAndSubmit() {
+                                this.isLoading = false;
+                                this.errors = {};
+                                let adaError = false;
+                        
+                                const cek = (id, fieldName, isSelect = false) => {
+                                    const el = document.getElementById(id);
+                                    if (!el || !el.value || (typeof el.value === 'string' && !el.value.trim())) {
+                                        this.errors[id] = fieldName + (isSelect ? ' wajib dipilih.' : ' wajib diisi.');
+                                        adaError = true;
+                                    }
+                                };
+                        
+                                if (this.mediaType === 'upload') {
+                                    const fileInput = document.getElementById('media_file');
+                                    if (!this.hasExistingImage && !fileInput.value) {
+                                        this.errors['media_file'] = 'File gambar wajib diupload.';
+                                        adaError = true;
+                                    }
+                                } else {
+                                    cek('media_url', 'Link URL YouTube');
+                                }
+                        
+                                cek('judul', 'Judul Konten');
+                                cek('id_kategori', 'Kategori Konten', true);
+                                cek('status_id', 'Status Publikasi', true);
+                                cek('deskripsi', 'Deskripsi Konten');
+                        
+                                if (adaError) {
+                                    const firstErrorId = Object.keys(this.errors)[0];
+                                    if (firstErrorId) {
+                                        let targetId = firstErrorId;
+                                        if (firstErrorId === 'media_file') targetId = 'dropzone-box';
+                        
+                                        const el = document.getElementById(targetId);
+                                        if (el) {
+                                            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                            if (targetId !== 'dropzone-box') el.focus();
+                                        }
+                                    }
+                                    return; 
+                                }
+                        
+                                this.isLoading = true;
+                                document.getElementById('kontenForm').submit();
+                            }
+                        }">
                         @csrf
                         @method('PUT')
+
+                        <div x-show="isLoading" style="display: none;"
+                            x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0"
+                            x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-100"
+                            x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+                            class="absolute inset-0 bg-white bg-opacity-80 z-50 flex flex-col items-center justify-center rounded-lg">
+                            <div
+                                class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4">
+                            </div>
+                            <p class="text-green-700 font-bold text-lg animate-pulse">Loading...</p>
+                        </div>
 
                         <div class="mb-8 p-6 bg-gray-50 rounded-xl border border-gray-200">
                             <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
@@ -60,20 +130,18 @@
 
                             <div class="flex items-center space-x-6 mb-4 ml-1">
                                 <label class="inline-flex items-center cursor-pointer">
-                                    <input type="radio" name="media_type" value="upload"
-                                        class="form-radio text-green-600 focus:ring-green-500 h-5 w-5"
-                                        @if (old('media_type', $mediaType) == 'upload') checked @endif>
+                                    <input type="radio" name="media_type" value="upload" x-model="mediaType"
+                                        class="form-radio text-green-600 focus:ring-green-500 h-5 w-5">
                                     <span class="ml-2 text-gray-700 font-medium">Upload Gambar</span>
                                 </label>
                                 <label class="inline-flex items-center cursor-pointer">
-                                    <input type="radio" name="media_type" value="url"
-                                        class="form-radio text-green-600 focus:ring-green-500 h-5 w-5"
-                                        @if (old('media_type', $mediaType) == 'url') checked @endif>
+                                    <input type="radio" name="media_type" value="url" x-model="mediaType"
+                                        class="form-radio text-green-600 focus:ring-green-500 h-5 w-5">
                                     <span class="ml-2 text-gray-700 font-medium">Link URL YouTube</span>
                                 </label>
                             </div>
 
-                            <div id="input-upload" class="transition-opacity duration-300">
+                            <div x-show="mediaType === 'upload'" x-transition class="transition-opacity duration-300">
                                 <div id="dropzone-box"
                                     class="border-2 border-dashed border-blue-300 hover:border-green-500 rounded-xl p-8 text-center cursor-pointer bg-white hover:bg-green-50 transition relative group"
                                     onclick="document.getElementById('media_file').click()">
@@ -105,7 +173,7 @@
 
                                         <button type="button" onclick="removeImage(event)"
                                             class="absolute -top-3 -right-3 bg-red-600 text-white rounded-full p-1.5 hover:bg-red-700 shadow-md transition transform hover:scale-110"
-                                            title="Hapus Gambar">
+                                            title="Ganti Gambar">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                                 viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -119,13 +187,17 @@
                                         </p>
                                     </div>
                                 </div>
+                                <p x-show="errors.media_file" x-text="errors.media_file"
+                                    class="text-red-500 text-xs mt-1 font-semibold" style="display: none;"></p>
                                 @error('media_file')
                                     <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
                                 @enderror
                             </div>
 
-                            <div id="input-url" class="hidden transition-opacity duration-300">
-                                <x-input-label for="media_url" :value="__('Link URL YouTube')" />
+                            <div x-show="mediaType === 'url'" x-transition class="transition-opacity duration-300"
+                                style="display: none;">
+                                <x-input-label for="media_url">Link URL YouTube <span
+                                        class="text-red-500">*</span></x-input-label>
                                 <div class="relative mt-1">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor"
@@ -141,6 +213,8 @@
                                         value="{{ old('media_url', $mediaType == 'url' ? $mediaValue : '') }}"
                                         oninput="checkLinkPreview()">
                                 </div>
+                                <p x-show="errors.media_url" x-text="errors.media_url"
+                                    class="text-red-500 text-xs mt-1 font-semibold" style="display: none;"></p>
                                 @error('media_url')
                                     <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
                                 @enderror
@@ -166,45 +240,44 @@
                             </h3>
 
                             <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-
                                 <div class="md:col-span-12">
-                                    <x-input-label for="judul" :value="__('Judul Konten')" />
+                                    <x-input-label for="judul">Judul Konten <span
+                                            class="text-red-500">*</span></x-input-label>
                                     <x-text-input id="judul"
                                         class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500"
-                                        type="text" name="judul" :value="old('judul', $konten->judul)" required />
+                                        type="text" name="judul" :value="old('judul', $konten->judul)" />
+                                    <p x-show="errors.judul" x-text="errors.judul"
+                                        class="text-red-500 text-xs mt-1 font-semibold" style="display: none;"></p>
                                     @error('judul')
                                         <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
                                     @enderror
                                 </div>
 
                                 <div class="md:col-span-6">
-                                    <x-input-label for="id_kategori" :value="__('Kategori Konten')" />
-
+                                    <x-input-label for="id_kategori">Kategori Konten <span
+                                            class="text-red-500">*</span></x-input-label>
                                     <select id="id_kategori" name="id_kategori"
-                                        class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm bg-white cursor-pointer"
-                                        required>
-
+                                        class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm bg-white cursor-pointer">
                                         <option value="">Pilih Kategori</option>
-
                                         @foreach ($kategori_konten as $cat)
-                                            <option value="{{ $cat->id_kategori }}" 
+                                            <option value="{{ $cat->id_kategori }}"
                                                 {{ old('id_kategori', $konten->id_kategori) == $cat->id_kategori ? 'selected' : '' }}>
-
                                                 {{ $cat->nama_kategori }}
                                             </option>
                                         @endforeach
                                     </select>
-
+                                    <p x-show="errors.id_kategori" x-text="errors.id_kategori"
+                                        class="text-red-500 text-xs mt-1 font-semibold" style="display: none;"></p>
                                     @error('id_kategori')
                                         <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
                                     @enderror
                                 </div>
 
                                 <div class="md:col-span-6">
-                                    <x-input-label for="status_id" :value="__('Status Publikasi')" />
+                                    <x-input-label for="status_id">Status Publikasi <span
+                                            class="text-red-500">*</span></x-input-label>
                                     <select id="status_id" name="status_id"
-                                        class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm bg-white cursor-pointer"
-                                        required>
+                                        class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm bg-white cursor-pointer">
                                         @foreach ($statuses as $status)
                                             <option value="{{ $status->id_status }}"
                                                 {{ old('status_id', $konten->status_id) == $status->id_status ? 'selected' : '' }}>
@@ -212,19 +285,24 @@
                                             </option>
                                         @endforeach
                                     </select>
+                                    <p x-show="errors.status_id" x-text="errors.status_id"
+                                        class="text-red-500 text-xs mt-1 font-semibold" style="display: none;"></p>
                                     @error('status_id')
                                         <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
                                     @enderror
                                 </div>
-
                             </div>
                         </div>
 
                         <div class="mb-8">
-                            <x-input-label for="deskripsi" :value="__('Deskripsi Konten')"
-                                class="text-lg font-bold text-gray-800 mb-2" />
+                            <x-input-label for="deskripsi" class="text-lg font-bold text-gray-800 mb-2">
+                                Deskripsi Konten <span class="text-red-500">*</span>
+                            </x-input-label>
                             <textarea id="deskripsi" name="deskripsi" rows="8"
-                                class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-xl shadow-sm p-4">{{ old('deskripsi', $konten->deskripsi) }}</textarea>
+                                class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-xl shadow-sm p-4"
+                                placeholder="Ceritakan detail konten Anda di sini...">{{ old('deskripsi', $konten->deskripsi) }}</textarea>
+                            <p x-show="errors.deskripsi" x-text="errors.deskripsi"
+                                class="text-red-500 text-xs mt-1 font-semibold" style="display: none;"></p>
                             @error('deskripsi')
                                 <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
                             @enderror
@@ -233,20 +311,13 @@
                         <div class="flex items-center justify-end border-t border-gray-200 pt-6 space-x-3">
                             <a href="{{ route('admin-data.konten.index') }}"
                                 class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">Batal</a>
-                            <button type="submit"
-                                class="px-6 py-2 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 shadow-lg transform hover:scale-105 transition duration-200">
+                            <button type="submit" :disabled="isLoading"
+                                class="px-6 py-2 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 shadow-lg transform hover:scale-105 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                                 {{ __('Update Konten') }}
                             </button>
                         </div>
                     </form>
                 </div>
-
-                <div id="loadingOverlay"
-                    class="absolute inset-0 bg-white bg-opacity-90 z-50 hidden flex-col items-center justify-center rounded-lg">
-                    <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
-                    <p class="text-green-700 font-bold text-lg animate-pulse">Menyimpan Perubahan...</p>
-                </div>
-
             </div>
         </div>
     </div>
@@ -254,16 +325,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const kontenForm = document.getElementById('kontenForm');
-        const loadingOverlay = document.getElementById('loadingOverlay');
-
-        kontenForm.addEventListener('submit', function() {
-            loadingOverlay.classList.remove('hidden');
-            loadingOverlay.classList.add('flex');
-        });
-
         @if (session('success_update'))
-            loadingOverlay.classList.add('hidden');
             Swal.fire({
                 icon: 'success',
                 title: 'Berhasil Diupdate!',
@@ -277,7 +339,6 @@
         @endif
 
         @if ($errors->any())
-            loadingOverlay.classList.add('hidden');
             Swal.fire({
                 icon: 'error',
                 title: 'Gagal Update!',
@@ -286,36 +347,10 @@
             });
         @endif
 
-        const mediaTypeRadios = document.querySelectorAll('input[name="media_type"]');
-        const inputUploadDiv = document.getElementById('input-upload');
-        const inputUrlDiv = document.getElementById('input-url');
-        const fileInput = document.getElementById('media_file');
-        const urlInput = document.getElementById('media_url');
-
-        const initialValue = '{{ old('media_type', $mediaType) }}';
-
-        function toggleInputs(value) {
-            if (value === 'upload') {
-                inputUploadDiv.classList.remove('hidden');
-                inputUrlDiv.classList.add('hidden');
-                if (urlInput) urlInput.value = '';
-                document.getElementById('youtube-preview-container').classList.add('hidden');
-                document.getElementById('url-image-preview-container').classList.add('hidden');
-            } else if (value === 'url') {
-                inputUploadDiv.classList.add('hidden');
-                inputUrlDiv.classList.remove('hidden');
-                if (fileInput) fileInput.value = null;
-                checkLinkPreview();
-            }
+        const oldUrl = document.getElementById('media_url');
+        if (oldUrl && oldUrl.value) {
+            checkLinkPreview();
         }
-
-        mediaTypeRadios.forEach(radio => {
-            if (radio.value === initialValue) radio.checked = true;
-            radio.addEventListener('change', function() {
-                toggleInputs(this.value);
-            });
-        });
-        toggleInputs(initialValue);
     });
 
     function previewFile() {
@@ -349,11 +384,15 @@
         const preview = document.getElementById('image-preview');
 
         fileInput.value = '';
+
         preview.src = '';
 
         previewContainer.classList.add('hidden');
         previewContainer.classList.remove('inline-block');
+
         dropzoneContent.classList.remove('hidden');
+
+        document.getElementById('file-name').textContent = '';
     }
 
     function checkLinkPreview() {

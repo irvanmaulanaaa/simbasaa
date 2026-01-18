@@ -66,7 +66,7 @@
     </style>
 </head>
 
-<body class="font-sans antialiased text-gray-700 bg-gray-50" x-data="{ currentView: 'home', mobileMenuOpen: false }">
+<body class="font-sans antialiased text-gray-700 bg-gray-50" x-data="{ currentView: '{{ request('view', 'home') }}', mobileMenuOpen: false }">
 
     <nav class="glass-nav border-b border-gray-100 sticky top-0 z-50 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -95,10 +95,11 @@
                         Home
                     </button>
 
-                    <a href="{{ route('public.konten.index') }}"
-                        class="text-lg font-bold text-slate-600 hover:text-green-600 transition">
+                    <button @click="currentView = 'konten'; window.scrollTo({top: 0, behavior: 'smooth'})"
+                        class="text-lg font-bold transition focus:outline-none"
+                        :class="currentView === 'konten' ? 'text-green-600' : 'text-slate-600 hover:text-green-600'">
                         Konten
-                    </a>
+                    </button>
 
                     <button @click="currentView = 'jenis-sampah'; window.scrollTo({top: 0, behavior: 'smooth'})"
                         class="text-lg font-bold transition focus:outline-none"
@@ -169,8 +170,8 @@
 
             <button @click="currentView = 'home'; mobileMenuOpen = false"
                 class="block w-full text-center px-4 py-3 font-bold text-lg text-slate-600 hover:text-green-600 rounded-xl border border-green-600">Home</button>
-            <a href="{{ route('public.konten.index') }}"
-                class="block w-full text-center px-4 py-3 font-bold text-lg text-slate-600 hover:text-green-600 rounded-xl border border-green-600">Konten</a>
+            <button @click="currentView = 'konten'; mobileMenuOpen = false"
+                class="block w-full text-center px-4 py-3 font-bold text-lg text-slate-600 hover:text-green-600 rounded-xl border border-green-600">Konten</button>
             <button @click="currentView = 'jenis-sampah'; mobileMenuOpen = false"
                 class="block w-full text-center px-4 py-3 font-bold text-lg text-slate-600 hover:text-green-600 rounded-xl border border-green-600">Jenis
                 Sampah</button>
@@ -387,10 +388,10 @@
                             <p class="mt-2 text-gray-500">Wawasan terkini untuk lingkungan yang lebih baik.</p>
                         </div>
                         <div class="flex items-center gap-4">
-                            <a href="{{ route('public.konten.index') }}"
+                            <button @click="currentView = 'konten'; window.scrollTo({top: 0, behavior: 'smooth'})"
                                 class="hidden md:inline-flex items-center text-green-600 font-bold hover:text-green-800 transition mr-4 text-lg">
                                 Lihat Semua Konten
-                            </a>
+                            </button>
                         </div>
                     </div>
 
@@ -512,22 +513,16 @@
                                 @endforeach
                             </div>
                         </div>
-                        <div class="flex justify-center items-center gap-2 mt-4">
-                            @foreach ($kontens as $index => $item)
-                                <button @click="scrollToSlide({{ $index }})"
-                                    class="w-3 h-3 rounded-full transition-all duration-300 focus:outline-none"
-                                    :class="activeSlide === {{ $index }} ? 'bg-green-600 w-8' :
-                                        'bg-gray-300 hover:bg-gray-400'"></button>
-                            @endforeach
-                        </div>
                     @else
                         <div class="text-center py-16 bg-gray-50 rounded-2xl border border-dashed border-gray-300">
                             <p class="text-gray-500 font-medium">Belum ada konten berita saat ini.</p>
                         </div>
                     @endif
-                    <div class="mt-8 text-center md:hidden"><a href="{{ route('public.konten.index') }}"
+                    <div class="mt-8 text-center md:hidden">
+                        <button @click="currentView = 'konten'; window.scrollTo({top: 0, behavior: 'smooth'})"
                             class="inline-flex items-center text-green-600 font-bold hover:text-green-800 transition text-lg">Lihat
-                            Semua Konten</a></div>
+                            Semua Konten</button>
+                    </div>
                 </div>
             </section>
 
@@ -672,7 +667,6 @@
             <section class="py-12 bg-white min-h-screen" x-data="{
                 search: '',
                 selectedCategory: 'all',
-                // MAPPING DATA DATABASE KE JSON ALPINE JS
                 items: {{ $sampah->map(function ($item) {
                         return [
                             'id' => $item->id_sampah,
@@ -710,7 +704,8 @@
                                         </svg>
                                     </div>
 
-                                    <input type="text"  name="search" id="search" x-model="search" placeholder="Cari jenis sampah..."
+                                    <input type="text" name="search" id="search" x-model="search"
+                                        placeholder="Cari jenis sampah..."
                                         class="block w-full h-full pl-14 pr-12 py-4 bg-transparent border-0 text-slate-900 placeholder:text-slate-400 font-medium focus:ring-0 rounded-[20px]">
 
                                     <button type="button" x-show="search.length > 0" @click="search = ''"
@@ -775,7 +770,10 @@
                                                 class="cursor-pointer select-none relative py-3 pl-4 pr-9 hover:bg-green-50 transition duration-200 group border-b border-gray-50">
                                                 <span
                                                     class="text-sm font-medium text-gray-700 group-hover:text-green-700"
-                                                    :class="{ 'font-bold text-green-700': selectedCategory === '{{ $kat->nama_kategori }}' }">
+                                                    :class="{
+                                                        'font-bold text-green-700': selectedCategory ===
+                                                            '{{ $kat->nama_kategori }}'
+                                                    }">
                                                     {{ $kat->nama_kategori }}
                                                 </span>
                                                 <span x-show="selectedCategory === '{{ $kat->nama_kategori }}'"
@@ -824,7 +822,8 @@
                                 </div>
 
                                 <h4 class="font-bold text-lg text-gray-800 text-center leading-snug"
-                                    x-text="item.nama"></h4>
+                                    x-text="item.nama">
+                                </h4>
 
                                 <div class="mt-3 mb-2 flex items-baseline gap-1">
                                     <span class="text-sm font-bold text-gray-400">Rp</span>
@@ -859,6 +858,294 @@
             </section>
         </div>
 
+        <div x-show="currentView === 'konten'" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0"
+            style="display: none;" class="font-jakarta premium-bg">
+
+            <div class="relative bg-white/0 overflow-visible z-40">
+                <div
+                    class="absolute inset-0 bg-gradient-to-b from-white via-transparent to-transparent z-10 pointer-events-none">
+                </div>
+                <div
+                    class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-green-100/20 blur-[100px] rounded-full pointer-events-none">
+                </div>
+
+                <div class="relative max-w-7xl mx-auto px-4 pt-16 pb-12 text-center z-20">
+                    <span
+                        class="inline-block py-1 px-3 rounded-full bg-green-100 text-green-700 text-xs font-bold tracking-wider uppercase mb-4 animate-fade-in-up">Konten
+                        Edukasi BY SIMBASA</span>
+                    <h1
+                        class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 mb-6 tracking-tight leading-tight">
+                        Jelajahi <span
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-500">Wawasan
+                            Hijau</span>
+                    </h1>
+                    <p class="text-lg text-slate-500 max-w-2xl mx-auto mb-10 leading-relaxed">
+                        Temukan artikel, berita, dan edukasi terbaru seputar pengelolaan lingkungan dan daur ulang
+                        sampah di sini.
+                    </p>
+                </div>
+            </div>
+
+            <section class="relative max-w-7xl mx-auto px-4 pb-16 min-h-[600px] z-0" x-data="{
+                searchKonten: '',
+                selectedKategoriKonten: 'all',
+                selectedSort: 'terbaru',
+            
+                kontenItems: {{ $kontens->map(function ($item) {
+                        $media = $item->media->first();
+                        $imagePath = null;
+                        $isVideo = false;
+                        if ($media) {
+                            if (
+                                $media->tipe == 'youtube' ||
+                                (strpos($media->gambar, 'youtube.com') !== false || strpos($media->gambar, 'youtu.be') !== false)
+                            ) {
+                                $isVideo = true;
+                                preg_match(
+                                    '/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^&?\/\s]{11})/',
+                                    $media->gambar,
+                                    $matches,
+                                );
+                                $imagePath = isset($matches[1]) ? 'https://img.youtube.com/vi/' . $matches[1] . '/hqdefault.jpg' : null;
+                            } else {
+                                $imagePath = filter_var($media->gambar, FILTER_VALIDATE_URL)
+                                    ? $media->gambar
+                                    : Illuminate\Support\Facades\Storage::url($media->gambar);
+                            }
+                        }
+                        return [
+                            'id' => $item->id_konten,
+                            'judul' => $item->judul,
+                            'deskripsi' => Str::limit(strip_tags($item->deskripsi ?? $item->isi), 100),
+                            'kategori' => $item->kategoriKonten->nama_kategori ?? 'Umum',
+                            'tanggal' => \Carbon\Carbon::parse($item->created_at)->format('d M Y'),
+                            'penulis' => $item->user->nama_lengkap ?? ($item->user->name ?? 'Admin'),
+                            'foto_penulis' =>
+                                $item->user && $item->user->profile_photo_path ? Storage::url($item->user->profile_photo_path) : null,
+                            'inisial_penulis' => substr($item->user->nama_lengkap ?? ($item->user->name ?? 'A'), 0, 1),
+                            'likes' => $item->jumlah_like ?? 0,
+                            'image' => $imagePath,
+                            'isVideo' => $isVideo,
+                            'url' => route('public.konten.show', $item->id_konten),
+                        ];
+                    })->toJson() }},
+            
+                get filteredKonten() {
+                    let result = this.kontenItems.filter(item => {
+                        const matchesSearch = item.judul.toLowerCase().includes(this.searchKonten.toLowerCase());
+                        const matchesCategory = this.selectedKategoriKonten === 'all' || item.kategori === this.selectedKategoriKonten;
+                        return matchesSearch && matchesCategory;
+                    });
+            
+                    if (this.selectedSort === 'terbaru') {
+                        return result.sort((a, b) => b.id - a.id);
+                    } else if (this.selectedSort === 'terlama') {
+                        return result.sort((a, b) => a.id - b.id);
+                    } else if (this.selectedSort === 'populer') {
+                        return result.sort((a, b) => b.likes - a.likes);
+                    }
+            
+                    return result;
+                }
+            }">
+
+                <div class="max-w-6xl mx-auto mb-12 relative z-30">
+                    <div class="flex flex-col md:flex-row gap-4">
+
+                        <div class="flex-grow relative">
+                            <div
+                                class="relative group h-full bg-white rounded-[20px] shadow-xl shadow-slate-200/60 border border-slate-100 transition focus-within:ring-4 focus-within:ring-green-100 focus-within:border-green-400">
+                                <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                                    <svg class="h-6 w-6 text-slate-400 group-focus-within:text-green-500 transition-colors"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                </div>
+                                <input type="text" x-model="searchKonten" placeholder="Cari topik menarik..."
+                                    class="block w-full h-full pl-14 pr-12 py-4 bg-transparent border-0 text-slate-900 placeholder:text-slate-400 font-medium focus:ring-0 rounded-[20px]">
+                                <button type="button" x-show="searchKonten.length > 0" @click="searchKonten = ''"
+                                    class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-red-500 transition cursor-pointer"
+                                    style="display: none;">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="md:w-1/4 relative" x-data="{ open: false }">
+                            <button type="button" @click="open = !open" @click.away="open = false"
+                                class="relative w-full h-full p-4 bg-white rounded-[20px] shadow-xl shadow-slate-200/60 border border-slate-100 text-left flex items-center justify-between focus:outline-none transition-all duration-300">
+                                <span class="block truncate font-semibold text-slate-700"
+                                    x-text="selectedKategoriKonten === 'all' ? 'Semua Kategori' : selectedKategoriKonten"></span>
+                                <svg class="h-5 w-5 text-green-600 transition-transform"
+                                    :class="{ 'rotate-180': open }" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div x-show="open" x-transition
+                                class="absolute z-[60] w-full mt-2 bg-white rounded-xl shadow-2xl overflow-hidden"
+                                style="display: none;">
+                                <div class="py-1 max-h-60 overflow-auto no-scrollbar">
+                                    <div @click="selectedKategoriKonten = 'all'; open = false"
+                                        class="cursor-pointer py-3 pl-4 hover:bg-green-50 text-sm font-medium text-gray-700 transition duration-200">
+                                        Semua Kategori</div>
+                                    @foreach ($kategoriKonten as $kat)
+                                        <div @click="selectedKategoriKonten = '{{ $kat->nama_kategori }}'; open = false"
+                                            class="cursor-pointer py-3 pl-4 hover:bg-green-50 text-sm font-medium text-gray-700 transition duration-200">
+                                            {{ $kat->nama_kategori }}</div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="md:w-1/4 relative" x-data="{ open: false }">
+                            <button type="button" @click="open = !open" @click.away="open = false"
+                                class="relative w-full h-full p-4 bg-white rounded-[20px] shadow-xl shadow-slate-200/60 border border-slate-100 text-left flex items-center justify-between focus:outline-none transition-all duration-300">
+                                <span class="block truncate font-semibold text-slate-700"
+                                    x-text="selectedSort === 'terbaru' ? 'Terbaru' : (selectedSort === 'terlama' ? 'Terlama' : 'Populer')"></span>
+                                <svg class="h-5 w-5 text-green-600 transition-transform"
+                                    :class="{ 'rotate-180': open }" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div x-show="open" x-transition
+                                class="absolute z-[60] w-full mt-2 bg-white rounded-xl shadow-2xl overflow-hidden"
+                                style="display: none;">
+                                <div class="py-1">
+                                    <div @click="selectedSort = 'terbaru'; open = false"
+                                        class="cursor-pointer py-3 pl-4 hover:bg-green-50 text-sm font-medium text-gray-700 transition duration-200">
+                                        Terbaru</div>
+                                    <div @click="selectedSort = 'terlama'; open = false"
+                                        class="cursor-pointer py-3 pl-4 hover:bg-green-50 text-sm font-medium text-gray-700 transition duration-200">
+                                        Terlama</div>
+                                    <div @click="selectedSort = 'populer'; open = false"
+                                        class="cursor-pointer py-3 pl-4 hover:bg-green-50 text-sm font-medium text-gray-700 transition duration-200">
+                                        Populer</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="mt-4 ml-2 text-sm text-slate-400 font-medium">
+                        Menampilkan <span x-text="filteredKonten.length" class="text-green-600 font-bold"></span>
+                        konten edukasi
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <template x-for="item in filteredKonten" :key="item.id">
+                        <a :href="item.url"
+                            class="group relative bg-white rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-green-900/5 hover:-translate-y-2 transition-all duration-500 flex flex-col h-full overflow-hidden">
+                            <div class="h-64 bg-slate-50 relative overflow-hidden flex items-center justify-center">
+                                <template x-if="item.image">
+                                    <img :src="item.image"
+                                        class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
+                                </template>
+                                <template x-if="!item.image">
+                                    <div class="text-slate-300 flex flex-col items-center"><span
+                                            class="text-sm font-medium">Visual Tidak Tersedia</span></div>
+                                </template>
+                                <template x-if="item.isVideo">
+                                    <div
+                                        class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-all duration-300">
+                                        <div
+                                            class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
+                                            <svg class="w-7 h-7 text-red-600 ml-1" fill="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path d="M8 5v14l11-7z" />
+                                            </svg></div>
+                                    </div>
+                                </template>
+                                <div class="absolute top-4 left-4 z-20">
+                                    <span
+                                        class="bg-green-200 backdrop-blur text-slate-800 text-[10px] font-extrabold px-3 py-1 rounded-full border border-slate-200 uppercase tracking-wider shadow-sm"
+                                        x-text="item.kategori"></span>
+                                </div>
+                            </div>
+
+                            <div class="p-8 flex flex-col flex-grow relative">
+                                <div
+                                    class="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent group-hover:via-green-400 transition-colors duration-500">
+                                </div>
+                                <div class="mb-4">
+                                    <span class="text-green-600 text-xs font-bold flex items-center gap-1 mb-2">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                            </path>
+                                        </svg>
+                                        <span x-text="item.tanggal"></span>
+                                    </span>
+                                    <h3 class="text-xl font-bold text-slate-900 group-hover:text-green-600 transition-colors duration-300 leading-snug tracking-tight line-clamp-2"
+                                        x-text="item.judul"></h3>
+                                </div>
+                                <p class="text-slate-500 text-sm line-clamp-3 mb-6 flex-grow leading-relaxed"
+                                    x-text="item.deskripsi"></p>
+                                <div class="flex items-center justify-between mt-auto pt-5 border-t border-slate-50">
+                                    <div class="flex items-center gap-2">
+                                        <template x-if="item.foto_penulis"><img :src="item.foto_penulis"
+                                                class="w-8 h-8 rounded-full object-cover border border-slate-100"></template>
+                                        <template x-if="!item.foto_penulis">
+                                            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-green-400 to-emerald-500 flex items-center justify-center text-white text-xs font-bold"
+                                                x-text="item.inisial_penulis"></div>
+                                        </template>
+                                        <span class="text-base font-semibold text-slate-600"
+                                            x-text="item.penulis"></span>
+                                    </div>
+                                    <div class="flex items-center gap-4 text-base font-bold text-slate-400">
+                                        <div class="flex items-center gap-1 text-red-500"><svg
+                                                class="w-6 h-6 fill-current" viewBox="0 0 20 20">
+                                                <path
+                                                    d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
+                                            </svg><span x-text="item.likes"></span></div>
+                                        <span
+                                            class="text-green-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform text-lg font-bold">Baca
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 5l7 7-7 7"></path>
+                                            </svg></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </template>
+                </div>
+
+                <div x-show="filteredKonten.length === 0"
+                    class="text-center py-24 bg-white rounded-[32px] border border-dashed border-slate-300 max-w-2xl mx-auto shadow-sm mt-10">
+                    <div class="bg-slate-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-10 h-10 text-slate-400" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 01-2-2V7m2 13a2 2 0 01-2-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Tidak Ditemukan</h3>
+                    <p class="text-slate-500 mb-8 max-w-sm mx-auto">Kami tidak dapat menemukan apa yang Anda cari. Coba
+                        kata kunci lain atau reset filter.</p>
+                    <button @click="searchKonten = ''; selectedKategoriKonten = 'all'; selectedSort = 'terbaru'"
+                        class="inline-flex items-center px-8 py-3 bg-white border-2 border-slate-200 rounded-full text-slate-700 font-bold hover:border-green-500 hover:text-green-600 transition-all duration-300">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                            </path>
+                        </svg> Reset Filter
+                    </button>
+                </div>
+            </section>
+        </div>
     </main>
 
     <footer class="bg-emerald-50 border-t pt-12 pb-8">
@@ -879,7 +1166,8 @@
                     <ul class="space-y-2 text-sm text-gray-500">
                         <li><button @click="currentView = 'home'; window.scrollTo({top: 0, behavior: 'smooth'})"
                                 class="hover:text-green-600">Beranda</button></li>
-                        <li><a href="{{ route('public.konten.index') }}" class="hover:text-green-600">Edukasi</a>
+                        <li><button @click="currentView = 'konten'; window.scrollTo({top: 0, behavior: 'smooth'})"
+                                class="hover:text-green-600">Konten</button>
                         </li>
                         <li><a href="{{ route('login') }}" class="hover:text-green-600">Masuk</a></li>
                     </ul>
@@ -912,7 +1200,8 @@
             style="display: none;">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                    d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                    d="M5 10l7-7m0 0l7 7m-7-7v18">
+                </path>
             </svg>
         </button>
     </div>

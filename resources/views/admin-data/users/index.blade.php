@@ -38,10 +38,11 @@
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
 
-                        <div class="flex flex-col md:flex-row justify-between items-center mb-4 space-y-4 md:space-y-0">
+                        <div
+                            class="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-6 space-y-4 xl:space-y-0 gap-4">
 
                             <a href="{{ route('admin-data.users.create') }}"
-                                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 active:bg-blue-700 focus:outline-none focus:border-blue-700 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150 shadow-md w-full md:w-auto justify-center">
+                                class="inline-flex items-center px-4 py-2.5 bg-blue-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 active:bg-blue-700 focus:outline-none focus:border-blue-700 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150 shadow-md w-full xl:w-auto justify-center whitespace-nowrap">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 4v16m8-8H4"></path>
@@ -50,8 +51,7 @@
                             </a>
 
                             <form method="GET" action="{{ route('admin-data.users.index') }}"
-                                class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 w-full md:w-auto"
-                                x-data="{
+                                class="flex flex-col lg:flex-row gap-3 w-full xl:w-auto" x-data="{
                                     search: '{{ request('search') }}',
                                     submitForm() { $el.submit(); },
                                     clearSearch() {
@@ -61,37 +61,35 @@
                                 }">
 
                                 <select name="per_page" onchange="this.form.submit()"
-                                    class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm">
-                                    <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 Data
-                                    </option>
-                                    <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 Data
-                                    </option>
-                                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 Data
-                                    </option>
+                                    class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm w-full lg:w-32 cursor-pointer">
+                                    <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 Data</option>
+                                    <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 Data</option>
+                                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 Data</option>
                                     <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 Data
                                     </option>
                                 </select>
 
-                                <select name="filter" onchange="this.form.submit()"
-                                    class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm md:w-48">
-                                    <option value="">Semua</option>
-                                    <optgroup label="Berdasarkan Role">
-                                        @foreach ($roles as $role)
-                                            <option value="role_{{ $role->id_role }}"
-                                                {{ request('filter') == 'role_' . $role->id_role ? 'selected' : '' }}>
-                                                {{ $role->nama_role }}</option>
-                                        @endforeach
-                                    </optgroup>
-                                    <optgroup label="Berdasarkan Status">
-                                        <option value="status_aktif"
-                                            {{ request('filter') == 'status_aktif' ? 'selected' : '' }}>Aktif</option>
-                                        <option value="status_tidak_aktif"
-                                            {{ request('filter') == 'status_tidak_aktif' ? 'selected' : '' }}>Tidak
-                                            Aktif</option>
-                                    </optgroup>
+                                <select name="role" onchange="this.form.submit()"
+                                    class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm w-full lg:w-40 cursor-pointer">
+                                    <option value="">Semua Role</option>
+                                    @foreach ($roles as $role)
+                                        <option value="{{ $role->id_role }}"
+                                            {{ request('role') == $role->id_role ? 'selected' : '' }}>
+                                            {{ $role->nama_role }}
+                                        </option>
+                                    @endforeach
                                 </select>
 
-                                <div class="relative w-full md:w-64">
+                                <select name="status" onchange="this.form.submit()"
+                                    class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm w-full lg:w-40 cursor-pointer">
+                                    <option value="">Semua Status</option>
+                                    <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif
+                                    </option>
+                                    <option value="tidak_aktif"
+                                        {{ request('status') == 'tidak_aktif' ? 'selected' : '' }}>Tidak Aktif</option>
+                                </select>
+
+                                <div class="relative w-full lg:w-64">
                                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                         <svg class="w-4 h-4 text-gray-500" aria-hidden="true"
                                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
@@ -102,6 +100,7 @@
                                     <input type="text" name="search" x-model="search"
                                         class="block w-full p-2 pl-10 pr-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-green-500 focus:border-green-500"
                                         placeholder="Cari nama / username...">
+
                                     <button type="button" @click="clearSearch()" x-show="search.length > 0"
                                         style="display: none;"
                                         class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-red-500 focus:outline-none transition">
@@ -249,7 +248,7 @@
                             </div>
 
                             <div class="mt-4">
-                                {{ $users->links() }}
+                                {{ $users->appends(request()->query())->links() }}
                             </div>
 
                             <div x-show="showResetModal" class="fixed inset-0 z-50 overflow-y-auto"
@@ -257,10 +256,8 @@
                                 x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
                                 x-transition:leave="transition ease-in duration-200"
                                 x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
-
                                 <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
                                     @click="showResetModal = false"></div>
-
                                 <div class="flex items-center justify-center min-h-screen p-4 text-center">
                                     <div
                                         class="relative bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:max-w-lg w-full">
@@ -284,16 +281,13 @@
                                                             <p class="text-sm text-gray-500 mb-4">Masukkan password
                                                                 baru untuk: <span class="font-bold text-gray-800"
                                                                     x-text="resetUserName"></span></p>
-
                                                             <label
                                                                 class="block text-sm font-medium text-gray-700 mb-1">Password
                                                                 Baru</label>
-
                                                             <input type="text" name="new_password" required
                                                                 x-model="resetPasswordInput"
                                                                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 transition duration-150 ease-in-out"
                                                                 placeholder="Minimal 8 karakter" minlength="8">
-
                                                             <div class="mt-1">
                                                                 <p x-show="resetPasswordInput.length > 0 && resetPasswordInput.length < 8"
                                                                     class="text-xs text-red-500 font-semibold flex items-center">
@@ -304,9 +298,8 @@
                                                                             d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
                                                                         </path>
                                                                     </svg>
-                                                                    Kurang 
-                                                                    <span x-text="8 - resetPasswordInput.length" class="mx-1"></span>
-                                                                    karakter lagi.
+                                                                    Kurang <span x-text="8 - resetPasswordInput.length"
+                                                                        class="mx-1"></span> karakter lagi.
                                                                 </p>
                                                                 <p x-show="resetPasswordInput.length >= 8"
                                                                     class="text-xs text-green-600 font-semibold flex items-center">
@@ -319,28 +312,21 @@
                                                                     Password valid.
                                                                 </p>
                                                                 <p x-show="resetPasswordInput.length === 0"
-                                                                    class="text-xs text-gray-400">
-                                                                    Wajib minimal 8 karakter.
-                                                                </p>
+                                                                    class="text-xs text-gray-400">Wajib minimal 8
+                                                                    karakter.</p>
                                                             </div>
-
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                                                {{-- TOMBOL SUBMIT (DISABLED JIKA < 8) --}}
                                                 <button type="submit" :disabled="resetPasswordInput.length < 8"
                                                     :class="{ 'opacity-50 cursor-not-allowed': resetPasswordInput.length <
                                                         8, 'hover:bg-yellow-700': resetPasswordInput.length >= 8 }"
-                                                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-yellow-600 text-base font-medium text-white focus:outline-none sm:ml-3 sm:w-auto sm:text-sm transition">
-                                                    Reset Password
-                                                </button>
-
+                                                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-yellow-600 text-base font-medium text-white focus:outline-none sm:ml-3 sm:w-auto sm:text-sm transition">Reset
+                                                    Password</button>
                                                 <button type="button" @click="showResetModal = false"
-                                                    class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition">
-                                                    Batal
-                                                </button>
+                                                    class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition">Batal</button>
                                             </div>
                                         </form>
                                     </div>

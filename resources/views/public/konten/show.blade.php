@@ -152,7 +152,7 @@
     <nav class="glass-nav shadow-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20 items-center">
-                <a href="{{ route('public.konten.index') }}"
+                <a href="{{ url('/') }}?view=konten"
                     class="flex items-center text-black hover:text-green-600 transition text-lg font-bold group">
                     <svg class="w-6 h-6 mr-2 transform group-hover:-translate-x-1 transition" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24">

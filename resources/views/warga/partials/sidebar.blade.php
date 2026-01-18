@@ -1,4 +1,4 @@
-<div class="flex flex-col space-y-1">
+<div class="flex-1 flex flex-col space-y-1">
     @php
         $activeClass = 'flex items-center px-3 py-3 text-lg font-medium bg-green-600 text-white rounded-md';
         $inactiveClass =

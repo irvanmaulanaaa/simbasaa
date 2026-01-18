@@ -21,17 +21,35 @@ class SetoranController extends Controller
     {
         $ketua = Auth::user();
 
+        $dataRT = User::whereHas('role', function ($q) {
+            $q->where('nama_role', 'warga');
+        })
+            ->where('desa_id', $ketua->desa_id)
+            ->where('rw', $ketua->rw)
+            ->whereHas('setoran', function ($q) {
+            })
+            ->select('rt')
+            ->distinct()
+            ->orderBy('rt', 'asc')
+            ->pluck('rt');
+
         $query = Setoran::with(['warga', 'detail'])
-            ->where(function($q) use ($ketua) {
+            ->where(function ($q) use ($ketua) {
                 $q->where('ketua_id', $ketua->id_user)
-                  ->orWhereHas('warga', function ($subQ) use ($ketua) {
-                      $subQ->where('desa_id', $ketua->desa_id)->where('rw', $ketua->rw);
-                  });
+                    ->orWhereHas('warga', function ($subQ) use ($ketua) {
+                        $subQ->where('desa_id', $ketua->desa_id)->where('rw', $ketua->rw);
+                    });
             });
 
         if ($request->filled('search')) {
-            $query->whereHas('warga', function($q) use ($request) {
+            $query->whereHas('warga', function ($q) use ($request) {
                 $q->where('nama_lengkap', 'like', "%{$request->search}%");
+            });
+        }
+
+        if ($request->filled('rt')) {
+            $query->whereHas('warga', function ($q) use ($request) {
+                $q->where('rt', $request->rt);
             });
         }
 
@@ -39,14 +57,22 @@ class SetoranController extends Controller
             $query->whereBetween('tgl_setor', [$request->start_date, $request->end_date]);
         }
 
-        $setorans = $query->latest('tgl_setor')->paginate(10);
+        $perPage = $request->input('per_page', 10);
+        $setorans = $query->latest('tgl_setor')
+            ->paginate($perPage)
+            ->withQueryString(); 
 
-        $wargas = User::whereHas('role', function ($q) { $q->where('nama_role', 'warga'); })
-            ->where('desa_id', $ketua->desa_id)->where('rw', $ketua->rw)->where('status', 'aktif')->get();
-        
+        $wargas = User::whereHas('role', function ($q) {
+            $q->where('nama_role', 'warga');
+        })
+            ->where('desa_id', $ketua->desa_id)
+            ->where('rw', $ketua->rw)
+            ->where('status', 'aktif')
+            ->get();
+
         $sampahs = Sampah::where('status_sampah', 'aktif')->get();
 
-        return view('ketua.setoran.index', compact('setorans', 'wargas', 'sampahs'));
+        return view('ketua.setoran.index', compact('setorans', 'wargas', 'sampahs', 'dataRT'));
     }
 
     /**
@@ -106,7 +132,8 @@ class SetoranController extends Controller
 
         DB::transaction(function () use ($request, $setoran) {
             $saldo = Saldo::where('user_id', $setoran->warga_id)->first();
-            if ($saldo) $saldo->decrement('jumlah_saldo', $setoran->total_harga);
+            if ($saldo)
+                $saldo->decrement('jumlah_saldo', $setoran->total_harga);
 
             $setoran->detail()->delete();
 
@@ -118,7 +145,9 @@ class SetoranController extends Controller
                 $totalSetoran += $subtotal;
 
                 $setoran->detail()->create([
-                    'sampah_id' => $sampahId, 'berat' => $berat, 'subtotal' => $subtotal
+                    'sampah_id' => $sampahId,
+                    'berat' => $berat,
+                    'subtotal' => $subtotal
                 ]);
             }
 
@@ -140,11 +169,12 @@ class SetoranController extends Controller
     public function destroy($id)
     {
         $setoran = Setoran::findOrFail($id);
-        
+
         DB::transaction(function () use ($setoran) {
             $saldo = Saldo::where('user_id', $setoran->warga_id)->first();
-            if ($saldo) $saldo->decrement('jumlah_saldo', $setoran->total_harga);
-            
+            if ($saldo)
+                $saldo->decrement('jumlah_saldo', $setoran->total_harga);
+
             $setoran->detail()->delete();
             $setoran->delete();
         });
@@ -152,7 +182,8 @@ class SetoranController extends Controller
         return redirect()->back()->with('success', 'Data setoran dihapus dan saldo dikembalikan.');
     }
 
-    private function validateRequest($request) {
+    private function validateRequest($request)
+    {
         $request->validate([
             'warga_id' => 'required|exists:users,id_user',
             'sampah_id' => 'required|array',

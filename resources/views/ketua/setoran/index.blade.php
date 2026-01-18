@@ -11,15 +11,46 @@
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
 
-    <div id="global-loader"
-        class="fixed inset-0 bg-white bg-opacity-90 z-[9999] flex flex-col items-center justify-center transition-opacity duration-300"
-        style="display: none;">
-        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
-        <p class="text-green-700 font-bold text-lg animate-pulse">Loading...</p>
-    </div>
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
 
-    <div class="py-6 px-4 sm:px-0 min-h-screen" x-data="setoranHandler()">
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+
+    <div class="py-6 px-4 sm:px-0 min-h-screen relative" x-data="setoranHandler()">
+
+        <div x-show="isLoading"
+            class="fixed inset-0 bg-white bg-opacity-80 z-[9999] flex flex-col items-center justify-center backdrop-blur-sm transition-opacity"
+            style="display: none;" x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+            <div class="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center border border-gray-100">
+                <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
+                <p class="text-green-700 font-bold text-lg animate-pulse">Loading...</p>
+            </div>
+        </div>
 
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
@@ -27,9 +58,7 @@
                 <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
                     <li class="inline-flex items-center">
                         <a href="{{ route('ketua.dashboard') }}"
-                            class="inline-flex items-center text-lg font-medium text-gray-700 hover:text-green-600">
-                            Home
-                        </a>
+                            class="inline-flex items-center text-lg font-medium text-gray-700 hover:text-green-600">Home</a>
                     </li>
                     <li aria-current="page">
                         <div class="flex items-center">
@@ -49,13 +78,13 @@
 
                     <div
                         class="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-6 space-y-4 xl:space-y-0">
-
                         <div class="flex-shrink-0">
-                            <button @click="openFormModal()"
-                                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-700 focus:outline-none focus:ring ring-green-300 transition ease-in-out duration-150 shadow-md h-[38px]">
+                            <button @click="openCreateModal()"
+                                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 transition shadow-md h-[38px]">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6">
+                                    </path>
                                 </svg>
                                 Input Setoran
                             </button>
@@ -81,38 +110,60 @@
 
                             <div class="w-full md:w-auto flex-grow" x-data="{ searchQuery: '{{ request('search') }}' }">
                                 <label class="block text-xs font-medium text-gray-500 mb-1">Cari Nama</label>
-                                <div class="relative w-full md:w-64"> 
+                                <div class="relative w-full md:w-64">
                                     <input type="text" name="search" x-model="searchQuery"
                                         placeholder="Nama warga..."
+                                        @keydown.enter.prevent="$el.closest('form').submit()"
                                         class="w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm pl-3 pr-8 h-[38px]">
 
                                     <button type="button" x-show="searchQuery && searchQuery.length > 0"
                                         @click="searchQuery = ''; $nextTick(() => { $el.closest('form').submit(); });"
-                                        class="absolute inset-y-0 right-0 flex items-center pr-2 text-gray-400 hover:text-red-500 transition cursor-pointer focus:outline-none"
+                                        class="absolute inset-y-0 right-8 flex items-center pr-2 text-gray-400 hover:text-red-500 transition cursor-pointer focus:outline-none"
                                         style="display: none;" x-transition>
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M6 18L18 6M6 6l12 12"></path>
                                         </svg>
                                     </button>
+
+                                    <button type="button" @click="$el.closest('form').submit()"
+                                        class="absolute inset-y-0 right-0 flex items-center pr-2 text-gray-400 hover:text-green-600 transition cursor-pointer">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                        </svg>
+                                    </button>
                                 </div>
+                            </div>
+
+                            <div class="w-full md:w-auto">
+                                <label class="block text-xs font-medium text-gray-500 mb-1">Filter RT</label>
+                                <select name="rt" onchange="this.form.submit()"
+                                    class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm cursor-pointer w-full md:w-30 h-[38px]">
+                                    <option value="">Semua RT</option>
+                                    @if (isset($dataRT))
+                                        @foreach ($dataRT as $rt)
+                                            <option value="{{ $rt }}"
+                                                {{ request('rt') == $rt ? 'selected' : '' }}>
+                                                RT {{ $rt }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                </select>
                             </div>
 
                             <div
                                 class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 w-full md:w-auto items-end">
-
                                 <div class="w-full md:w-auto">
                                     <label class="block text-xs font-medium text-gray-500 mb-1">Dari Tanggal</label>
                                     <input type="date" name="start_date" value="{{ request('start_date') }}"
                                         class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm w-full md:w-auto h-[38px]">
                                 </div>
-
                                 <div class="w-full md:w-auto">
                                     <label class="block text-xs font-medium text-gray-500 mb-1">Sampai Tanggal</label>
                                     <input type="date" name="end_date" value="{{ request('end_date') }}"
                                         class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm w-full md:w-auto h-[38px]">
                                 </div>
-
                                 <div class="flex space-x-2 w-full md:w-auto">
                                     <button type="submit"
                                         class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition h-[38px] text-sm font-medium shadow-sm flex items-center justify-center flex-grow md:flex-grow-0">
@@ -120,7 +171,7 @@
                                     </button>
 
                                     @if (request('start_date') || request('end_date'))
-                                        <a href="{{ route('ketua.setoran.index', ['per_page' => request('per_page'), 'search' => request('search')]) }}"
+                                        <a href="{{ route('ketua.setoran.index', ['per_page' => request('per_page'), 'search' => request('search'), 'rt' => request('rt')]) }}"
                                             class="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition h-[38px] flex items-center justify-center shadow-sm"
                                             title="Reset Tanggal">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor"
@@ -140,8 +191,9 @@
                             <thead class="bg-gray-100 text-gray-700 uppercase text-xs font-bold leading-normal">
                                 <tr>
                                     <th class="py-3 px-6 text-center w-12">No</th>
-                                    <th class="py-3 px-6 text-left whitespace-nowrap">Tanggal Transaksi</th>
+                                    <th class="py-3 px-6 text-center whitespace-nowrap">Tanggal Transaksi</th>
                                     <th class="py-3 px-6 text-left whitespace-nowrap">Nama Warga</th>
+                                    <th class="py-3 px-6 text-center w-16">RT</th>
                                     <th class="py-3 px-6 text-center whitespace-nowrap">Total Setoran</th>
                                     <th class="py-3 px-6 text-center whitespace-nowrap">Total Pendapatan</th>
                                     <th class="py-3 px-6 text-center w-24 whitespace-nowrap">Aksi</th>
@@ -149,33 +201,49 @@
                             </thead>
                             <tbody class="text-gray-600 text-sm font-light">
                                 @forelse ($setorans as $index => $setoran)
-                                    <tr
-                                        class="border-b border-gray-200 hover:bg-gray-50 transition duration-150 group">
+                                    <tr class="border-b border-gray-200 hover:bg-gray-50 transition duration-150">
                                         <td class="py-3 px-6 text-center font-medium align-middle">
                                             {{ $setorans->firstItem() + $index }}
                                         </td>
-                                        <td class="py-3 px-6 text-left align-middle whitespace-nowrap">
-                                            <span
-                                                class="font-bold text-gray-800 block">{{ \Carbon\Carbon::parse($setoran->tgl_setor)->translatedFormat('d M Y') }}</span>
+                                        <td class="py-3 px-6 text-center align-middle whitespace-nowrap">
+                                            <span class="font-bold text-gray-800 block">
+                                                {{ \Carbon\Carbon::parse($setoran->tgl_setor)->translatedFormat('d M Y') }}
+                                            </span>
                                         </td>
                                         <td class="py-3 px-6 text-left align-middle whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <span
-                                                    class="font-medium text-gray-900">{{ $setoran->warga->nama_lengkap ?? '-' }}</span>
-                                            </div>
+                                            <span class="font-medium text-gray-900">
+                                                {{ $setoran->warga->nama_lengkap ?? '-' }}
+                                            </span>
                                         </td>
+
+                                        <td class="py-3 px-6 text-center align-middle font-medium">
+                                            {{ $setoran->warga->rt ?? '-' }}
+                                        </td>
+
                                         <td class="py-3 px-6 text-center align-middle whitespace-nowrap">
                                             @php
                                                 $summary = $setoran->detail
                                                     ->groupBy('sampah.UOM')
-                                                    ->map(function ($row) {
-                                                        return $row->sum('berat');
-                                                    });
+                                                    ->map(fn($row) => $row->sum('berat'));
                                             @endphp
                                             <div class="flex flex-col items-center gap-1">
                                                 @foreach ($summary as $uom => $total)
+                                                    @php
+                                                        $uomLower = strtolower($uom);
+
+                                                        if ($uomLower == 'kg') {
+                                                            $badgeClass = 'bg-blue-100 text-blue-800 border-blue-200';
+                                                        } elseif ($uomLower == 'pcs') {
+                                                            $badgeClass =
+                                                                'bg-green-100 text-green-800 border-green-200';
+                                                        } else {
+                                                            $badgeClass =
+                                                                'bg-yellow-100 text-yellow-800 border-yellow-200';
+                                                        }
+                                                    @endphp
+
                                                     <span
-                                                        class="inline-flex items-center bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded-full border border-blue-200">
+                                                        class="inline-flex items-center {{ $badgeClass }} text-xs font-bold px-2.5 py-0.5 rounded-full border">
                                                         {{ (float) $total }} {{ $uom }}
                                                     </span>
                                                 @endforeach
@@ -201,7 +269,7 @@
                                                         </path>
                                                     </svg>
                                                 </button>
-                                                <button @click="openFormModal({{ $setoran->id_setor }})"
+                                                <button @click="openEditModal({{ $setoran->id_setor }})"
                                                     class="w-8 h-8 rounded bg-yellow-50 text-yellow-600 flex items-center justify-center hover:bg-yellow-500 hover:text-white transition shadow-sm"
                                                     title="Edit Data">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor"
@@ -216,28 +284,14 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-center py-12 text-gray-500">
-                                            <div class="flex flex-col items-center justify-center">
-                                                <svg class="w-12 h-12 mb-3 text-gray-300" fill="none"
-                                                    stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
-                                                    </path>
-                                                </svg>
-                                                <p class="text-base">Belum ada riwayat setoran.</p>
-                                                <p class="text-xs mt-1">Silakan input setoran pertama Anda.</p>
-                                            </div>
-                                        </td>
+                                        <td colspan="7" class="text-center py-12 text-gray-500">Belum ada riwayat
+                                            setoran.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
-
-                    <div class="mt-4">
-                        {{ $setorans->appends(request()->query())->links() }}
-                    </div>
+                    <div class="mt-4">{{ $setorans->appends(request()->query())->links() }}</div>
                 </div>
             </div>
         </div>
@@ -246,10 +300,8 @@
             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
             x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
             x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
-
             <div class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity"
                 @click="showFormModal = false"></div>
-
             <div class="flex min-h-full items-center justify-center p-4">
                 <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden transform transition-all"
                     x-transition:enter="transition ease-out duration-300"
@@ -260,12 +312,11 @@
                         <h3 class="text-lg font-bold text-white flex items-center">
                             <span x-text="isEdit ? 'Edit Data Setoran' : 'Input Setoran Baru'"></span>
                         </h3>
-                        <button @click="showFormModal = false" class="text-green-100 hover:text-white transition">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button @click="showFormModal = false" class="text-green-100 hover:text-white transition"><svg
+                                class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
+                            </svg></button>
                     </div>
 
                     <form :action="formAction" method="POST" class="p-6" @submit.prevent="validateAndSubmit"
@@ -274,13 +325,12 @@
                         <input type="hidden" name="_method" :value="isEdit ? 'PUT' : 'POST'">
 
                         <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Pilih Warga Penyetor <span class="text-red-500">*</span>
-                            </label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Warga Penyetor <span
+                                    class="text-red-500">*</span></label>
                             <div class="relative">
                                 <select name="warga_id" x-model="formData.warga_id"
                                     class="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 text-sm cursor-pointer transition-colors"
-                                    :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': errors.warga_id }">
+                                    :class="{ 'border-red-500': errors.warga_id }">
                                     <option value="">Pilih Nama Warga</option>
                                     @foreach ($wargas as $w)
                                         <option value="{{ $w->id_user }}">{{ $w->nama_lengkap }} (RW
@@ -305,7 +355,6 @@
                                 <template x-for="(item, index) in items" :key="index">
                                     <div
                                         class="grid grid-cols-12 gap-3 items-end bg-white p-3 rounded-lg shadow-sm border border-gray-100">
-
                                         <div class="col-span-12 md:col-span-5">
                                             <label
                                                 class="text-[10px] text-gray-400 uppercase font-bold mb-1 block">Jenis
@@ -313,15 +362,13 @@
                                             <select name="sampah_id[]" x-model="item.sampah_id"
                                                 @change="updateHarga(index)"
                                                 class="w-full text-sm border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 py-1.5 cursor-pointer"
-                                                :class="{ 'border-red-500 bg-red-50': errors.items[index]?.sampah_id }">
-                                                <option value="" data-harga="0">Pilih Jenis Sampah</option>
-                                                @foreach ($sampahs as $s)
-                                                    <option value="{{ $s->id_sampah }}"
-                                                        data-harga="{{ $s->harga_anggota }}">{{ $s->nama_sampah }}
-                                                        (Rp
-                                                        {{ number_format($s->harga_anggota) }}/{{ $s->UOM }})
+                                                :class="{ 'border-red-500': errors.items[index]?.sampah_id }">
+                                                <option value="">Pilih Jenis Sampah</option>
+                                                <template x-for="s in masterSampah">
+                                                    <option :value="s.id_sampah"
+                                                        x-text="s.nama_sampah + ' (Rp ' + s.harga_anggota + '/' + s.UOM + ')'">
                                                     </option>
-                                                @endforeach
+                                                </template>
                                             </select>
                                             <p x-show="errors.items[index]?.sampah_id"
                                                 class="text-red-500 text-[10px] mt-1">Wajib dipilih</p>
@@ -329,13 +376,13 @@
 
                                         <div class="col-span-5 md:col-span-3">
                                             <label
-                                                class="text-[10px] text-gray-400 uppercase font-bold mb-1 block">Total
+                                                class="text-[10px] text-gray-400 uppercase font-bold mb-1 block">Berat/Qty
                                                 <span class="text-red-500">*</span></label>
                                             <input type="number" name="berat[]" x-model="item.berat"
                                                 @input="updateHarga(index)" step="0.01" min="0"
                                                 class="w-full text-sm border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 py-1.5"
                                                 placeholder="0"
-                                                :class="{ 'border-red-500 bg-red-50': errors.items[index]?.berat }"
+                                                :class="{ 'border-red-500': errors.items[index]?.berat }"
                                                 onkeydown="return event.keyCode !== 69 && event.keyCode !== 189">
                                             <p x-show="errors.items[index]?.berat"
                                                 class="text-red-500 text-[10px] mt-1">Wajib diisi</p>
@@ -365,11 +412,12 @@
                             </div>
 
                             <button type="button" @click="addItem()"
-                                class="mt-3 w-full py-2 border-2 border-dashed border-green-300 text-green-600 rounded-lg text-sm font-semibold hover:bg-green-50 hover:border-green-400 transition flex items-center justify-center"><svg
-                                    class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                class="mt-3 w-full py-2 border-2 border-dashed border-green-300 text-green-600 rounded-lg text-sm font-semibold hover:bg-green-50 hover:border-green-400 transition flex items-center justify-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 4v16m8-8H4"></path>
-                                </svg> Tambah Item Sampah</button>
+                                </svg> Tambah Item Sampah
+                            </button>
                         </div>
 
                         <div class="flex flex-col md:flex-row justify-between items-center gap-4 pt-2">
@@ -390,8 +438,9 @@
                                 <button type="button" @click="showFormModal = false"
                                     class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition">Batal</button>
                                 <button type="submit"
-                                    class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition shadow-md"><span
-                                        x-text="isEdit ? 'Update' : 'Simpan'"></span></button>
+                                    class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition shadow-md">
+                                    <span x-text="isEdit ? 'Update' : 'Simpan'"></span>
+                                </button>
                             </div>
                         </div>
                     </form>
@@ -491,94 +540,52 @@
                     items: []
                 },
                 masterSampah: @json($sampahs),
-
                 errors: {
                     warga_id: null,
                     items: {},
                     items_empty: false
                 },
+                isLoading: false,
 
-                validateAndSubmit(e) {
+                openCreateModal() {
+                    this.isEdit = false;
+                    this.formAction = '{{ route('ketua.setoran.store') }}';
+                    this.formData.warga_id = '';
+                    this.items = [];
+                    this.addItem();
+                    this.calculateTotal();
                     this.errors = {
                         warga_id: null,
                         items: {},
                         items_empty: false
                     };
-                    let isValid = true;
-
-                    if (!this.formData.warga_id) {
-                        this.errors.warga_id = 'Silakan pilih nama warga terlebih dahulu.';
-                        isValid = false;
-                    }
-
-                    if (this.items.length === 0) {
-                        this.errors.items_empty = true;
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Daftar Kosong!',
-                            text: 'Minimal input satu setoran sampah.',
-                            confirmButtonColor: '#16a34a'
-                        });
-                        return;
-                    }
-
-                    this.items.forEach((item, index) => {
-                        this.errors.items[index] = {};
-                        if (!item.sampah_id) {
-                            this.errors.items[index].sampah_id = true;
-                            isValid = false;
-                        }
-                        if (!item.berat || item.berat <= 0) {
-                            this.errors.items[index].berat = true;
-                            isValid = false;
-                        }
-                    });
-
-                    if (!isValid) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Data Belum Lengkap',
-                            text: 'Mohon lengkapi data yang berwarna merah.',
-                            confirmButtonColor: '#dc2626'
-                        });
-                        return;
-                    }
-
-                    document.getElementById('global-loader').style.display = 'flex';
-                    e.target.submit();
+                    this.showFormModal = true;
                 },
 
-                openFormModal(id = null) {
-                    this.showFormModal = true;
-                    this.isEdit = !!id;
-                    this.items = [];
+                openEditModal(id) {
+                    this.isEdit = true;
+                    this.formAction = `/ketua/setoran/${id}`;
                     this.errors = {
                         warga_id: null,
                         items: {},
                         items_empty: false
                     };
 
-                    if (this.isEdit) {
-                        this.formAction = `/ketua/setoran/${id}`;
-                        fetch(`/ketua/setoran/${id}`)
-                            .then(res => res.json())
-                            .then(data => {
-                                this.formData.warga_id = data.warga_id;
-                                this.items = data.detail.map(d => ({
-                                    sampah_id: d.sampah_id,
-                                    berat: parseFloat(d.berat),
-                                    subtotal: d.subtotal,
-                                    harga_per_kg: this.masterSampah.find(s => s.id_sampah == d.sampah_id)
-                                        ?.harga_anggota || 0
-                                }));
-                                this.calculateTotal();
-                            });
-                    } else {
-                        this.formAction = "{{ route('ketua.setoran.store') }}";
-                        this.formData.warga_id = '';
-                        this.addItem();
-                        this.calculateTotal();
-                    }
+                    fetch(`/ketua/setoran/${id}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            this.formData.warga_id = data.warga_id;
+                            this.items = data.detail.map(d => ({
+                                sampah_id: d.sampah_id,
+                                berat: parseFloat(d.berat),
+                                subtotal: d.subtotal,
+                                harga_per_kg: this.masterSampah.find(s => s.id_sampah == d.sampah_id)
+                                    ?.harga_anggota || 0
+                            }));
+                            this.calculateTotal();
+                            this.showFormModal = true;
+                        })
+                        .catch(err => console.error(err));
                 },
 
                 openDetailModal(id) {
@@ -597,7 +604,7 @@
                                     .toFixed(2),
                                 items: data.detail.map(d => ({
                                     nama_sampah: d.sampah ? d.sampah.nama_sampah : '-',
-                                    berat: d.berat,
+                                    berat: parseFloat(d.berat),
                                     uom: d.sampah ? d.sampah.UOM : 'Kg',
                                     subtotal: d.subtotal
                                 }))
@@ -618,20 +625,18 @@
 
                 removeItem(index) {
                     this.items.splice(index, 1);
-                    delete this.errors.items[index];
                     this.calculateTotal();
                 },
 
                 updateHarga(index) {
                     let item = this.items[index];
-
-                    if (item.berat < 0) {
-                        item.berat = 0;
-                    }
+                    if (item.berat < 0) item.berat = 0;
 
                     let selectedSampah = this.masterSampah.find(s => s.id_sampah == item.sampah_id);
                     if (selectedSampah) {
                         item.harga_per_kg = selectedSampah.harga_anggota;
+                    } else {
+                        item.harga_per_kg = 0;
                     }
 
                     let berat = parseFloat(item.berat);
@@ -652,8 +657,58 @@
                         currency: 'IDR',
                         minimumFractionDigits: 0
                     }).format(number);
+                },
+
+                validateAndSubmit(e) {
+                    this.errors = {
+                        warga_id: null,
+                        items: {},
+                        items_empty: false
+                    };
+                    let isValid = true;
+
+                    if (!this.formData.warga_id) {
+                        this.errors.warga_id = 'Nama warga wajib dipilih.';
+                        isValid = false;
+                    }
+
+                    if (this.items.length === 0) {
+                        this.errors.items_empty = true;
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Kosong!',
+                            text: 'Minimal input satu item sampah.',
+                            confirmButtonColor: '#ca8a04'
+                        });
+                        return;
+                    }
+
+                    this.items.forEach((item, index) => {
+                        this.errors.items[index] = {};
+                        if (!item.sampah_id) {
+                            this.errors.items[index].sampah_id = true;
+                            isValid = false;
+                        }
+                        if (!item.berat || item.berat <= 0) {
+                            this.errors.items[index].berat = true;
+                            isValid = false;
+                        }
+                    });
+
+                    if (!isValid) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Data Belum Lengkap',
+                            text: 'Periksa kolom yang berwarna merah.',
+                            confirmButtonColor: '#dc2626'
+                        });
+                        return;
+                    }
+
+                    this.isLoading = true;
+                    e.target.submit();
                 }
-            }
+            };
         }
 
         @if (session('success'))
@@ -672,5 +727,4 @@
         <p>&copy; {{ date('Y') }} <span class="font-bold text-green-600">SIMBASA Developed by</span> Irvan
             Maulana.</p>
     </footer>
-
 </x-app-layout>

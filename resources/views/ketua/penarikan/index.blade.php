@@ -37,7 +37,7 @@
         class="fixed inset-0 bg-white bg-opacity-90 z-[9999] flex flex-col items-center justify-center transition-opacity duration-300"
         style="display: none;">
         <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
-        <p class="text-green-700 font-bold text-lg animate-pulse">Memproses Data...</p>
+        <p class="text-green-700 font-bold text-lg animate-pulse">Loading...</p>
     </div>
 
     <div class="py-6 px-4 sm:px-0 min-h-screen">
@@ -210,12 +210,12 @@
                     </div>
 
                     <form method="GET" action="{{ route('ketua.penarikan.index') }}"
-                        class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                        class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
 
                         <div class="md:col-span-2">
                             <label class="block text-xs font-bold text-gray-500 mb-1">Tampilkan</label>
                             <select name="per_page" onchange="this.form.submit()"
-                                class="w-full text-sm border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                                class="w-full text-sm border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 cursor-pointer h-[38px] py-1">
                                 <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 Data
                                 </option>
                                 <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 Data
@@ -227,27 +227,35 @@
                             </select>
                         </div>
 
-                        <div class="md:col-span-4" x-data="{ searchQuery: '{{ request('search') }}' }">
-                            <label class="block text-xs font-bold text-gray-500 mb-1">Cari Nama Warga</label>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-gray-500 mb-1">Status</label>
+                            <select name="status" onchange="this.form.submit()"
+                                class="w-full text-sm border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 cursor-pointer h-[38px] py-1">
+                                <option value="">Semua Status</option>
+                                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending
+                                </option>
+                                <option value="disetujui" {{ request('status') == 'disetujui' ? 'selected' : '' }}>
+                                    Disetujui</option>
+                                <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="md:col-span-3" x-data="{ searchQuery: '{{ request('search') }}' }">
+                            <label class="block text-xs font-bold text-gray-500 mb-1">Cari Nama</label>
                             <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                     </svg>
                                 </div>
-
-                                <input type="text" name="search" x-model="searchQuery"
-                                    placeholder="Ketik nama warga..."
-                                    class="w-full pl-10 pr-10 text-sm border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
-
+                                <input type="text" name="search" x-model="searchQuery" placeholder="Cari..."
+                                    class="w-full pl-8 pr-8 text-sm border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 h-[38px]">
                                 <button type="button" x-show="searchQuery.length > 0"
                                     @click="searchQuery = ''; $nextTick(() => $el.closest('form').submit())"
-                                    x-transition:enter="transition ease-out duration-200"
-                                    x-transition:enter-start="opacity-0 scale-90"
-                                    x-transition:enter-end="opacity-100 scale-100"
-                                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-red-500 cursor-pointer"
+                                    class="absolute inset-y-0 right-0 pr-2 flex items-center text-gray-400 hover:text-red-500 cursor-pointer"
                                     style="display: none;">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -257,33 +265,32 @@
                             </div>
                         </div>
 
-                        <div class="md:col-span-4 grid grid-cols-2 gap-2">
+                        <div class="md:col-span-3 grid grid-cols-2 gap-2">
                             <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">Dari Tanggal</label>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">Dari</label>
                                 <input type="date" name="start_date" value="{{ request('start_date') }}"
-                                    class="w-full text-sm border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                                    class="w-full text-sm border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 px-2 h-[38px]">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">Sampai Tanggal</label>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">Sampai</label>
                                 <input type="date" name="end_date" value="{{ request('end_date') }}"
-                                    class="w-full text-sm border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                                    class="w-full text-sm border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 px-2 h-[38px]">
                             </div>
                         </div>
 
-                        <div class="md:col-span-2 flex items-end gap-2">
+                        <div class="md:col-span-2 flex gap-2">
                             <button type="submit"
-                                class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg text-sm w-full transition h-[38px]">
+                                class="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded-lg text-sm w-full transition h-[38px] flex items-center justify-center">
                                 Filter
                             </button>
 
-                            @if (request('start_date') || request('end_date') || request('search'))
+                            @if (request('search') || request('status') || request('start_date') || request('end_date'))
                                 <a href="{{ route('ketua.penarikan.index') }}"
-                                    class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-3 rounded-lg text-sm transition h-[38px] flex items-center justify-center animate-fade-in-up"
-                                    title="Reset Filter">
+                                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded-lg text-sm w-auto transition h-[38px] flex items-center justify-center"
+                                    title="Reset">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
-                                        </path>
+                                            d="M6 18L18 6M6 6l12 12"></path>
                                     </svg>
                                 </a>
                             @endif
@@ -331,7 +338,7 @@
                                         @else
                                             <span
                                                 class="inline-flex items-center bg-red-100 text-red-800 text-xs font-bold px-2.5 py-0.5 rounded-full border border-red-200">
-                                                 Ditolak
+                                                Ditolak
                                             </span>
                                         @endif
                                     </td>
@@ -357,7 +364,8 @@
 
                 <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-gray-50">
                     <div class="text-xs text-gray-500">
-                        Menampilkan {{ $historyRequests->firstItem() ?? 0 }} sampai {{ $historyRequests->lastItem() ?? 0 }}
+                        Menampilkan {{ $historyRequests->firstItem() ?? 0 }} sampai
+                        {{ $historyRequests->lastItem() ?? 0 }}
                         dari {{ $historyRequests->total() }} data
                     </div>
                     <div>
@@ -417,7 +425,7 @@
             } else {
                 Swal.fire({
                     title: 'Tolak Penarikan?',
-                    input: 'textarea', 
+                    input: 'textarea',
                     inputLabel: 'Alasan Penolakan',
                     inputPlaceholder: 'Contoh: Saldo tidak mencukupi, atau data tidak valid...',
                     inputAttributes: {
@@ -442,8 +450,8 @@
 
                         let inputPesan = document.createElement('input');
                         inputPesan.type = 'hidden';
-                        inputPesan.name = 'catatan_ketua'; 
-                        inputPesan.value = result.value; 
+                        inputPesan.name = 'catatan_ketua';
+                        inputPesan.value = result.value;
 
                         form.appendChild(inputPesan);
                         form.submit();

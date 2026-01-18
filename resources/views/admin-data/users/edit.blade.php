@@ -46,12 +46,81 @@
             </nav>
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg relative">
-                <div class="p-6 text-gray-900">
 
+                <div class="p-6 text-gray-900">
                     <form id="editForm" action="{{ route('admin-data.users.update', $user->id_user) }}" method="POST"
-                        x-data="{ password: '', password_confirmation: '' }">
+                        novalidate @submit.prevent="validateAndSubmit" x-data="{
+                            password: '',
+                            password_confirmation: '',
+                            errors: {},
+                            isLoading: false,
+                        
+                            validateAndSubmit() {
+                                this.isLoading = false;
+                                this.errors = {};
+                                let adaError = false;
+                        
+                                const cek = (id, fieldName, isSelect = false) => {
+                                    const el = document.getElementById(id);
+                                    if (!el || !el.value || (typeof el.value === 'string' && !el.value.trim())) {
+                                        this.errors[id] = fieldName + (isSelect ? ' wajib dipilih.' : ' wajib diisi.');
+                                        adaError = true;
+                                    }
+                                };
+                        
+                                cek('nama_lengkap', 'Nama Lengkap');
+                                cek('username', 'Username');
+                        
+                                cek('role_id', 'Role Pengguna', true);
+                                cek('status', 'Status', true);
+                        
+                                cek('no_telepon', 'Nomor Telepon');
+                                cek('jalan', 'Nama Jalan');
+                                cek('rt', 'RT');
+                                cek('rw', 'RW');
+                                cek('kecamatan_id', 'Kecamatan', true);
+                                cek('desa_id', 'Desa', true);
+                        
+                                if (this.password.length > 0 && this.password.length < 8) {
+                                    this.errors['password'] = 'Password minimal 8 karakter.';
+                                    adaError = true;
+                                }
+                                if (this.password.length > 0 && this.password !== this.password_confirmation) {
+                                    this.errors['password_confirmation'] = 'Konfirmasi password tidak cocok.';
+                                    adaError = true;
+                                }
+                        
+                                if (adaError) {
+                                    const firstErrorId = Object.keys(this.errors)[0];
+                                    if (firstErrorId) {
+                                        const el = document.getElementById(firstErrorId);
+                                        if (el) {
+                                            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                            el.focus();
+                                        }
+                                    }
+                                    return; 
+                                }
+                        
+                                this.isLoading = true; 
+                                document.getElementById('editForm').submit();
+                            }
+                        }">
                         @csrf
                         @method('PUT')
+
+                        <div x-show="isLoading" style="display: none;"
+                            x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0"
+                            x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-100"
+                            x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+                            class="absolute inset-0 bg-white bg-opacity-80 z-50 flex flex-col items-center justify-center rounded-lg">
+
+                            <div
+                                class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4">
+                            </div>
+
+                            <p class="text-green-700 font-bold text-lg animate-pulse">Loading...</p>
+                        </div>
 
                         <div class="mb-6">
                             <h3 class="text-lg font-medium text-gray-900 border-b pb-2 mb-4">Informasi Akun & Pribadi
@@ -60,27 +129,28 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                                 <div>
-                                    <x-input-label for="nama_lengkap">
-                                        Nama Lengkap
-                                    </x-input-label>
+                                    <x-input-label for="nama_lengkap">Nama Lengkap <span
+                                            class="text-red-500">*</span></x-input-label>
                                     <x-text-input id="nama_lengkap"
                                         class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500"
                                         type="text" name="nama_lengkap" :value="old('nama_lengkap', $user->nama_lengkap)" />
+                                    <p x-show="errors.nama_lengkap" x-text="errors.nama_lengkap"
+                                        class="text-red-500 text-xs mt-1 font-semibold" style="display: none;"></p>
                                     @error('nama_lengkap')
                                         <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
                                     @enderror
                                 </div>
 
                                 <div>
-                                    <x-input-label for="username">
-                                        Username<span
+                                    <x-input-label for="username">Username <span class="text-red-500">*</span> <span
                                             class="text-xs text-gray-500 font-normal ml-1">(Huruf kecil, tanpa
-                                            spasi)</span>
-                                    </x-input-label>
+                                            spasi)</span></x-input-label>
                                     <x-text-input id="username"
                                         class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500"
                                         type="text" name="username" :value="old('username', $user->username)"
                                         oninput="this.value = this.value.toLowerCase().replace(/\s/g, '')" />
+                                    <p x-show="errors.username" x-text="errors.username"
+                                        class="text-red-500 text-xs mt-1 font-semibold" style="display: none;"></p>
                                     @error('username')
                                         <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
                                     @enderror
@@ -91,7 +161,6 @@
                                         <span>Password Baru <span
                                                 class="text-xs text-gray-500 font-normal ml-1">(Opsional, Min. 8
                                                 Karakter)</span></span>
-
                                         <template x-if="password.length > 0">
                                             <span class="text-xs font-bold transition-colors duration-200"
                                                 :class="password.length >= 8 ? 'text-green-600' : 'text-red-500'">
@@ -99,13 +168,12 @@
                                             </span>
                                         </template>
                                     </x-input-label>
-
                                     <div class="relative mt-1">
                                         <x-text-input id="password"
                                             class="block w-full border-gray-300 focus:border-green-500 focus:ring-green-500 pr-10"
                                             type="password" name="password"
-                                            placeholder="Kosongkan jika tidak ingin ubah" x-model="password" /> <button
-                                            type="button" onclick="togglePassword('password', 'eye-icon-pass')"
+                                            placeholder="Kosongkan jika tidak ingin ubah" x-model="password" />
+                                        <button type="button" onclick="togglePassword('password', 'eye-icon-pass')"
                                             class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none">
                                             <svg id="eye-icon-pass" xmlns="http://www.w3.org/2000/svg" fill="none"
                                                 viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -117,6 +185,8 @@
                                             </svg>
                                         </button>
                                     </div>
+                                    <p x-show="errors.password" x-text="errors.password"
+                                        class="text-red-500 text-xs mt-1 font-semibold" style="display: none;"></p>
                                     @error('password')
                                         <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
                                     @enderror
@@ -126,26 +196,22 @@
                                     <x-input-label for="password_confirmation"
                                         class="flex justify-between items-center w-full">
                                         <span>Konfirmasi Password Baru</span>
-
                                         <template x-if="password_confirmation.length > 0">
                                             <span>
                                                 <span x-show="password === password_confirmation"
-                                                    class="text-green-600 text-xs font-bold transition-colors duration-200">
-                                                    Cocok
-                                                </span>
+                                                    class="text-green-600 text-xs font-bold transition-colors duration-200">Cocok</span>
                                                 <span x-show="password !== password_confirmation"
-                                                    class="text-red-500 text-xs font-bold transition-colors duration-200">
-                                                    Tidak Cocok
-                                                </span>
+                                                    class="text-red-500 text-xs font-bold transition-colors duration-200">Tidak
+                                                    Cocok</span>
                                             </span>
                                         </template>
                                     </x-input-label>
-
                                     <div class="relative mt-1">
                                         <x-text-input id="password_confirmation"
                                             class="block w-full border-gray-300 focus:border-green-500 focus:ring-green-500 pr-10"
                                             type="password" name="password_confirmation"
-                                            placeholder="Masukkan kembali password baru" x-model="password_confirmation" />
+                                            placeholder="Masukkan kembali password baru"
+                                            x-model="password_confirmation" />
                                         <button type="button"
                                             onclick="togglePassword('password_confirmation', 'eye-icon-conf')"
                                             class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none">
@@ -159,29 +225,35 @@
                                             </svg>
                                         </button>
                                     </div>
+                                    <p x-show="errors.password_confirmation" x-text="errors.password_confirmation"
+                                        class="text-red-500 text-xs mt-1 font-semibold" style="display: none;"></p>
                                 </div>
 
                                 <div>
-                                    <x-input-label for="role_id">Role</x-input-label>
+                                    <x-input-label for="role_id">Role Pengguna <span
+                                            class="text-red-500">*</span></x-input-label>
                                     <select id="role_id" name="role_id"
                                         class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm">
                                         <option value="">Pilih Role</option>
                                         @foreach ($roles as $role)
                                             <option value="{{ $role->id_role }}"
                                                 {{ old('role_id', $user->role_id) == $role->id_role ? 'selected' : '' }}>
-                                                {{ $role->nama_role }}
-                                            </option>
+                                                {{ $role->nama_role }}</option>
                                         @endforeach
                                     </select>
+                                    <p x-show="errors.role_id" x-text="errors.role_id"
+                                        class="text-red-500 text-xs mt-1 font-semibold" style="display: none;"></p>
                                     @error('role_id')
                                         <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
                                     @enderror
                                 </div>
 
                                 <div>
-                                    <x-input-label for="status">Status</x-input-label>
+                                    <x-input-label for="status">Status <span
+                                            class="text-red-500">*</span></x-input-label>
                                     <select id="status" name="status"
                                         class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm">
+                                        <option value="">Pilih Status</option>
                                         <option value="aktif"
                                             {{ old('status', $user->status) == 'aktif' ? 'selected' : '' }}>Aktif
                                         </option>
@@ -189,19 +261,23 @@
                                             {{ old('status', $user->status) == 'tidak_aktif' ? 'selected' : '' }}>Tidak
                                             Aktif</option>
                                     </select>
+                                    <p x-show="errors.status" x-text="errors.status"
+                                        class="text-red-500 text-xs mt-1 font-semibold" style="display: none;"></p>
                                     @error('status')
                                         <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
                                     @enderror
                                 </div>
 
                                 <div>
-                                    <x-input-label for="no_telepon">Nomor Telepon
+                                    <x-input-label for="no_telepon">Nomor Telepon <span class="text-red-500">*</span>
                                         <span class="text-xs text-gray-500 font-normal ml-1">(Angka
                                             Saja)</span></x-input-label>
                                     <x-text-input id="no_telepon"
                                         class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500"
                                         type="text" name="no_telepon" :value="old('no_telepon', $user->no_telepon)"
                                         oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                                    <p x-show="errors.no_telepon" x-text="errors.no_telepon"
+                                        class="text-red-500 text-xs mt-1 font-semibold" style="display: none;"></p>
                                     @error('no_telepon')
                                         <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
                                     @enderror
@@ -214,60 +290,70 @@
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="md:col-span-2">
-                                    <x-input-label for="jalan">Nama Jalan</x-input-label>
+                                    <x-input-label for="jalan">Nama Jalan <span
+                                            class="text-red-500">*</span></x-input-label>
                                     <x-text-input id="jalan"
                                         class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500"
                                         type="text" name="jalan" :value="old('jalan', $user->jalan)" />
+                                    <p x-show="errors.jalan" x-text="errors.jalan"
+                                        class="text-red-500 text-xs mt-1 font-semibold" style="display: none;"></p>
                                     @error('jalan')
                                         <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
                                     @enderror
                                 </div>
 
                                 <div>
-                                    <x-input-label for="rt">RT <span
+                                    <x-input-label for="rt">RT <span class="text-red-500">*</span> <span
                                             class="text-xs text-gray-500 font-normal ml-1">(Angka
                                             Saja)</span></x-input-label>
                                     <x-text-input id="rt"
                                         class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500"
                                         type="text" name="rt" :value="old('rt', $user->rt)"
                                         oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="3" />
+                                    <p x-show="errors.rt" x-text="errors.rt"
+                                        class="text-red-500 text-xs mt-1 font-semibold" style="display: none;"></p>
                                     @error('rt')
                                         <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
                                     @enderror
                                 </div>
 
                                 <div>
-                                    <x-input-label for="rw">RW <span
+                                    <x-input-label for="rw">RW <span class="text-red-500">*</span> <span
                                             class="text-xs text-gray-500 font-normal ml-1">(Angka
                                             Saja)</span></x-input-label>
                                     <x-text-input id="rw"
                                         class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500"
                                         type="text" name="rw" :value="old('rw', $user->rw)"
                                         oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="3" />
+                                    <p x-show="errors.rw" x-text="errors.rw"
+                                        class="text-red-500 text-xs mt-1 font-semibold" style="display: none;"></p>
                                     @error('rw')
                                         <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
                                     @enderror
                                 </div>
 
                                 <div>
-                                    <x-input-label for="kecamatan_id">Kecamatan</x-input-label>
+                                    <x-input-label for="kecamatan_id">Kecamatan <span
+                                            class="text-red-500">*</span></x-input-label>
                                     <select id="kecamatan_id" name="kecamatan_id"
                                         class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm">
                                         <option value="">Pilih Kecamatan</option>
                                         @foreach ($kecamatans as $kecamatan)
                                             <option value="{{ $kecamatan->id_kecamatan }}"
                                                 {{ old('kecamatan_id', $user->desa->kecamatan_id ?? '') == $kecamatan->id_kecamatan ? 'selected' : '' }}>
-                                                {{ $kecamatan->nama_kecamatan }}
-                                            </option>
+                                                {{ $kecamatan->nama_kecamatan }}</option>
                                         @endforeach
                                     </select>
+                                    <p x-show="errors.kecamatan_id" x-text="errors.kecamatan_id"
+                                        class="text-red-500 text-xs mt-1 font-semibold" style="display: none;"></p>
                                     @error('kecamatan_id')
                                         <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
                                     @enderror
                                 </div>
 
                                 <div>
-                                    <x-input-label for="desa_id">Desa</x-input-label>
+                                    <x-input-label for="desa_id">Desa <span
+                                            class="text-red-500">*</span></x-input-label>
                                     <select id="desa_id" name="desa_id"
                                         class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm">
                                         <option value="">Pilih Desa</option>
@@ -275,11 +361,12 @@
                                             @foreach ($desas as $desa)
                                                 <option value="{{ $desa->id_desa }}"
                                                     {{ old('desa_id', $user->desa_id) == $desa->id_desa ? 'selected' : '' }}>
-                                                    {{ $desa->nama_desa }}
-                                                </option>
+                                                    {{ $desa->nama_desa }}</option>
                                             @endforeach
                                         @endif
                                     </select>
+                                    <p x-show="errors.desa_id" x-text="errors.desa_id"
+                                        class="text-red-500 text-xs mt-1 font-semibold" style="display: none;"></p>
                                     @error('desa_id')
                                         <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p>
                                     @enderror
@@ -290,20 +377,13 @@
                         <div class="flex items-center justify-end mt-6 space-x-3">
                             <a href="{{ route('admin-data.users.index') }}"
                                 class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">Batal</a>
-                            <button type="submit"
-                                class="px-6 py-2 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 shadow-lg transform hover:scale-105 transition duration-200">
+                            <button type="submit" :disabled="isLoading"
+                                class="px-6 py-2 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 shadow-lg transform hover:scale-105 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                                 Update Pengguna
                             </button>
                         </div>
                     </form>
                 </div>
-
-                <div id="loadingOverlay"
-                    class="absolute inset-0 bg-white bg-opacity-80 z-50 hidden flex-col items-center justify-center rounded-lg">
-                    <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
-                    <p class="text-green-700 font-bold text-lg animate-pulse">Menyimpan Perubahan...</p>
-                </div>
-
             </div>
         </div>
     </div>
@@ -327,16 +407,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            const editForm = document.getElementById('editForm');
-            const loadingOverlay = document.getElementById('loadingOverlay');
-
-            editForm.addEventListener('submit', function() {
-                loadingOverlay.classList.remove('hidden');
-                loadingOverlay.classList.add('flex');
-            });
-
             @if (session('success_update'))
-                loadingOverlay.classList.add('hidden');
                 Swal.fire({
                     icon: 'success',
                     title: 'Berhasil!',
@@ -350,7 +421,6 @@
             @endif
 
             @if (session('error'))
-                loadingOverlay.classList.add('hidden');
                 Swal.fire({
                     icon: 'error',
                     title: 'Gagal!',
@@ -360,7 +430,6 @@
             @endif
 
             @if ($errors->any())
-                loadingOverlay.classList.add('hidden');
                 Swal.fire({
                     icon: 'warning',
                     title: 'Perhatian!',

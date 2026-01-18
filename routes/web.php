@@ -52,7 +52,10 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/konten', [HomeController::class, 'allContent'])->name('public.konten.index');
+Route::get('/konten', function () {
+    return redirect('/?view=konten');
+})->name('public.konten.index');
+
 Route::get('/konten/{id}', [HomeController::class, 'show'])->name('public.konten.show');
 Route::post('/konten/{id}/like', [HomeController::class, 'like'])->name('public.konten.like');
 Route::get('/lupa-password', function () {

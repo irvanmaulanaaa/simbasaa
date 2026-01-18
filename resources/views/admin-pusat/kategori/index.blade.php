@@ -1,4 +1,6 @@
 <x-app-layout>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <x-slot name="sidebar">
         @include('admin-pusat.partials.sidebar')
     </x-slot>
@@ -9,269 +11,364 @@
         </h2>
     </x-slot>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <div class="flex flex-col min-h-screen bg-gray-100 relative">
 
-    <div id="global-loader" 
-        class="fixed inset-0 bg-white bg-opacity-90 z-[9999] flex flex-col items-center justify-center transition-opacity duration-300"
-        style="display: none;">
-        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-red-600 mb-4"></div>
-        <p class="text-red-700 font-bold text-lg animate-pulse">Menghapus Data...</p>
-    </div>
+        <div class="flex-grow py-6 px-4 sm:px-0">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-    <div class="py-6 px-4 sm:px-0 min-h-screen" 
-        x-data="{ 
-            showModal: false, 
-            isEdit: false, 
-            modalTitle: '', 
-            formAction: '', 
-            kategoriNama: '', 
-            kategoriId: '',
-            submitting: false, 
-            
-            openCreateModal() {
-                this.isEdit = false;
-                this.modalTitle = 'Tambah Kategori Baru';
-                this.formAction = '{{ route('admin-pusat.kategori-sampah.store') }}';
-                this.kategoriNama = '';
-                this.showModal = true;
-                this.submitting = false;
-                this.$nextTick(() => { this.$refs.inputNama.focus(); });
-            },
+                <nav class="flex mb-4" aria-label="Breadcrumb">
+                    <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+                        <li class="inline-flex items-center">
+                            <a href="{{ route('admin-pusat.dashboard') }}"
+                                class="inline-flex items-center text-lg font-medium text-gray-700 hover:text-green-600">
+                                Home
+                            </a>
+                        </li>
+                        <li aria-current="page">
+                            <div class="flex items-center">
+                                <svg class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="m1 9 4-4-4-4" />
+                                </svg>
+                                <span class="ms-1 text-lg font-medium text-gray-500 md:ms-2">Kategori Sampah</span>
+                            </div>
+                        </li>
+                    </ol>
+                </nav>
 
-            openEditModal(id, nama, url) {
-                this.isEdit = true;
-                this.modalTitle = 'Edit Kategori';
-                this.formAction = url;
-                this.kategoriId = id;
-                this.kategoriNama = nama;
-                this.showModal = true;
-                this.submitting = false;
-                this.$nextTick(() => { this.$refs.inputNama.focus(); });
-            }
-        }">
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900">
 
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                        @if ($errors->any())
+                            <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+                                <strong class="font-bold">Whoops!</strong> Ada input yang salah.
+                                <ul class="mt-1 list-disc list-inside text-sm">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
 
-            <nav class="flex mb-4" aria-label="Breadcrumb">
-                <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
-                    <li class="inline-flex items-center">
-                        <a href="{{ route('admin-pusat.dashboard') }}"
-                            class="inline-flex items-center text-lg font-medium text-gray-700 hover:text-green-600">
-                            Home
-                        </a>
-                    </li>
-                    <li aria-current="page">
-                        <div class="flex items-center">
-                            <svg class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                    stroke-width="2" d="m1 9 4-4-4-4" />
-                            </svg>
-                            <span class="ms-1 text-lg font-medium text-gray-500 md:ms-2">Kategori Sampah</span>
-                        </div>
-                    </li>
-                </ol>
-            </nav>
+                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
+                            <button onclick="openCreateModal()"
+                                class="w-full md:w-auto inline-flex items-center justify-center px-4 py-2 bg-blue-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-700 focus:outline-none focus:ring ring-blue-300 transition ease-in-out duration-150 shadow-md">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4v16m8-8H4"></path>
+                                </svg>
+                                Tambah Kategori
+                            </button>
 
-                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
-                        
-                        <button @click="openCreateModal()"
-                            class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 active:bg-blue-700 focus:outline-none focus:ring ring-blue-300 transition ease-in-out duration-150 shadow-md w-full md:w-auto justify-center">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 4v16m8-8H4"></path>
-                            </svg>
-                            Tambah Kategori
-                        </button>
+                            <form method="GET" action="{{ route('admin-pusat.kategori-sampah.index') }}"
+                                class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 w-full md:w-auto"
+                                x-data="{
+                                    search: '{{ request('search') }}',
+                                    submitForm() { $el.submit(); },
+                                    clearSearch() {
+                                        this.search = '';
+                                        setTimeout(() => { this.submitForm(); }, 100);
+                                    }
+                                }">
 
-                        <form method="GET" action="{{ route('admin-pusat.kategori-sampah.index') }}"
-                            class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 w-full md:w-auto"
-                            x-data="{
-                                search: '{{ request('search') }}',
-                                submitForm() { $el.submit(); },
-                                clearSearch() {
-                                    this.search = '';
-                                    setTimeout(() => { this.submitForm(); }, 100);
-                                }
-                            }">
-                            
-                            <select name="per_page" onchange="this.form.submit()"
-                                class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm cursor-pointer md:w-32">
-                                <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 Data</option>
-                                <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 Data</option>
-                                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 Data</option>
-                            </select>
-
-                            <div class="relative w-full md:w-64">
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <svg class="w-4 h-4 text-gray-500" aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                            stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                                    </svg>
+                                <div class="relative">
+                                    <select name="per_page" onchange="this.form.submit()"
+                                        class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm cursor-pointer md:w-32"
+                                        title="Jumlah data per halaman">
+                                        <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 Data
+                                        </option>
+                                        <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 Data
+                                        </option>
+                                        <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 Data
+                                        </option>
+                                        <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 Data
+                                        </option>
+                                    </select>
                                 </div>
-                                <input type="text" name="search" x-model="search"
-                                    class="block w-full p-2 pl-10 pr-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-green-500 focus:border-green-500"
-                                    placeholder="Cari kategori...">
-                                <button type="button" @click="clearSearch()" x-show="search.length > 0"
-                                    style="display: none;"
-                                    class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-red-500 focus:outline-none transition">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M6 18L18 6M6 6l12 12"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
 
-                    <div class="overflow-x-auto rounded-lg shadow border border-gray-200">
-                        <table class="min-w-full bg-white whitespace-nowrap">
-                            <thead class="bg-gray-100 text-gray-700 uppercase text-xs font-bold leading-normal">
-                                <tr>
-                                    <th class="py-3 px-6 text-center w-12">No</th>
-                                    <th class="py-3 px-6 text-left">Nama Kategori</th>
-                                    <th class="py-3 px-6 text-center w-32">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-gray-600 text-sm font-light">
-                                @forelse ($kategoris as $kategori)
-                                    <tr class="border-b border-gray-200 hover:bg-gray-50 transition duration-150">
-                                        <td class="py-3 px-6 text-center font-medium">
-                                            {{ ($kategoris->currentPage() - 1) * $kategoris->perPage() + $loop->iteration }}
-                                        </td>
-                                        <td class="py-3 px-6 text-left">
-                                            <div class="font-bold text-gray-900">{{ $kategori->nama_kategori }}</div>
-                                        </td>
-                                        <td class="py-3 px-6 text-center">
-                                            <div class="flex item-center justify-center space-x-2">
-                                                
-                                                <button @click="openEditModal({{ $kategori->id_kategori }}, '{{ $kategori->nama_kategori }}', '{{ route('admin-pusat.kategori-sampah.update', $kategori->id_kategori) }}')"
-                                                    class="w-8 h-8 rounded bg-yellow-50 text-yellow-600 flex items-center justify-center hover:bg-yellow-500 hover:text-white transition"
-                                                    title="Edit Kategori">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z" />
-                                                    </svg>
-                                                </button>
+                                <div class="relative w-full md:w-64">
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                        <svg class="w-4 h-4 text-gray-500" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                                stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                                        </svg>
+                                    </div>
+                                    <input type="text" name="search" x-model="search"
+                                        class="block w-full p-2 pl-10 pr-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-green-500 focus:border-green-500"
+                                        placeholder="Cari kategori...">
+                                    <button type="button" @click="clearSearch()" x-show="search.length > 0"
+                                        style="display: none;"
+                                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-red-500 focus:outline-none transition">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
 
-                                                <button type="button"
-                                                    onclick="confirmDeleteKategori({{ $kategori->id_kategori }}, '{{ $kategori->nama_kategori }}')"
-                                                    class="w-8 h-8 rounded bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-600 hover:text-white transition"
-                                                    title="Hapus Kategori">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
-                                                </button>
-
-                                                <form id="delete-form-{{ $kategori->id_kategori }}"
-                                                    action="{{ route('admin-pusat.kategori-sampah.destroy', $kategori->id_kategori) }}"
-                                                    method="POST" class="hidden">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                </form>
-
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
+                        <div class="overflow-x-auto rounded-lg shadow border border-gray-200">
+                            <table class="min-w-full bg-white whitespace-nowrap">
+                                <thead class="bg-gray-100 text-gray-700 uppercase text-xs font-bold leading-normal">
                                     <tr>
-                                        <td colspan="3" class="text-center py-8 text-gray-500">
-                                            <div class="flex flex-col items-center justify-center">
-                                                <svg class="w-12 h-12 mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                                                </svg>
-                                                <p>Data kategori belum tersedia.</p>
-                                            </div>
-                                        </td>
+                                        <th class="py-3 px-6 text-center w-16">No</th>
+                                        <th class="py-3 px-6 text-center">Nama Kategori</th>
+                                        <th class="py-3 px-6 text-center w-32">Aksi</th>
                                     </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody class="text-gray-600 text-sm font-light">
+                                    @forelse ($kategoris as $kategori)
+                                        <tr class="border-b border-gray-200 hover:bg-gray-50 transition duration-150">
+                                            <td class="py-3 px-6 text-center font-medium">
+                                                {{ ($kategoris->currentPage() - 1) * $kategoris->perPage() + $loop->iteration }}
+                                            </td>
+                                            <td class="py-3 px-6 text-center">
+                                                <div class="font-bold text-gray-900">{{ $kategori->nama_kategori }}
+                                                </div>
+                                            </td>
+                                            <td class="py-3 px-6 text-center">
+                                                <div class="flex item-center justify-center space-x-2">
 
-                    <div class="mt-4">
-                        {{ $kategoris->appends(request()->query())->links() }}
+                                                    <button
+                                                        onclick="openEditModal('{{ route('admin-pusat.kategori-sampah.update', $kategori->id_kategori) }}', '{{ $kategori->nama_kategori }}')"
+                                                        class="w-8 h-8 rounded bg-yellow-50 text-yellow-600 flex items-center justify-center hover:bg-yellow-500 hover:text-white transition shadow-sm"
+                                                        title="Edit">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z" />
+                                                        </svg>
+                                                    </button>
+
+                                                    <button
+                                                        onclick="confirmDelete('{{ route('admin-pusat.kategori-sampah.destroy', $kategori->id_kategori) }}', '{{ $kategori->nama_kategori }}')"
+                                                        class="w-8 h-8 rounded bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-600 hover:text-white transition shadow-sm"
+                                                        title="Hapus">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="3" class="text-center py-8 text-gray-500">
+                                                <div class="flex flex-col items-center justify-center">
+                                                    <svg class="w-12 h-12 mb-2 text-gray-300" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                                                        </path>
+                                                    </svg>
+                                                    <p>Data kategori belum tersedia.</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="mt-4">
+                            {{ $kategoris->appends(request()->query())->links() }}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div x-show="showModal" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;"
-            x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-            x-transition:leave="transition ease-in duration-200"
-            x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
-            
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showModal = false"></div>
-
-            <div class="flex items-center justify-center min-h-screen p-4 text-center sm:p-0">
-                <div class="relative bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg w-full">
-                    
-                    <div x-show="submitting"
-                        class="absolute inset-0 bg-white bg-opacity-90 z-50 flex flex-col items-center justify-center rounded-lg"
-                        style="display: none;">
-                        <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-green-600 mb-4"></div>
-                        <p class="text-green-700 font-bold text-lg animate-pulse">Menyimpan Data...</p>
-                    </div>
-
-                    <form :action="formAction" method="POST" @submit="submitting = true">
-                        @csrf
-                        <input type="hidden" name="_method" :value="isEdit ? 'PUT' : 'POST'">
-
-                        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title" x-text="modalTitle"></h3>
-                            
-                            <div class="mt-4">
-                                <label for="nama_kategori" class="block text-sm font-medium text-gray-700">
-                                    Nama Kategori <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" name="nama_kategori" id="nama_kategori" 
-                                    x-model="kategoriNama" x-ref="inputNama"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                                    placeholder="Contoh: Plastik, Kertas, Logam" required>
-                                
-                                @error('nama_kategori')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                            <button type="submit"
-                                :disabled="submitting"
-                                :class="{ 'opacity-50 cursor-not-allowed': submitting }"
-                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm transition ease-in-out duration-150">
-                                <span x-text="submitting ? 'Menyimpan...' : 'Simpan'"></span>
-                            </button>
-                            <button type="button" @click="showModal = false"
-                                :disabled="submitting"
-                                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition ease-in-out duration-150">
-                                Batal
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+        <footer class="mt-auto py-6 text-center text-sm text-gray-500 bg-gray-50 border-t border-gray-200">
+            <p>&copy; {{ date('Y') }} <span class="font-bold text-green-600">SIMBASA Developed by</span> Irvan
+                Maulana.</p>
+        </footer>
 
     </div>
 
-    <footer class="mt-auto py-6 text-center text-sm text-gray-500 bg-gray-50 border-t border-gray-200">
-        <p>&copy; {{ date('Y') }} <span class="font-bold text-green-600">SIMBASA Developed by</span> Irvan Maulana.</p>
-    </footer>
+    <div id="createModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title"
+        role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closeModal('createModal')">
+        </div>
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+            <div
+                class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+
+                <form id="createForm" action="{{ route('admin-pusat.kategori-sampah.store') }}" method="POST"
+                    novalidate @submit.prevent="validateAndSubmit" x-data="{
+                        errors: {},
+                        validateAndSubmit() {
+                            this.errors = {};
+                            let adaError = false;
+                    
+                            const val = document.getElementById('create_nama_kategori').value;
+                    
+                            if (!val || !val.trim()) {
+                                this.errors['nama_kategori'] = 'Nama Kategori wajib diisi.';
+                                adaError = true;
+                            }
+                    
+                            if (adaError) {
+                                document.getElementById('create_nama_kategori').focus();
+                                return;
+                            }
+                    
+                            showGlobalLoading();
+                            document.getElementById('createForm').submit();
+                        }
+                    }">
+                    @csrf
+                    <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+                                <h3 class="text-lg font-semibold leading-6 text-gray-900">Tambah Kategori Baru</h3>
+                                <div class="mt-4">
+                                    <label for="create_nama_kategori"
+                                        class="block text-sm font-medium text-gray-700 text-left">
+                                        Nama Kategori <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" id="create_nama_kategori" name="nama_kategori"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
+                                        placeholder="Contoh: Plastik, Kertas, Logam">
+
+                                    <p x-show="errors.nama_kategori" x-text="errors.nama_kategori"
+                                        class="text-red-500 text-xs mt-1 font-semibold text-left"
+                                        style="display: none;"></p>
+                                    @error('nama_kategori')
+                                        <p class="text-red-500 text-xs mt-1 font-semibold text-left">{{ $message }}
+                                        </p>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                        <button type="submit"
+                            class="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-700 sm:ml-3 sm:w-auto">
+                            Simpan
+                        </button>
+                        <button type="button" onclick="closeModal('createModal')"
+                            class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">
+                            Batal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="editModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title"
+        role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closeModal('editModal')">
+        </div>
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+            <div
+                class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+
+                <form id="editForm" action="" method="POST" novalidate @submit.prevent="validateAndSubmit"
+                    x-data="{
+                        errors: {},
+                        validateAndSubmit() {
+                            this.errors = {};
+                            let adaError = false;
+                    
+                            const val = document.getElementById('edit_nama_kategori').value;
+                    
+                            if (!val || !val.trim()) {
+                                this.errors['nama_kategori'] = 'Nama Kategori wajib diisi.';
+                                adaError = true;
+                            }
+                    
+                            if (adaError) {
+                                document.getElementById('edit_nama_kategori').focus();
+                                return;
+                            }
+                    
+                            showGlobalLoading();
+                            document.getElementById('editForm').submit();
+                        }
+                    }">
+                    @csrf
+                    @method('PUT')
+                    <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+                                <h3 class="text-lg font-semibold leading-6 text-gray-900">Edit Kategori</h3>
+                                <div class="mt-4">
+                                    <label for="edit_nama_kategori"
+                                        class="block text-sm font-medium text-gray-700 text-left">
+                                        Nama Kategori <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" id="edit_nama_kategori" name="nama_kategori"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm">
+
+                                    <p x-show="errors.nama_kategori" x-text="errors.nama_kategori"
+                                        class="text-red-500 text-xs mt-1 font-semibold text-left"
+                                        style="display: none;"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                        <button type="submit"
+                            class="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-700 sm:ml-3 sm:w-auto">
+                            Update
+                        </button>
+                        <button type="button" onclick="closeModal('editModal')"
+                            class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">
+                            Batal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <form id="delete-form" action="" method="POST" style="display: none;"> @csrf @method('DELETE') </form>
+
+    <div id="loadingOverlay"
+        class="fixed inset-0 bg-white bg-opacity-80 z-[60] hidden flex-col items-center justify-center backdrop-blur-sm transition-opacity">
+        <div class="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center border border-gray-100">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
+            <p class="text-green-700 font-bold text-lg animate-pulse">Loading...</p>
+        </div>
+    </div>
 
     <script>
+        function showGlobalLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+        }
+
+        function openCreateModal() {
+            document.getElementById('createModal').classList.remove('hidden');
+            document.getElementById('createForm').reset();
+        }
+
+        function openEditModal(url, nama) {
+            document.getElementById('editForm').action = url;
+            document.getElementById('edit_nama_kategori').value = nama;
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
         @if (session('success'))
             Swal.fire({
                 icon: 'success',
                 title: 'Berhasil!',
-                text: "{{ session('success') }}",
+                text: '{{ session('success') }}',
                 showConfirmButton: false,
                 timer: 2000,
                 timerProgressBar: true
@@ -282,26 +379,15 @@
             Swal.fire({
                 icon: 'error',
                 title: 'Gagal!',
-                text: "{{ session('error') }}",
-                confirmButtonColor: '#d33',
+                text: '{{ session('error') }}',
+                confirmButtonColor: '#dc2626'
             });
         @endif
 
-        @if ($errors->any())
-            document.addEventListener('alpine:init', () => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Validasi Gagal',
-                    text: 'Mohon periksa inputan Anda.',
-                    confirmButtonText: 'Oke'
-                });
-            });
-        @endif
-
-        function confirmDeleteKategori(id, nama) {
+        function confirmDelete(url, name) {
             Swal.fire({
                 title: 'Hapus Kategori?',
-                text: "Anda akan menghapus kategori '" + nama + "'. Pastikan tidak ada data sampah yang menggunakan kategori ini!",
+                text: "Menghapus kategori '" + name + "' mungkin mempengaruhi data sampah yang terkait!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#dc2626',
@@ -310,11 +396,12 @@
                 cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    document.getElementById('global-loader').style.display = 'flex';
-                    
-                    document.getElementById('delete-form-' + id).submit();
+                    showGlobalLoading();
+                    var form = document.getElementById('delete-form');
+                    form.action = url;
+                    form.submit();
                 }
-            });
+            })
         }
     </script>
 </x-app-layout>

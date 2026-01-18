@@ -21,6 +21,7 @@ class UserController extends Controller
     {
         $perPage = $request->input('per_page', 10);
         $roles = Role::all();
+
         $users = User::with(['role', 'desa.kecamatan'])
             ->when($request->search, function ($query) use ($request) {
                 $query->where(function ($q) use ($request) {
@@ -28,16 +29,11 @@ class UserController extends Controller
                         ->orWhere('username', 'like', '%' . $request->search . '%');
                 });
             })
-            ->when($request->filter, function ($query) use ($request) {
-                $filter = $request->filter;
-
-                if (str_starts_with($filter, 'role_')) {
-                    $roleId = str_replace('role_', '', $filter);
-                    $query->where('role_id', $roleId);
-                } elseif (str_starts_with($filter, 'status_')) {
-                    $status = str_replace('status_', '', $filter);
-                    $query->where('status', $status);
-                }
+            ->when($request->role, function ($query) use ($request) {
+                $query->where('role_id', $request->role);
+            })
+            ->when($request->status, function ($query) use ($request) {
+                $query->where('status', $request->status);
             })
             ->latest()
             ->paginate($perPage)

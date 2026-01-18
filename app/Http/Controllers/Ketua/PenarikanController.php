@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class PenarikanController extends Controller
 {
-    public function index(Request $request) 
+    public function index(Request $request)
     {
         $ketua = Auth::user();
 
@@ -36,6 +36,10 @@ class PenarikanController extends Controller
             });
         }
 
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->whereBetween('tgl_request', [
                 $request->start_date . ' 00:00:00',
@@ -45,8 +49,8 @@ class PenarikanController extends Controller
 
         $query->latest('tgl_request');
 
-        $perPage = $request->input('per_page', 10); 
-        $historyRequests = $query->paginate($perPage)->withQueryString(); 
+        $perPage = $request->input('per_page', 10);
+        $historyRequests = $query->paginate($perPage)->withQueryString();
 
         return view('ketua.penarikan.index', compact('pendingRequests', 'historyRequests'));
     }

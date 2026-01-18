@@ -48,7 +48,7 @@
          x-data="{ 
             isEditing: {{ $hasProfileErrors ? 'true' : 'false' }},
             
-            showPhotoModal: false, // State Modal Foto
+            showPhotoModal: false, 
 
             usernameQuery: '{{ Auth::user()->username }}',
             usernameStatus: '',

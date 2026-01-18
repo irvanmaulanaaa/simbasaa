@@ -37,7 +37,7 @@ class HomeController extends Controller
         $kontens = Konten::with(['media', 'user', 'kategoriKonten'])
             ->whereHas('status', fn($q) => $q->where('nama_status', 'published'))
             ->latest()
-            ->take(10)
+            ->take(10) 
             ->get();
 
         $sampah = Sampah::with('kategori')
@@ -46,6 +46,7 @@ class HomeController extends Controller
 
         $kategoriSampah = KategoriSampah::all();
 
+        $kategoriKonten = KategoriKonten::all(); 
 
         return view('welcome', compact(
             'kontens',
@@ -55,37 +56,8 @@ class HomeController extends Controller
             'totalDanaCair',
             'sampah',
             'kategoriSampah',
+            'kategoriKonten' 
         ));
-    }
-
-    public function allContent(Request $request)
-    {
-        $query = Konten::with('media', 'user', 'kategoriKonten')
-            ->whereHas('status', fn($q) => $q->where('nama_status', 'published'));
-
-        if ($request->has('cari')) {
-            $query->where('judul', 'like', '%' . $request->cari . '%');
-        }
-
-        if ($request->filled('kategori')) {
-            $query->where('id_kategori', $request->kategori);
-        }
-
-        $filter = $request->get('filter', 'terbaru');
-
-        if ($filter == 'terlama') {
-            $query->oldest();
-        } elseif ($filter == 'populer') {
-            $query->orderBy('jumlah_like', 'desc');
-        } else {
-            $query->latest();
-        }
-
-        $kontens = $query->paginate(9)->withQueryString();
-
-        $kategori_konten = KategoriKonten::all();
-
-        return view('public.konten.index', compact('kontens', 'kategori_konten'));
     }
 
     public function show($id)
