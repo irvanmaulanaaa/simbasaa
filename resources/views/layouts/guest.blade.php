@@ -30,10 +30,6 @@
                 {{ $slot }}
             </div>
         </div>
-        
-        <div class="absolute bottom-4 text-xs text-green-800 opacity-60">
-            &copy; {{ date('Y') }} SIMBASA
-        </div>
     </div>
 </body>
 

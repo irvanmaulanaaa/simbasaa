@@ -218,13 +218,15 @@
                 </div>
             </section>
 
-            <section class="py-20 bg-green-50 reveal">
+            <section class="py-20 bg-white reveal">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h2 class="text-3xl font-bold text-gray-900">Bagaimana Cara Setor Sampah?</h2>
+                    <h2 class="text-3xl font-bold text-slate-900">
+                        Bagaimana Cara Setor<span class="text-green-600"> Sampah?</span>
+                    </h2>
                     <p class="mt-2 text-gray-600">Hanya dengan 3 langkah mudah.</p>
                     <div class="mt-12 grid gap-8 md:grid-cols-3">
                         <div
-                            class="bg-white p-8 rounded-lg shadow-lg text-center transform hover:-translate-y-2 transition duration-300">
+                            class="bg-green-50 p-8 rounded-lg shadow-lg text-center transform hover:-translate-y-2 transition duration-300">
                             <div
                                 class="flex items-center justify-center h-12 w-12 rounded-full bg-green-500 text-white mx-auto mb-5 text-xl font-bold">
                                 1</div>
@@ -232,7 +234,7 @@
                             <p class="mt-2 text-gray-500">Pisahkan sampah anorganik di rumah Anda.</p>
                         </div>
                         <div
-                            class="bg-white p-8 rounded-lg shadow-lg text-center transform hover:-translate-y-2 transition duration-300">
+                            class="bg-green-50 p-8 rounded-lg shadow-lg text-center transform hover:-translate-y-2 transition duration-300">
                             <div
                                 class="flex items-center justify-center h-12 w-12 rounded-full bg-green-500 text-white mx-auto mb-5 text-xl font-bold">
                                 2</div>
@@ -240,7 +242,7 @@
                             <p class="mt-2 text-gray-500">Bawa ke lokasi kami untuk ditimbang.</p>
                         </div>
                         <div
-                            class="bg-white p-8 rounded-lg shadow-lg text-center transform hover:-translate-y-2 transition duration-300">
+                            class="bg-green-50 p-8 rounded-lg shadow-lg text-center transform hover:-translate-y-2 transition duration-300">
                             <div
                                 class="flex items-center justify-center h-12 w-12 rounded-full bg-green-500 text-white mx-auto mb-5 text-xl font-bold">
                                 3</div>
@@ -256,11 +258,13 @@
                     <div
                         class="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-8 md:p-12">
                         <div class="text-center max-w-3xl mx-auto mb-16">
-                            <h2 class="text-3xl font-extrabold text-gray-900">Dampak Nyata SIMBASA</h2>
+                            <h2 class="text-3xl font-extrabold text-slate-900">
+                                Dampak Nyata <span class="text-green-600">SIMBASA</span>
+                            </h2>
                             <p class="mt-4 text-lg text-gray-500">Transparansi data untuk membangun kepercayaan
                                 masyarakat Desa Sukapura.</p>
                         </div>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-gray-100 text-center">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-8  text-center">
                             <div class="group">
                                 <div
                                     class="mb-3 inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-50 text-green-600 group-hover:bg-green-600 group-hover:text-white transition duration-300">
@@ -320,40 +324,42 @@
                 </div>
             </section>
 
-            <section class="py-20 bg-gray-50 reveal">
+            <section class="py-20 bg-white reveal">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Sampah Apa Saja yang Bisa Disetor?</h2>
+                    <h2 class="text-3xl font-bold text-green-600 mb-4">
+                        Sampah <span class="text-slate-900">Apa Saja yang Bisa Disetor?</span>
+                    </h2>
                     <p class="text-gray-600 mb-12">Kami menerima berbagai jenis sampah anorganik yang bernilai
                         ekonomis.</p>
                     <div class="flex flex-wrap justify-center gap-6">
                         <div
-                            class="bg-white px-8 py-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center w-40 hover:shadow-md transition">
+                            class="bg-emerald-100 px-8 py-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center w-40 hover:shadow-md transition">
                             <div class="text-4xl mb-3">🥤</div>
-                            <h4 class="font-bold text-gray-800">Plastik</h4>
+                            <h4 class="font-bold text-gray-900">Plastik</h4>
                             <span class="text-xs text-gray-500 mt-1">Botol, Gelas</span>
                         </div>
                         <div
-                            class="bg-white px-8 py-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center w-40 hover:shadow-md transition">
+                            class="bg-emerald-100 px-8 py-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center w-40 hover:shadow-md transition">
                             <div class="text-4xl mb-3">📦</div>
-                            <h4 class="font-bold text-gray-800">Kardus</h4>
+                            <h4 class="font-bold text-gray-900">Kardus</h4>
                             <span class="text-xs text-gray-500 mt-1">Box Bekas</span>
                         </div>
                         <div
-                            class="bg-white px-8 py-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center w-40 hover:shadow-md transition">
+                            class="bg-emerald-100 px-8 py-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center w-40 hover:shadow-md transition">
                             <div class="text-4xl mb-3">📰</div>
-                            <h4 class="font-bold text-gray-800">Kertas</h4>
+                            <h4 class="font-bold text-gray-900">Kertas</h4>
                             <span class="text-xs text-gray-500 mt-1">Koran, HVS</span>
                         </div>
                         <div
-                            class="bg-white px-8 py-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center w-40 hover:shadow-md transition">
+                            class="bg-emerald-100 px-8 py-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center w-40 hover:shadow-md transition">
                             <div class="text-4xl mb-3">🔧</div>
-                            <h4 class="font-bold text-gray-800">Logam</h4>
+                            <h4 class="font-bold text-gray-900">Logam</h4>
                             <span class="text-xs text-gray-500 mt-1">Besi, Kaleng</span>
                         </div>
                         <div
-                            class="bg-white px-8 py-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center w-40 hover:shadow-md transition">
+                            class="bg-emerald-100 px-8 py-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center w-40 hover:shadow-md transition">
                             <div class="text-4xl mb-3">🧴</div>
-                            <h4 class="font-bold text-gray-800">Botol Kaca</h4>
+                            <h4 class="font-bold text-gray-900">Botol Kaca</h4>
                             <span class="text-xs text-gray-500 mt-1">Kecap, Sirup</span>
                         </div>
                     </div>
@@ -367,24 +373,25 @@
                 </div>
             </section>
 
-            <section id="konten" class="py-24 bg-green-50 border-t border-gray-100 relative reveal"
-                x-data="{
-                    activeSlide: 0,
-                    totalSlides: {{ isset($kontens) ? $kontens->count() : 0 }},
-                    cardWidth: 340,
-                    scrollLeft() { this.$refs.slider.scrollBy({ left: -this.cardWidth, behavior: 'smooth' }); },
-                    scrollRight() { this.$refs.slider.scrollBy({ left: this.cardWidth, behavior: 'smooth' }); },
-                    scrollToSlide(index) { this.$refs.slider.scrollTo({ left: index * this.cardWidth, behavior: 'smooth' }); },
-                    updateActiveSlide() {
-                        let scrollLeft = this.$refs.slider.scrollLeft;
-                        this.activeSlide = Math.round(scrollLeft / this.cardWidth);
-                    }
-                }">
+            <section id="konten" class="py-24 bg-white relative reveal" x-data="{
+                activeSlide: 0,
+                totalSlides: {{ isset($kontens) ? $kontens->count() : 0 }},
+                cardWidth: 340,
+                scrollLeft() { this.$refs.slider.scrollBy({ left: -this.cardWidth, behavior: 'smooth' }); },
+                scrollRight() { this.$refs.slider.scrollBy({ left: this.cardWidth, behavior: 'smooth' }); },
+                scrollToSlide(index) { this.$refs.slider.scrollTo({ left: index * this.cardWidth, behavior: 'smooth' }); },
+                updateActiveSlide() {
+                    let scrollLeft = this.$refs.slider.scrollLeft;
+                    this.activeSlide = Math.round(scrollLeft / this.cardWidth);
+                }
+            }">
 
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
                     <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
                         <div class="text-center md:text-left w-full md:w-auto">
-                            <h2 class="text-3xl font-extrabold text-gray-900">Konten Edukasi </h2>
+                            <h2 class="text-3xl font-extrabold text-green-600">
+                                Konten <span class="text-slate-900">Edukasi</span>
+                            </h2>
                             <p class="mt-2 text-gray-500">Wawasan terkini untuk lingkungan yang lebih baik.</p>
                         </div>
                         <div class="flex items-center gap-4">
@@ -401,14 +408,17 @@
                                 class="absolute left-0 top-1/2 -translate-y-1/2 -ml-5 z-20 bg-white/80 backdrop-blur-sm border border-gray-200 text-gray-600 p-3 rounded-full shadow-lg hover:bg-green-600 hover:text-white transition-all duration-300 opacity-0 group-hover/slider:opacity-100 hidden md:block">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                        d="M15 19l-7-7 7-7"></path>
+                                        d="M15 19l-7-7 7-7">
+                                    </path>
                                 </svg>
                             </button>
+
                             <button @click="scrollRight"
                                 class="absolute right-0 top-1/2 -translate-y-1/2 -mr-5 z-20 bg-white/80 backdrop-blur-sm border border-gray-200 text-gray-600 p-3 rounded-full shadow-lg hover:bg-green-600 hover:text-white transition-all duration-300 opacity-0 group-hover/slider:opacity-100 hidden md:block">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                        d="M9 5l7 7-7 7"></path>
+                                        d="M9 5l7 7-7 7">
+                                    </path>
                                 </svg>
                             </button>
 
@@ -512,6 +522,17 @@
                                     </div>
                                 @endforeach
                             </div>
+
+                            <div class="flex justify-center gap-2 mt-6">
+                                <template x-for="i in totalSlides" :key="i">
+                                    <button @click="scrollToSlide(i - 1)"
+                                        class="h-2 rounded-full transition-all duration-300 ease-out"
+                                        :class="activeSlide === (i - 1) ? 'w-8 bg-green-600' :
+                                            'w-2 bg-gray-300 hover:bg-green-400'"
+                                        :aria-label="'Go to slide ' + i"></button>
+                                </template>
+                            </div>
+
                         </div>
                     @else
                         <div class="text-center py-16 bg-gray-50 rounded-2xl border border-dashed border-gray-300">
@@ -538,10 +559,13 @@
                             </div>
                         </div>
                         <div>
-                            <span class="text-green-600 font-bold uppercase tracking-wide text-sm">Tentang
+                            <span class="text-green-600 font-bold uppercase tracking-wide text-base">Tentang
                                 SIMBASA</span>
-                            <h2 class="text-3xl font-bold text-gray-900 mt-2 mb-6">Solusi Digital untuk Pengelolaan
-                                Sampah yang masih Manual</h2>
+                            <h2 class="text-3xl font-bold text-green-600 mt-2 mb-6">Solusi Digital
+                                <span class="text-slate-900"> untuk Pengelolaan</span>
+                                <span class="text-green-600">Sampah</span>
+                                <span class="text-slate-900"> yang masih Manual</span>
+                            </h2>
                             <div class="prose text-gray-600 space-y-4">
                                 <p><strong>SIMBASA</strong> hadir sebagai respon terhadap tantangan pengelolaan sampah
                                     di Desa Sukapura, Kabupaten Bandung.</p>
@@ -568,11 +592,13 @@
                 </div>
             </section>
 
-            <section id="faq" class="py-20 bg-emerald-50 border-t border-gray-200 reveal">
+            <section id="faq" class="py-20 bg-white reveal">
                 <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-12">
                         <span class="text-green-600 font-bold uppercase tracking-wide text-xl">FAQ</span>
-                        <h2 class="text-3xl font-extrabold text-gray-900 mt-2">Pertanyaan yang Sering Ditanyakan</h2>
+                        <h2 class="text-3xl font-extrabold text-green-600 mt-2">Pertanyaan
+                            <span class="text-slate-900"> yang Sering Ditanyakan</span>
+                        </h2>
                         <p class="mt-4 text-gray-600">Jawaban cepat untuk pertanyaan umum Anda.</p>
                     </div>
                     <div class="space-y-4" x-data="{ activeAccordion: null }">
@@ -592,8 +618,8 @@
                             </button>
                             <div x-show="activeAccordion === 1" x-collapse
                                 class="border-t border-gray-100 bg-gray-50/50">
-                                <div class="p-5 text-gray-600 leading-relaxed">Silakan klik tombol "Masuk" lalu pilih
-                                    menu registrasi, atau hubungi admin kami melalui WhatsApp.</div>
+                                <div class="p-5 text-gray-600 leading-relaxed">Silakan klik tombol "Masuk" lalu klik
+                                    "Hubungi Admin" di bawah tombol MASUK pada halaman login.</div>
                             </div>
                         </div>
                         <div
@@ -611,8 +637,9 @@
                             </button>
                             <div x-show="activeAccordion === 2" x-collapse
                                 class="border-t border-gray-100 bg-gray-50/50">
-                                <div class="p-5 text-gray-600 leading-relaxed">Jadwal operasional kami adalah setiap
-                                    hari <strong>Sabtu dan Minggu</strong>, pukul 08.00 - 14.00 WIB.</div>
+                                <div class="p-5 text-gray-600 leading-relaxed">Jadwal penyetoran sampah dilakukan
+                                    sesuai dengan jadwal penimbangan yang dapat dilihat melalui notifikasi
+                                    masing-masing</div>
                             </div>
                         </div>
                         <div
@@ -1062,7 +1089,8 @@
                                             <svg class="w-7 h-7 text-red-600 ml-1" fill="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path d="M8 5v14l11-7z" />
-                                            </svg></div>
+                                            </svg>
+                                        </div>
                                     </div>
                                 </template>
                                 <div class="absolute top-4 left-4 z-20">
@@ -1174,10 +1202,39 @@
                 </div>
                 <div>
                     <h4 class="font-bold text-gray-900 mb-4">Hubungi Kami</h4>
-                    <ul class="space-y-2 text-sm text-gray-500">
-                        <li>Desa Sukapura, Kab. Bandung, Jawa Barat, Indonesia</li>
-                        <li>admin@simbasa.com</li>
-                        <li>+62 1234 5678</li>
+                    <ul class="space-y-3 text-sm text-gray-500">
+                        <li class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                                </path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z">
+                                </path>
+                            </svg>
+                            <span class="leading-relaxed">Desa Sukapura, Kab. Bandung, Jawa Barat, Indonesia</span>
+                        </li>
+
+                        <li class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                            <span>irvanmaulanaa10@gmail.com</span>
+                        </li>
+
+                        <li class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z">
+                                </path>
+                            </svg>
+                            <span>+62 852 6384 9464</span>
+                        </li>
                     </ul>
                 </div>
             </div>

@@ -170,7 +170,7 @@
                     </div>
 
                     <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white text-sm">
+                        <table class="min-w-full bg-white text-sm whitespace-nowrap">
                             <thead class="bg-gray-50 text-gray-500 uppercase font-semibold">
                                 <tr>
                                     <th class="py-4 px-6 text-left w-10">No</th>

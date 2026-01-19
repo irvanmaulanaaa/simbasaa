@@ -140,7 +140,7 @@
                         x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
                         x-transition:leave="transition ease-in duration-75"
                         x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-                        class="origin-top-right absolute right-0 mt-2 w-80 rounded-lg shadow-xl bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+                        class="origin-top-right absolute right-[-30px] mt-2 w-72 md:w-80 max-w-[90vw] rounded-lg shadow-xl bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
                         style="display: none;">
 
                         <div
