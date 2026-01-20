@@ -1,4 +1,7 @@
 <x-app-layout>
+
+    @section('title', 'Manajemen Setoran Sampah Warga')
+
     <x-slot name="sidebar">
         @include('ketua.partials.sidebar')
     </x-slot>

@@ -59,4 +59,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(Setoran::class, 'warga_id', 'id_user');
     }
+
+    public function hasRole($roleName)
+    {
+        if ($this->role) {
+            return strtolower($this->role->nama_role) === strtolower($roleName);
+        }
+        
+        return false;
+    }
 }

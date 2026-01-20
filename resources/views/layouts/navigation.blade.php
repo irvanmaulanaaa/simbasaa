@@ -5,8 +5,13 @@
             <div class="flex items-center">
                 <div class="flex items-center lg:hidden">
                     <button @click="sidebarOpen = !sidebarOpen"
-                        class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
+                        class="relative inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
                         <x-heroicon-o-bars-3-center-left class="h-6 w-6" />
+                        @if (isset($showHamburgerDot) && $showHamburgerDot)
+                            <span
+                                class="absolute top-2 right-2 block h-2.5 w-2.5 rounded-full bg-red-600 ring-2 ring-white animate-pulse"></span>
+                        @endif
+
                     </button>
                 </div>
 
@@ -28,7 +33,7 @@
                 <div x-data="{
                     openNotif: false,
                     showDetail: false,
-                    isLoading: false, 
+                    isLoading: false,
                     notifications: [],
                     count: 0,
                     detail: {},
@@ -62,7 +67,7 @@
                             title: 'Hapus Notifikasi?',
                             text: 'Notifikasi ini akan dihapus permanen dari daftar Anda.',
                             icon: 'warning',
-                            backdrop: `rgba(220, 38, 38, 0.4)`, 
+                            backdrop: `rgba(220, 38, 38, 0.4)`,
                             showCancelButton: true,
                             confirmButtonColor: '#ef4444',
                             cancelButtonColor: '#1f2937',
@@ -74,7 +79,7 @@
                 
                         if (result.isConfirmed) {
                             this.isLoading = true;
-                            this.showDetail = false; 
+                            this.showDetail = false;
                 
                             try {
                                 await fetch('{{ route('notifications.delete') }}', {
@@ -82,7 +87,7 @@
                                     headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                                     body: JSON.stringify({ id: this.detail.id_notif })
                                 });
-                                
+                
                                 await new Promise(r => setTimeout(r, 500));
                 
                                 this.isLoading = false;
@@ -98,7 +103,7 @@
                 
                                 this.fetchNotif();
                             } catch (error) {
-                                this.isLoading = false; 
+                                this.isLoading = false;
                                 Swal.fire('Error', 'Gagal menghapus notifikasi.', 'error');
                             }
                         }
@@ -108,17 +113,15 @@
                         return new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
                     }
                 }" x-init="fetchNotif()" class="relative mr-2">
-                
-                    <div x-show="isLoading"
-                        x-transition:enter="transition ease-out duration-300"
-                        x-transition:enter-start="opacity-0"
-                        x-transition:enter-end="opacity-100"
-                        x-transition:leave="transition ease-in duration-200"
-                        x-transition:leave-start="opacity-100"
+
+                    <div x-show="isLoading" x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                        x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
                         x-transition:leave-end="opacity-0"
                         class="fixed inset-0 bg-white bg-opacity-90 z-[9999] flex flex-col items-center justify-center"
                         style="display: none;">
-                        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-red-600 mb-4"></div>
+                        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-red-600 mb-4">
+                        </div>
                         <p class="text-red-700 font-bold text-lg animate-pulse">Menghapus Notifikasi...</p>
                     </div>
 
@@ -228,7 +231,8 @@
                                     </h3>
                                     <button @click="showDetail = false"
                                         class="text-blue-100 hover:text-white transition">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M6 18L18 6M6 6l12 12"></path>
                                         </svg>
@@ -247,8 +251,8 @@
                                             <span
                                                 class="text-xs text-gray-500 uppercase font-semibold tracking-wider mb-1">Tanggal</span>
                                             <div class="flex items-center gap-2 text-sm font-bold text-gray-800">
-                                                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
+                                                <svg class="w-4 h-4 text-blue-500" fill="none"
+                                                    stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round"
                                                         stroke-width="2"
                                                         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
@@ -262,10 +266,11 @@
                                             <span
                                                 class="text-xs text-gray-500 uppercase font-semibold tracking-wider mb-1">Waktu</span>
                                             <div class="flex items-center gap-2 text-sm font-bold text-gray-800">
-                                                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
+                                                <svg class="w-4 h-4 text-blue-500" fill="none"
+                                                    stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z">
+                                                        stroke-width="2"
+                                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z">
                                                     </path>
                                                 </svg>
                                                 <span x-text="detail.jam_kegiatan + ' WIB'"></span>

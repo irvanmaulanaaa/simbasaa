@@ -6,7 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'SIMBASA') }}</title>
+    <title>Home | {{ config('app.name', 'SIMBASA') }}</title>
+
+    <link rel="icon" type="image/png" href="{{ asset('favicon/favicon-96x96.png') }}" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon/favicon.svg') }}" />
+    <link rel="shortcut icon" href="{{ asset('favicon/favicon.ico') }}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('favicon/apple-touch-icon.png') }}" />
+    <link rel="manifest" href="{{ asset('favicon/site.webmanifest') }}" />
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
@@ -66,7 +72,15 @@
     </style>
 </head>
 
-<body class="font-sans antialiased text-gray-700 bg-gray-50" x-data="{ currentView: '{{ request('view', 'home') }}', mobileMenuOpen: false }">
+<body class="font-sans antialiased text-gray-700 bg-gray-50" x-data="{ currentView: '{{ request('view', 'home') }}', mobileMenuOpen: false }" x-init="$watch('currentView', (value) => {
+    const url = new URL(window.location);
+    if (value === 'home') {
+        url.searchParams.delete('view');
+    } else {
+        url.searchParams.set('view', value);
+    }
+    window.history.pushState({}, '', url);
+})">
 
     <nav class="glass-nav border-b border-gray-100 sticky top-0 z-50 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -78,7 +92,7 @@
                         <div
                             class="absolute -inset-1 bg-green-200 rounded-full opacity-0 group-hover:opacity-50 blur transition duration-300">
                         </div>
-                        <img src="{{ asset('images/logobaru.png') }}"
+                        <img src="{{ asset('images/logosimbasa.png') }}"
                             class="relative h-12 w-auto transform transition duration-300 group-hover:rotate-6"
                             alt="SIMBASA">
                     </div>
@@ -121,7 +135,8 @@
                             Dashboard
                         </a>
                         <div class="flex items-center pl-6 border-l border-slate-200">
-                            <a href="{{ route('profile.show') }}" class="flex items-center space-x-3 group" title="profile">
+                            <a href="{{ route('profile.show') }}" class="flex items-center space-x-3 group"
+                                title="profile">
                                 @if (Auth::user()->profile_photo_path)
                                     <img src="{{ Storage::url(Auth::user()->profile_photo_path) }}"
                                         alt="{{ Auth::user()->nama_lengkap }}"
@@ -204,7 +219,8 @@
                         <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">Ubah Sampah Menjadi
                             <span class="text-green-500">Rupiah</span>
                         </h1>
-                        <p class="mt-4 text-lg text-gray-600">Selamatkan lingkungan sambil menambah pundi-pundi tabungan
+                        <p class="mt-4 text-lg text-gray-600">Selamatkan lingkungan sambil menambah pundi-pundi
+                            tabungan
                             Anda. Bergabunglah dengan sistem bank sampah digital kami.</p>
                         <div class="mt-8">
                             <a href="{{ route('login') }}"
@@ -389,7 +405,7 @@
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
                     <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
                         <div class="text-center md:text-left w-full md:w-auto">
-                            <h2 class="text-3xl font-extrabold text-green-600">
+                            <h2 class="text-4xl font-extrabold text-green-600">
                                 Konten <span class="text-slate-900">Edukasi</span>
                             </h2>
                             <p class="mt-2 text-gray-500">Wawasan terkini untuk lingkungan yang lebih baik.</p>
@@ -1181,7 +1197,7 @@
             <div class="grid md:grid-cols-4 gap-8 mb-8">
                 <div class="col-span-1 md:col-span-2">
                     <div class="flex items-center mb-4">
-                        <img src="{{ asset('images/logobaru.png') }}" class="h-12 w-auto mr-2" alt="Logo">
+                        <img src="{{ asset('images/logosimbasa.png') }}" class="h-12 w-auto mr-2" alt="Logo">
                         <span class="font-bold text-xl text-gray-800">SIMBASA</span>
                     </div>
                     <p class="text-gray-500 text-sm leading-relaxed max-w-sm">
@@ -1192,12 +1208,43 @@
                 <div>
                     <h4 class="font-bold text-gray-900 mb-4">Menu</h4>
                     <ul class="space-y-2 text-sm text-gray-500">
-                        <li><button @click="currentView = 'home'; window.scrollTo({top: 0, behavior: 'smooth'})"
-                                class="hover:text-green-600">Beranda</button></li>
-                        <li><button @click="currentView = 'konten'; window.scrollTo({top: 0, behavior: 'smooth'})"
-                                class="hover:text-green-600">Konten</button>
+                        <li>
+                            <button @click="currentView = 'home'; window.scrollTo({top: 0, behavior: 'smooth'})"
+                                class="hover:text-green-600">
+                                Beranda
+                            </button>
                         </li>
-                        <li><a href="{{ route('login') }}" class="hover:text-green-600">Masuk</a></li>
+                        <li>
+                            <button @click="currentView = 'konten'; window.scrollTo({top: 0, behavior: 'smooth'})"
+                                class="hover:text-green-600">
+                                Konten
+                            </button>
+                        </li>
+                        <li>
+                            <button
+                                @click="currentView = 'jenis-sampah'; window.scrollTo({top: 0, behavior: 'smooth'})"
+                                class="hover:text-green-600">
+                                Jenis Sampah
+                            </button>
+                        </li>
+                        <li>
+                            <button
+                                @click="currentView = 'home'; setTimeout(() => document.getElementById('faq')?.scrollIntoView({behavior: 'smooth'}), 300)"
+                                class="hover:text-green-600">
+                                FAQ
+                            </button>
+                        </li>
+                        <li>
+                            @auth
+                                <a href="{{ route('dashboard') }}" class="font-bold text-green-600 hover:text-green-800">
+                                    Dashboard
+                                </a>
+                            @else
+                                <a href="{{ route('login') }}" class="hover:text-green-600">
+                                    Masuk
+                                </a>
+                            @endauth
+                        </li>
                     </ul>
                 </div>
                 <div>

@@ -1,4 +1,7 @@
 <x-app-layout>
+
+    @section('title', 'Manajemen Konten')
+    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <x-slot name="sidebar">
@@ -40,7 +43,7 @@
 
                         <div class="mb-4">
                             <a href="{{ route('admin-data.konten.create') }}"
-                                class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 border border-transparent rounded-lg font-semibold text-base text-white hover:bg-blue-700 transition shadow-md">
+                                class="inline-flex items-center px-4 py-2.5 bg-blue-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 active:bg-blue-700 focus:outline-none focus:border-blue-700 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150 shadow-md w-full xl:w-auto justify-center whitespace-nowrap h-[42px]">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 4v16m8-8H4"></path>
@@ -394,7 +397,8 @@
                 confirmButtonColor: '#dc2626',
                 cancelButtonColor: '#6b7280',
                 confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal'
+                cancelButtonText: 'Batal',
+                reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
                     document.getElementById('loadingOverlay').classList.remove('hidden');

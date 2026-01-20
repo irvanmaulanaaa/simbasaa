@@ -1,4 +1,7 @@
 <x-app-layout>
+
+    @section('title', 'Manajemen Kecamatan')
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <x-slot name="sidebar">
@@ -49,10 +52,11 @@
                             </div>
                         @endif
 
-                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
+                        <div
+                            class="flex flex-col md:flex-row justify-between items-end mb-6 space-y-4 md:space-y-0 gap-4">
 
                             <button onclick="openCreateModal()"
-                                class="w-full md:w-auto inline-flex items-center justify-center px-4 py-2 bg-blue-600 border border-transparent rounded-lg font-semibold text-base text-white hover:bg-blue-700 transition shadow-md">
+                                class="inline-flex items-center px-4 py-2.5 bg-blue-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 active:bg-blue-700 focus:outline-none focus:border-blue-700 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150 shadow-md w-full xl:w-auto justify-center whitespace-nowrap h-[42px]">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 4v16m8-8H4"></path>
@@ -61,7 +65,7 @@
                             </button>
 
                             <form method="GET" action="{{ route('admin-data.kecamatan.index') }}"
-                                class="flex flex-wrap md:flex-nowrap gap-2 w-full md:w-auto items-center justify-end"
+                                class="flex flex-col md:flex-row gap-3 w-full md:w-auto items-end justify-end"
                                 x-data="{
                                     search: '{{ request('search') }}',
                                     submitForm() { $el.submit(); },
@@ -71,41 +75,51 @@
                                     }
                                 }">
 
-                                <div class="relative">
-                                    <select name="per_page" onchange="this.form.submit()"
-                                        class="rounded-lg border-gray-300 text-sm focus:ring-green-500 focus:border-green-500 cursor-pointer bg-gray-50"
-                                        title="Jumlah data per halaman">
-                                        <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 Data
-                                        </option>
-                                        <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 Data
-                                        </option>
-                                        <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 Data
-                                        </option>
-                                    </select>
+                                <div class="w-full md:w-auto">
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Tampilkan</label>
+                                    <div class="relative">
+                                        <select name="per_page" onchange="this.form.submit()"
+                                            class="rounded-lg border-gray-300 text-sm focus:ring-green-500 focus:border-green-500 cursor-pointer bg-gray-50 h-[42px] w-full md:w-auto"
+                                            title="Jumlah data per halaman">
+                                            <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10
+                                                Data</option>
+                                            <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25
+                                                Data</option>
+                                            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50
+                                                Data</option>
+                                        </select>
+                                    </div>
                                 </div>
 
-                                <div class="relative w-full md:w-64">
-                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                        <svg class="w-4 h-4 text-gray-500" aria-hidden="true"
-                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                                        </svg>
+                                <div class="w-full md:w-64">
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Cari</label>
+                                    <div class="relative w-full">
+                                        <div
+                                            class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                            <svg class="w-4 h-4 text-gray-500" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2"
+                                                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                                            </svg>
+                                        </div>
+
+                                        <input type="text" name="search" x-model="search"
+                                            class="block w-full p-2 pl-10 pr-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-green-500 focus:border-green-500 h-[42px]"
+                                            placeholder="Cari Kecamatan...">
+
+                                        <button type="button" @click="clearSearch()" x-show="search.length > 0"
+                                            style="display: none;"
+                                            class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-red-500 focus:outline-none transition"
+                                            title="Hapus pencarian">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12">
+                                                </path>
+                                            </svg>
+                                        </button>
                                     </div>
-
-                                    <input type="text" name="search" x-model="search"
-                                        class="block w-full p-2 pl-10 pr-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-green-500 focus:border-green-500"
-                                        placeholder="Cari Kecamatan...">
-
-                                    <button type="button" @click="clearSearch()" x-show="search.length > 0"
-                                        style="display: none;"
-                                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-red-500 focus:outline-none transition"
-                                        title="Hapus pencarian">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M6 18L18 6M6 6l12 12"></path>
-                                        </svg>
-                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -382,7 +396,7 @@
                 cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    showGlobalLoading(); 
+                    showGlobalLoading();
                     var form = document.getElementById('delete-form');
                     form.action = url;
                     form.submit();

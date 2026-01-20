@@ -1,4 +1,7 @@
 <x-guest-layout>
+    
+    @section('title', 'Lupa Password')
+
     <div class="text-center">
         <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
             <svg class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -22,9 +22,23 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Ketua\NotifikasiController;
 use App\Http\Controllers\Warga\WargaSetoranController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+Route::get('/konten', function () {
+    return redirect('/?view=konten');
+})->name('public.konten.index');
+
+Route::get('/konten/{id}', [HomeController::class, 'show'])->name('public.konten.show');
+
+Route::post('/konten/{id}/like', [HomeController::class, 'like'])
+    ->middleware(['auth', 'throttle:60,1'])
+    ->name('public.konten.like');
+
+Route::get('/lupa-password', function () {
+    return view('auth.forgot-password-custom');
+})->name('password.manual_reset');
+
 
 Route::get('/dashboard', function () {
     $user = Auth::user();
@@ -51,24 +65,15 @@ Route::get('/dashboard', function () {
 
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/konten', function () {
-    return redirect('/?view=konten');
-})->name('public.konten.index');
-
-Route::get('/konten/{id}', [HomeController::class, 'show'])->name('public.konten.show');
-Route::post('/konten/{id}/like', [HomeController::class, 'like'])->name('public.konten.like');
-Route::get('/lupa-password', function () {
-    return view('auth.forgot-password-custom');
-})->name('password.manual_reset');
-
 Route::middleware('auth')->group(function () {
-
     Route::get('/notifications/latest', [NotificationController::class, 'getLatest'])->name('notifications.latest');
     Route::post('/notifications/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::post('/notifications/delete', [NotificationController::class, 'deleteForUser'])->name('notifications.delete');
 
-    Route::post('/konten/{id}/comment', [HomeController::class, 'comment'])->name('public.konten.comment');
+    Route::post('/konten/{id}/comment', [HomeController::class, 'comment'])
+        ->middleware('throttle:10,1')
+        ->name('public.konten.comment');
+
     Route::put('/komentar/{id}', [HomeController::class, 'updateComment'])->name('public.komentar.update');
     Route::delete('/komentar/{id}', [HomeController::class, 'deleteComment'])->name('public.komentar.delete');
 
@@ -80,62 +85,66 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile/photo', [ProfileController::class, 'deletePhoto'])->name('current-user-photo.destroy');
     Route::patch('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo.update');
 
-    Route::prefix('admin-data')->name('admin-data.')->group(function () {
-        Route::get('dashboard', [AdminDataDashboard::class, 'index'])->name('dashboard');
-        Route::get('/users/get-desa', [UserController::class, 'getDesa'])->name('users.get-desa');
 
-        Route::resource('kecamatan', KecamatanController::class);
-        Route::resource('desa', DesaController::class);
-        Route::resource('users', UserController::class);
-        Route::resource('konten', KontenController::class)->except(['show']);
-        Route::put('users/{id}/reset-password', [UserController::class, 'resetPassword'])
-            ->name('users.reset_password');
-    });
+    Route::prefix('admin-data')->name('admin-data.')
+        ->middleware('role:admin_data')
+        ->group(function () {
+            Route::get('dashboard', [AdminDataDashboard::class, 'index'])->name('dashboard');
+            Route::get('/users/get-desa', [UserController::class, 'getDesa'])->name('users.get-desa');
 
-    Route::prefix('admin-pusat')->name('admin-pusat.')->group(function () {
-        Route::get('dashboard', [AdminPusatDashboard::class, 'index'])->name('dashboard');
-        Route::get('sampah/check-code', [SampahController::class, 'checkCode'])
-            ->name('sampah.check-code');
+            Route::resource('kecamatan', KecamatanController::class);
+            Route::resource('desa', DesaController::class);
+            Route::resource('users', UserController::class);
+            Route::resource('konten', KontenController::class)->except(['show']);
+            Route::put('users/{id}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset_password');
+        });
 
-        Route::resource('sampah', SampahController::class);
-        Route::resource('jadwal', JadwalPenimbanganController::class);
 
-        Route::get('/api/desas/{kecamatanId}', [JadwalPenimbanganController::class, 'getDesasByKecamatan'])
-            ->name('api.desas');
-        Route::get('/api/rws/{desaId}', [JadwalPenimbanganController::class, 'getRwsByDesa'])
-            ->name('api.rws');
+    Route::prefix('admin-pusat')->name('admin-pusat.')
+        ->middleware('role:admin_pusat')
+        ->group(function () {
+            Route::get('dashboard', [AdminPusatDashboard::class, 'index'])->name('dashboard');
+            Route::get('sampah/check-code', [SampahController::class, 'checkCode'])->name('sampah.check-code');
 
-        Route::resource('kategori-sampah', KategoriSampahController::class);
+            Route::resource('sampah', SampahController::class);
+            Route::resource('jadwal', JadwalPenimbanganController::class);
 
-    });
+            Route::get('/api/desas/{kecamatanId}', [JadwalPenimbanganController::class, 'getDesasByKecamatan'])->name('api.desas');
+            Route::get('/api/rws/{desaId}', [JadwalPenimbanganController::class, 'getRwsByDesa'])->name('api.rws');
 
-    Route::prefix('ketua')->name('ketua.')->middleware(['auth'])->group(function () {
+            Route::resource('kategori-sampah', KategoriSampahController::class);
+        });
 
-        Route::get('dashboard', [KetuaDashboard::class, 'index'])->name('dashboard');
 
-        Route::get('setoran', [SetoranController::class, 'index'])->name('setoran.index');
-        Route::post('setoran', [SetoranController::class, 'store'])->name('setoran.store');
-        Route::get('setoran/{id}', [SetoranController::class, 'show'])->name('setoran.show');
-        Route::put('setoran/{id}', [SetoranController::class, 'update'])->name('setoran.update');
-        Route::delete('setoran/{id}', [SetoranController::class, 'destroy'])->name('setoran.destroy');
+    Route::prefix('ketua')->name('ketua.')
+        ->middleware('role:ketua')
+        ->group(function () {
+            Route::get('dashboard', [KetuaDashboard::class, 'index'])->name('dashboard');
 
-        Route::get('penarikan', [KetuaPenarikan::class, 'index'])->name('penarikan.index');
-        Route::patch('penarikan/{id}', [KetuaPenarikan::class, 'konfirmasi'])->name('penarikan.konfirmasi');
+            Route::get('setoran', [SetoranController::class, 'index'])->name('setoran.index');
+            Route::post('setoran', [SetoranController::class, 'store'])->name('setoran.store');
+            Route::get('setoran/{id}', [SetoranController::class, 'show'])->name('setoran.show');
+            Route::put('setoran/{id}', [SetoranController::class, 'update'])->name('setoran.update');
+            Route::delete('setoran/{id}', [SetoranController::class, 'destroy'])->name('setoran.destroy');
 
-        Route::get('/api/count-pending', [NotifikasiController::class, 'countPending'])->name('api.count-pending');
+            Route::get('penarikan', [KetuaPenarikan::class, 'index'])->name('penarikan.index');
+            Route::patch('penarikan/{id}', [KetuaPenarikan::class, 'konfirmasi'])->name('penarikan.konfirmasi');
 
-    });
+            Route::get('/api/count-pending', [NotifikasiController::class, 'countPending'])->name('api.count-pending');
+        });
 
-    Route::prefix('warga')->name('warga.')->middleware(['auth'])->group(function () {
-        Route::get('dashboard', [WargaDashboard::class, 'index'])->name('dashboard');
+    Route::prefix('warga')->name('warga.')
+        ->middleware('role:warga')
+        ->group(function () {
+            Route::get('dashboard', [WargaDashboard::class, 'index'])->name('dashboard');
 
-        Route::post('tarik-saldo', [WargaPenarikan::class, 'store'])->name('tarik.store');
+            Route::post('tarik-saldo', [WargaPenarikan::class, 'store'])->name('tarik.store');
 
-        Route::get('riwayat-penarikan', [WargaPenarikan::class, 'index'])->name('penarikan.index');
-        Route::get('riwayat-setoran', [WargaSetoranController::class, 'index'])->name('setoran.index');
+            Route::get('riwayat-penarikan', [WargaPenarikan::class, 'index'])->name('penarikan.index');
+            Route::get('riwayat-setoran', [WargaSetoranController::class, 'index'])->name('setoran.index');
 
-        Route::post('penarikan/{id}/mark-read', [WargaPenarikan::class, 'markAsRead'])->name('penarikan.markRead');
-    });
+            Route::post('penarikan/{id}/mark-read', [WargaPenarikan::class, 'markAsRead'])->name('penarikan.markRead');
+        });
 });
 
 require __DIR__ . '/auth.php';

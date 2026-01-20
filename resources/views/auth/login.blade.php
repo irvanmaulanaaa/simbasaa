@@ -1,7 +1,10 @@
 <x-guest-layout>
+
+    @section('title', 'Login')
+
     <div class="text-center">
         <div class="flex items-center justify-center">
-            <img src="{{ asset('images/logobaru.png') }}" alt="Logo Bank Sampah" class="h-16 w-auto">
+            <img src="{{ asset('images/logosimbasa.png') }}" alt="Logo Bank Sampah" class="h-16 w-auto">
             <span class="mx-4 text-gray-300 text-2xl font-light">|</span>
             <span class="text-2xl font-semibold text-gray-700">SIMBASA</span>
         </div>
@@ -41,22 +44,37 @@
 
         @csrf
 
-        <div>
-            <x-input-label for="username" :value="__('Username')" />
-            <x-text-input id="username" class="block mt-1 w-full" type="text" name="username" x-model="username"
-                autofocus autocomplete="username" />
+        <div class="relative mt-4">
+            <x-text-input id="username"
+                class="block w-full px-4 pt-5 pb-2 text-gray-900 bg-white rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-green-600 peer lowercase"
+                type="text" name="username" x-model="username"
+                @input="username = $event.target.value.toLowerCase().replace(/\s/g, '')" placeholder=" " autofocus
+                autocomplete="username" />
+
+            <label for="username"
+                class="absolute text-base font-medium text-gray-600 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-green-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1 pointer-events-none">
+                {{ __('Username') }}
+            </label>
+
             <p x-show="errUsername" x-text="errUsername" class="text-sm text-red-600 mt-2 space-y-1"
                 style="display: none;"></p>
             <x-input-error :messages="$errors->get('username')" class="mt-2" />
         </div>
 
-        <div class="mt-4">
-            <x-input-label for="password" value="Password" class="font-semibold" />
-            <div class="relative mt-1">
-                <x-text-input id="password" class="block w-full rounded-lg pr-10" ::type="show ? 'text' : 'password'" name="password"
-                    x-model="password" autocomplete="current-password" />
+        <div class="relative mt-4">
+            <div class="relative">
+                <x-text-input id="password"
+                    class="block w-full px-4 pt-5 pb-2 text-gray-900 bg-white rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-green-600 peer pr-10"
+                    ::type="show ? 'text' : 'password'" name="password" x-model="password" placeholder=" "
+                    autocomplete="current-password" />
+
+                <label for="password"
+                    class="absolute text-base font-medium text-gray-600 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-green-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1 pointer-events-none">
+                    Password
+                </label>
+
                 <button type="button" @click="show = !show"
-                    class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-green-600 focus:outline-none transition">
+                    class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-green-600 focus:outline-none transition z-20">
                     <svg x-show="!show" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                         stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -73,7 +91,6 @@
 
             <p x-show="errPassword" x-text="errPassword" class="text-sm text-red-600 mt-2 space-y-1"
                 style="display: none;"></p>
-
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 

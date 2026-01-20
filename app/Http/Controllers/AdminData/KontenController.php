@@ -69,7 +69,7 @@ class KontenController extends Controller
             'deskripsi' => 'required|string',
             'status_id' => 'required|exists:status_konten,id_status',
             'media_type' => 'required|in:upload,url',
-            'media_file' => 'nullable|required_if:media_type,upload|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'media_file' => 'nullable|required_if:media_type,upload|image|mimes:jpeg,png,jpg,webp|max:2048',
             'media_url' => 'nullable|required_if:media_type,url|url:https',
         ]);
 
@@ -142,7 +142,7 @@ class KontenController extends Controller
             'id_kategori' => 'required|exists:kategori_kontens,id_kategori',
             'status_id' => 'required|exists:status_konten,id_status',
             'media_type' => 'required|in:upload,url',
-            'media_file' => 'nullable|image|mimes:jpeg,png,jpg,gif,mp4,mov,avi|max:20480',
+            'media_file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'media_url' => 'nullable|url:https',
         ]);
 

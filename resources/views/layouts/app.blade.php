@@ -6,7 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>
+        @hasSection('title')
+            @yield('title') |
+        @endif{{ config('app.name', 'SIMBASA') }}
+    </title>
+
+    <link rel="icon" type="image/png" href="{{ asset('favicon/favicon-96x96.png') }}" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon/favicon.svg') }}" />
+    <link rel="shortcut icon" href="{{ asset('favicon/favicon.ico') }}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('favicon/apple-touch-icon.png') }}" />
+    <link rel="manifest" href="{{ asset('favicon/site.webmanifest') }}" />
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -30,7 +40,7 @@
 
                 <div class="h-full flex flex-col">
                     <div class="h-16 flex items-center shadow-sm border-b border-gray-100 relative">
-                        <img src="{{ asset('images/logobaru.png') }}" alt="SIMBASA" class="h-10 w-auto ml-6">
+                        <img src="{{ asset('images/logosimbasa.png') }}" alt="SIMBASA" class="h-10 w-auto ml-6">
                         <span class="text-gray-800 text-xl font-bold ml-4">SIMBASA</span>
                         <button @click="sidebarOpen = false"
                             class="absolute top-3 right-3 p-1 text-gray-400 hover:text-gray-600 lg:hidden">

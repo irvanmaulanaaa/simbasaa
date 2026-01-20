@@ -1,4 +1,7 @@
 <x-app-layout>
+
+    @section('title', 'Permintaan Penarikan Saldo Warga')
+
     <x-slot name="sidebar">
         @include('ketua.partials.sidebar')
     </x-slot>
@@ -414,7 +417,8 @@
                     confirmButtonColor: '#16a34a',
                     cancelButtonColor: '#6b7280',
                     confirmButtonText: 'Ya, Setujui!',
-                    cancelButtonText: 'Batal'
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true
                 }).then((result) => {
                     if (result.isConfirmed) {
                         showLoading();
@@ -437,6 +441,7 @@
                     cancelButtonColor: '#6b7280',
                     confirmButtonText: 'Tolak Permintaan',
                     cancelButtonText: 'Batal',
+                    reverseButtons: true,
                     inputValidator: (value) => {
                         if (!value) {
                             return 'Anda wajib menuliskan alasan penolakan!'

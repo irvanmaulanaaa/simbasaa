@@ -1,4 +1,7 @@
 <x-app-layout>
+
+    @section('title', 'Kategori Sampah')
+    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <x-slot name="sidebar">
@@ -51,10 +54,11 @@
                             </div>
                         @endif
 
-                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
+                        <div
+                            class="flex flex-col md:flex-row justify-between items-end mb-6 space-y-4 md:space-y-0 gap-4">
 
                             <button onclick="openCreateModal()"
-                                class="w-full md:w-auto inline-flex items-center justify-center px-4 py-2 bg-blue-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-700 focus:outline-none focus:ring ring-blue-300 transition ease-in-out duration-150 shadow-md">
+                                class="w-full md:w-auto inline-flex items-center justify-center px-4 py-2 bg-blue-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-700 focus:outline-none focus:ring ring-blue-300 transition ease-in-out duration-150 shadow-md h-[42px]">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 4v16m8-8H4"></path>
@@ -63,7 +67,7 @@
                             </button>
 
                             <form method="GET" action="{{ route('admin-pusat.kategori-sampah.index') }}"
-                                class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 w-full md:w-auto"
+                                class="flex flex-col md:flex-row gap-3 w-full md:w-auto items-end justify-end"
                                 x-data="{
                                     search: '{{ request('search') }}',
                                     submitForm() { $el.submit(); },
@@ -73,40 +77,52 @@
                                     }
                                 }">
 
-                                <div class="relative">
-                                    <select name="per_page" onchange="this.form.submit()"
-                                        class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm cursor-pointer md:w-32"
-                                        title="Jumlah data per halaman">
-                                        <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 Data
-                                        </option>
-                                        <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 Data
-                                        </option>
-                                        <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 Data
-                                        </option>
-                                        <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 Data
-                                        </option>
-                                    </select>
+                                <div class="w-full md:w-auto">
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Tampilkan</label>
+                                    <div class="relative">
+                                        <select name="per_page" onchange="this.form.submit()"
+                                            class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm cursor-pointer w-full md:w-32 h-[42px]"
+                                            title="Jumlah data per halaman">
+                                            <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10
+                                                Data</option>
+                                            <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25
+                                                Data</option>
+                                            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50
+                                                Data</option>
+                                            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>
+                                                100 Data</option>
+                                        </select>
+                                    </div>
                                 </div>
 
-                                <div class="relative w-full md:w-64">
-                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                        <svg class="w-4 h-4 text-gray-500" aria-hidden="true"
-                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                                        </svg>
+                                <div class="w-full md:w-64">
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Cari</label>
+                                    <div class="relative w-full">
+                                        <div
+                                            class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                            <svg class="w-4 h-4 text-gray-500" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2"
+                                                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                                            </svg>
+                                        </div>
+
+                                        <input type="text" name="search" x-model="search"
+                                            class="block w-full p-2 pl-10 pr-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-green-500 focus:border-green-500 h-[42px]"
+                                            placeholder="Cari kategori...">
+
+                                        <button type="button" @click="clearSearch()" x-show="search.length > 0"
+                                            style="display: none;"
+                                            class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-red-500 focus:outline-none transition">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12">
+                                                </path>
+                                            </svg>
+                                        </button>
                                     </div>
-                                    <input type="text" name="search" x-model="search"
-                                        class="block w-full p-2 pl-10 pr-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-green-500 focus:border-green-500"
-                                        placeholder="Cari kategori...">
-                                    <button type="button" @click="clearSearch()" x-show="search.length > 0"
-                                        style="display: none;"
-                                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-red-500 focus:outline-none transition">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M6 18L18 6M6 6l12 12"></path>
-                                        </svg>
-                                    </button>
                                 </div>
                             </form>
                         </div>

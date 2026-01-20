@@ -1,4 +1,7 @@
 <x-app-layout>
+
+    @section('title', 'Setoran Sampah')
+
     <x-slot name="sidebar">
         @include('warga.partials.sidebar')
     </x-slot>

@@ -6,7 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Bank Sampah') }}</title>
+    <title>
+        @hasSection('title')
+            @yield('title') |
+        @endif{{ config('app.name', 'SIMBASA') }}
+    </title>
+
+    <link rel="icon" type="image/png" href="{{ asset('favicon/favicon-96x96.png') }}" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon/favicon.svg') }}" />
+    <link rel="shortcut icon" href="{{ asset('favicon/favicon.ico') }}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('favicon/apple-touch-icon.png') }}" />
+    <link rel="manifest" href="{{ asset('favicon/site.webmanifest') }}" />
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -16,13 +26,13 @@
 
 <body class="font-sans text-gray-900 antialiased">
     <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-100 p-4">
-        
+
         <div class="flex bg-white shadow-2xl rounded-2xl overflow-hidden max-w-4xl w-full border border-white/50">
 
             <div class="w-1/2 bg-green-300 hidden md:flex items-center justify-center p-8 relative">
                 <img src="{{ asset('images/ilus.png') }}" alt="Ilustrasi Login Bank Sampah"
                     class="max-w-full h-auto object-cover rounded-xl relative z-10 hover:scale-105 transition duration-500">
-                
+
                 <div class="absolute inset-0 bg-green-100 opacity-30"></div>
             </div>
 

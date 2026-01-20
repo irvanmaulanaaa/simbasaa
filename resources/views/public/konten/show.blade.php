@@ -5,7 +5,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $konten->judul }} - SIMBASA</title>
+
+    <title>{{ $konten->judul }} | SIMBASA</title>
+
+    <link rel="icon" type="image/png" href="{{ asset('favicon/favicon-96x96.png') }}" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon/favicon.svg') }}" />
+    <link rel="shortcut icon" href="{{ asset('favicon/favicon.ico') }}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('favicon/apple-touch-icon.png') }}" />
+    <link rel="manifest" href="{{ asset('favicon/site.webmanifest') }}" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -162,7 +169,7 @@
                     Kembali ke Konten
                 </a>
                 <a href="{{ url('/') }}" class="flex items-center gap-2 group">
-                    <img src="{{ asset('images/logobaru.png') }}" alt="Logo SIMBASA"
+                    <img src="{{ asset('images/logosimbasa.png') }}" alt="Logo SIMBASA"
                         class="h-14 w-auto group-hover:scale-105 transition duration-300">
                 </a>
             </div>

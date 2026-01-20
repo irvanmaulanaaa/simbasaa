@@ -1,4 +1,7 @@
 <x-app-layout>
+
+    @section('title', 'Tambah Konten')
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <x-slot name="sidebar">
@@ -51,7 +54,7 @@
                     <form id="kontenForm" action="{{ route('admin-data.konten.store') }}" method="POST"
                         enctype="multipart/form-data" novalidate @submit.prevent="validateAndSubmit"
                         x-data="{
-                            mediaType: '{{ old('media_type', 'upload') }}', 
+                            mediaType: '{{ old('media_type', 'upload') }}',
                             errors: {},
                             isLoading: false,
                         
@@ -95,7 +98,7 @@
                                             if (targetId !== 'dropzone-box') el.focus();
                                         }
                                     }
-                                    return; 
+                                    return;
                                 }
                         
                                 this.isLoading = true;
@@ -154,7 +157,9 @@
                                         <p class="mt-2 text-sm text-gray-600"><span
                                                 class="font-bold text-green-600 hover:underline">Klik di sini</span>
                                             untuk memilih gambar</p>
-                                        <p class="text-xs text-gray-400 mt-1">Mendukung: JPG, PNG, GIF (Maks. 10MB)</p>
+                                        <p class="text-xs text-gray-400 mt-1">Mendukung: JPG, PNG, JPEG, WEBP
+                                            <span class="text-red-500 font-bold">(Maks. 2MB)</span>
+                                        </p>
                                     </div>
 
                                     <div id="preview-container" class="hidden relative">
@@ -357,23 +362,39 @@
         const fileNameDisplay = document.getElementById('file-name');
 
         const file = fileInput.files[0];
-        const reader = new FileReader();
-
-        reader.addEventListener("load", function() {
-            preview.src = reader.result;
-            dropzoneContent.classList.add('hidden');
-            previewContainer.classList.remove('hidden');
-            previewContainer.classList.add('inline-block');
-            fileNameDisplay.textContent = "File: " + file.name;
-        }, false);
 
         if (file) {
+            const maxSize = 2 * 1024 * 1024;
+
+            if (file.size > maxSize) {
+                fileInput.value = '';
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Ukuran File Terlalu Besar!',
+                    text: 'Maksimal ukuran file adalah 2 MB. File Anda: ' + (file.size / (1024 * 1024)).toFixed(
+                        2) + ' MB.',
+                    confirmButtonColor: '#f59e0b'
+                });
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.addEventListener("load", function() {
+                preview.src = reader.result;
+                dropzoneContent.classList.add('hidden');
+                previewContainer.classList.remove('hidden');
+                previewContainer.classList.add('inline-block');
+                fileNameDisplay.textContent = "File: " + file.name + " (" + (file.size / 1024).toFixed(0) +
+                    " KB)";
+            }, false);
+
             reader.readAsDataURL(file);
         }
     }
 
     function removeImage(event) {
-        event.stopPropagation(); 
+        event.stopPropagation();
         const fileInput = document.getElementById('media_file');
         const dropzoneContent = document.getElementById('dropzone-content');
         const previewContainer = document.getElementById('preview-container');

@@ -1,4 +1,7 @@
 <x-app-layout>
+
+    @section('title', 'Jadwal Penimbangan')
+
     <x-slot name="sidebar">
         @include('admin-pusat.partials.sidebar')
     </x-slot>
@@ -594,7 +597,8 @@
                 confirmButtonColor: '#dc2626',
                 cancelButtonColor: '#6b7280',
                 confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal'
+                cancelButtonText: 'Batal',
+                reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
                     document.getElementById('loadingOverlay').classList.remove('hidden');

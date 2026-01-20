@@ -1,4 +1,7 @@
 <x-app-layout>
+
+    @section('title', 'Edit Data Sampah')
+
     <x-slot name="sidebar">
         @include('admin-pusat.partials.sidebar')
     </x-slot>

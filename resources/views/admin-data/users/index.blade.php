@@ -1,4 +1,7 @@
 <x-app-layout>
+
+    @section('title', 'Manajemen Pengguna')
+    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <x-slot name="sidebar">
@@ -42,7 +45,7 @@
                             class="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-6 space-y-4 xl:space-y-0 gap-4">
 
                             <a href="{{ route('admin-data.users.create') }}"
-                                class="inline-flex items-center px-4 py-2.5 bg-blue-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 active:bg-blue-700 focus:outline-none focus:border-blue-700 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150 shadow-md w-full xl:w-auto justify-center whitespace-nowrap">
+                                class="inline-flex items-center px-4 py-2.5 bg-blue-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 active:bg-blue-700 focus:outline-none focus:border-blue-700 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150 shadow-md w-full xl:w-auto justify-center whitespace-nowrap h-[42px]">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 4v16m8-8H4"></path>
@@ -51,7 +54,8 @@
                             </a>
 
                             <form method="GET" action="{{ route('admin-data.users.index') }}"
-                                class="flex flex-col lg:flex-row gap-3 w-full xl:w-auto" x-data="{
+                                class="flex flex-col lg:flex-row gap-3 w-full xl:w-auto items-end"
+                                x-data="{
                                     search: '{{ request('search') }}',
                                     submitForm() { $el.submit(); },
                                     clearSearch() {
@@ -60,55 +64,75 @@
                                     }
                                 }">
 
-                                <select name="per_page" onchange="this.form.submit()"
-                                    class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm w-full lg:w-32 cursor-pointer">
-                                    <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 Data</option>
-                                    <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 Data</option>
-                                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 Data</option>
-                                    <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 Data
-                                    </option>
-                                </select>
-
-                                <select name="role" onchange="this.form.submit()"
-                                    class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm w-full lg:w-40 cursor-pointer">
-                                    <option value="">Semua Role</option>
-                                    @foreach ($roles as $role)
-                                        <option value="{{ $role->id_role }}"
-                                            {{ request('role') == $role->id_role ? 'selected' : '' }}>
-                                            {{ $role->nama_role }}
+                                <div class="w-full lg:w-auto">
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Tampilkan</label>
+                                    <select name="per_page" onchange="this.form.submit()"
+                                        class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm w-full lg:w-32 cursor-pointer h-[42px]">
+                                        <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 Data
                                         </option>
-                                    @endforeach
-                                </select>
+                                        <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 Data
+                                        </option>
+                                        <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 Data
+                                        </option>
+                                        <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100
+                                            Data</option>
+                                    </select>
+                                </div>
 
-                                <select name="status" onchange="this.form.submit()"
-                                    class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm w-full lg:w-40 cursor-pointer">
-                                    <option value="">Semua Status</option>
-                                    <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif
-                                    </option>
-                                    <option value="tidak_aktif"
-                                        {{ request('status') == 'tidak_aktif' ? 'selected' : '' }}>Tidak Aktif</option>
-                                </select>
+                                <div class="w-full lg:w-auto">
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Filter Role</label>
+                                    <select name="role" onchange="this.form.submit()"
+                                        class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm w-full lg:w-40 cursor-pointer h-[42px]">
+                                        <option value="">Semua Role</option>
+                                        @foreach ($roles as $role)
+                                            <option value="{{ $role->id_role }}"
+                                                {{ request('role') == $role->id_role ? 'selected' : '' }}>
+                                                {{ $role->nama_role }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
-                                <div class="relative w-full lg:w-64">
-                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                        <svg class="w-4 h-4 text-gray-500" aria-hidden="true"
-                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                                        </svg>
+                                <div class="w-full lg:w-auto">
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Filter Status</label>
+                                    <select name="status" onchange="this.form.submit()"
+                                        class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm w-full lg:w-40 cursor-pointer h-[42px]">
+                                        <option value="">Semua Status</option>
+                                        <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>
+                                            Aktif</option>
+                                        <option value="tidak_aktif"
+                                            {{ request('status') == 'tidak_aktif' ? 'selected' : '' }}>Tidak Aktif
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="w-full lg:w-64">
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Cari</label>
+                                    <div class="relative w-full">
+                                        <div
+                                            class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                            <svg class="w-4 h-4 text-gray-500" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2"
+                                                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                                            </svg>
+                                        </div>
+                                        <input type="text" name="search" x-model="search"
+                                            class="block w-full p-2 pl-10 pr-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-green-500 focus:border-green-500 h-[42px]"
+                                            placeholder="Nama / username...">
+
+                                        <button type="button" @click="clearSearch()" x-show="search.length > 0"
+                                            style="display: none;"
+                                            class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-red-500 focus:outline-none transition">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12">
+                                                </path>
+                                            </svg>
+                                        </button>
                                     </div>
-                                    <input type="text" name="search" x-model="search"
-                                        class="block w-full p-2 pl-10 pr-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-green-500 focus:border-green-500"
-                                        placeholder="Cari nama / username...">
-
-                                    <button type="button" @click="clearSearch()" x-show="search.length > 0"
-                                        style="display: none;"
-                                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-red-500 focus:outline-none transition">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M6 18L18 6M6 6l12 12"></path>
-                                        </svg>
-                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -219,7 +243,7 @@
                                                                     stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path stroke-linecap="round"
                                                                         stroke-linejoin="round" stroke-width="2"
-                                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                                        d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
                                                                 </svg>
                                                             </button>
                                                         @endif
@@ -256,13 +280,32 @@
                                 x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
                                 x-transition:leave="transition ease-in duration-200"
                                 x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+
                                 <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-                                    @click="showResetModal = false"></div>
+                                    @click="showResetModal = false">
+                                </div>
+
                                 <div class="flex items-center justify-center min-h-screen p-4 text-center">
                                     <div
                                         class="relative bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:max-w-lg w-full">
-                                        <form :action="resetActionUrl" method="POST">
+                                        <form :action="resetActionUrl" method="POST" x-data="{ isResetting: false }"
+                                            @submit="isResetting = true">
                                             @csrf @method('PUT')
+                                            <div x-show="isResetting" style="display: none;"
+                                                x-transition:enter="transition ease-out duration-200"
+                                                x-transition:enter-start="opacity-0"
+                                                x-transition:enter-end="opacity-100"
+                                                x-transition:leave="transition ease-in duration-100"
+                                                x-transition:leave-start="opacity-100"
+                                                x-transition:leave-end="opacity-0"
+                                                class="absolute inset-0 bg-white bg-opacity-80 z-50 flex flex-col items-center justify-center rounded-lg">
+                                                <div
+                                                    class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4">
+                                                </div>
+                                                <p class="text-green-700 font-bold text-lg animate-pulse">Loading...
+                                                </p>
+                                            </div>
+
                                             <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                                                 <div class="sm:flex sm:items-start">
                                                     <div
@@ -299,7 +342,8 @@
                                                                         </path>
                                                                     </svg>
                                                                     Kurang <span x-text="8 - resetPasswordInput.length"
-                                                                        class="mx-1"></span> karakter lagi.
+                                                                        class="mx-1"></span>
+                                                                    karakter lagi.
                                                                 </p>
                                                                 <p x-show="resetPasswordInput.length >= 8"
                                                                     class="text-xs text-green-600 font-semibold flex items-center">
@@ -312,8 +356,8 @@
                                                                     Password valid.
                                                                 </p>
                                                                 <p x-show="resetPasswordInput.length === 0"
-                                                                    class="text-xs text-gray-400">Wajib minimal 8
-                                                                    karakter.</p>
+                                                                    class="text-xs text-gray-400">Wajib
+                                                                    minimal 8 karakter.</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -321,8 +365,10 @@
                                             </div>
                                             <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                                                 <button type="submit" :disabled="resetPasswordInput.length < 8"
-                                                    :class="{ 'opacity-50 cursor-not-allowed': resetPasswordInput.length <
-                                                        8, 'hover:bg-yellow-700': resetPasswordInput.length >= 8 }"
+                                                    :class="{
+                                                        'opacity-50 cursor-not-allowed': resetPasswordInput.length < 8,
+                                                        'hover:bg-yellow-700': resetPasswordInput.length >= 8
+                                                    }"
                                                     class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-yellow-600 text-base font-medium text-white focus:outline-none sm:ml-3 sm:w-auto sm:text-sm transition">Reset
                                                     Password</button>
                                                 <button type="button" @click="showResetModal = false"

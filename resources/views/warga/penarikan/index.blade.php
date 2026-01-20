@@ -1,4 +1,7 @@
 <x-app-layout>
+
+    @section('title', 'Permintaan Penarikan Saldo')
+
     <x-slot name="sidebar">
         @include('warga.partials.sidebar')
     </x-slot>

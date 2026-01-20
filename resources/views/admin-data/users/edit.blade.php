@@ -1,4 +1,7 @@
 <x-app-layout>
+
+    @section('title', 'Edit Pengguna')
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <x-slot name="sidebar">

@@ -1,4 +1,7 @@
 <x-app-layout>
+
+    @section('title', 'Edit Konten')
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <x-slot name="sidebar">
@@ -102,7 +105,7 @@
                                             if (targetId !== 'dropzone-box') el.focus();
                                         }
                                     }
-                                    return; 
+                                    return;
                                 }
                         
                                 this.isLoading = true;
@@ -162,7 +165,9 @@
                                         <p class="mt-2 text-sm text-gray-600"><span
                                                 class="font-bold text-green-600 hover:underline">Klik di sini</span>
                                             untuk mengganti gambar</p>
-                                        <p class="text-xs text-gray-400 mt-1">Kosongkan jika tidak ingin mengubah</p>
+                                        <p class="text-xs text-gray-400 mt-1">Kosongkan jika tidak ingin mengubah 
+                                            <span class="text-red-500 font-bold">(Maks. 2MB)</span>
+                                        </p>
                                     </div>
 
                                     <div id="preview-container"
@@ -361,17 +366,33 @@
         const fileNameDisplay = document.getElementById('file-name');
 
         const file = fileInput.files[0];
-        const reader = new FileReader();
-
-        reader.addEventListener("load", function() {
-            preview.src = reader.result;
-            dropzoneContent.classList.add('hidden');
-            previewContainer.classList.remove('hidden');
-            previewContainer.classList.add('inline-block');
-            fileNameDisplay.textContent = "File Baru: " + file.name;
-        }, false);
 
         if (file) {
+            const maxSize = 2 * 1024 * 1024;
+
+            if (file.size > maxSize) {
+                fileInput.value = '';
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Ukuran File Terlalu Besar!',
+                    text: 'Maksimal ukuran file adalah 2 MB. File Anda: ' + (file.size / (1024 * 1024)).toFixed(
+                        2) + ' MB.',
+                    confirmButtonColor: '#f59e0b'
+                });
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.addEventListener("load", function() {
+                preview.src = reader.result;
+                dropzoneContent.classList.add('hidden');
+                previewContainer.classList.remove('hidden');
+                previewContainer.classList.add('inline-block');
+                fileNameDisplay.textContent = "File Baru: " + file.name + " (" + (file.size / 1024).toFixed(0) +
+                    " KB)";
+            }, false);
+
             reader.readAsDataURL(file);
         }
     }
