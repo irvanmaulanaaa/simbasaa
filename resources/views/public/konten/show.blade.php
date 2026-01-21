@@ -166,11 +166,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
                         </path>
                     </svg>
-                    Kembali ke Konten
+                    Kembali
                 </a>
                 <a href="{{ url('/') }}" class="flex items-center gap-2 group">
+                    <span class="font-extrabold text-2xl text-slate-800 tracking-tight group-hover:text-green-600 transition duration-300">SIMBASA</span>
                     <img src="{{ asset('images/logosimbasa.png') }}" alt="Logo SIMBASA"
-                        class="h-14 w-auto group-hover:scale-105 transition duration-300">
+                        class="relative h-12 w-auto transform transition duration-300 group-hover:rotate-6">
                 </a>
             </div>
         </div>

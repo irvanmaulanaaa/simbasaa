@@ -106,7 +106,8 @@
                                     </option>
                                     <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 Data
                                     </option>
-                                    <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 Data
+                                    <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100
+                                        Data
                                     </option>
                                 </select>
                             </div>
@@ -233,7 +234,6 @@
                                                 @foreach ($summary as $uom => $total)
                                                     @php
                                                         $uomLower = strtolower($uom);
-
                                                         if ($uomLower == 'kg') {
                                                             $badgeClass = 'bg-blue-100 text-blue-800 border-blue-200';
                                                         } elseif ($uomLower == 'pcs') {
@@ -272,16 +272,23 @@
                                                         </path>
                                                     </svg>
                                                 </button>
-                                                <button @click="openEditModal({{ $setoran->id_setor }})"
-                                                    class="w-8 h-8 rounded bg-yellow-50 text-yellow-600 flex items-center justify-center hover:bg-yellow-500 hover:text-white transition shadow-sm"
-                                                    title="Edit Data">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z" />
-                                                    </svg>
-                                                </button>
+
+                                                @php
+                                                    $isWargaAktif = $wargas->contains('id_user', $setoran->warga_id);
+                                                @endphp
+
+                                                @if ($isWargaAktif)
+                                                    <button @click="openEditModal({{ $setoran->id_setor }})"
+                                                        class="w-8 h-8 rounded bg-yellow-50 text-yellow-600 flex items-center justify-center hover:bg-yellow-500 hover:text-white transition shadow-sm"
+                                                        title="Edit Data">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z" />
+                                                        </svg>
+                                                    </button>
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>
@@ -322,46 +329,19 @@
                             </svg></button>
                     </div>
 
-                    <div x-show="isMovedUser" class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mx-6 mt-4">
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm text-yellow-700">
-                                    <strong>Perhatian:</strong> Warga ini sudah tidak terdaftar di wilayah Anda (Pindah
-                                    RT/RW).
-                                    Data <b>dikunci</b> dan tidak dapat diedit untuk menjaga integritas saldo warga di
-                                    tempat baru.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
                     <form :action="formAction" method="POST" class="p-6" @submit.prevent="validateAndSubmit"
                         novalidate>
                         @csrf
                         <input type="hidden" name="_method" :value="isEdit ? 'PUT' : 'POST'">
 
                         <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Warga Penyetor
-                                <span class="text-red-500">*</span></label>
-
-                            <div x-show="isEdit && isMovedUser">
-                                <input type="text" x-model="detailData.warga_nama" readonly
-                                    class="w-full border-gray-300 rounded-lg bg-gray-100 text-gray-500 text-sm cursor-not-allowed focus:ring-0">
-                                <input type="hidden" name="warga_id" x-model="formData.warga_id">
-                            </div>
-
-                            <div x-show="!isEdit || (isEdit && !isMovedUser)" class="relative">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Warga Penyetor <span
+                                    class="text-red-500">*</span></label>
+                            <div class="relative">
                                 <select name="warga_id" x-model="formData.warga_id"
                                     class="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 text-sm cursor-pointer transition-colors"
                                     :class="{ 'border-red-500': errors.warga_id, 'bg-gray-100 cursor-not-allowed': isEdit }"
-                                    :disabled="isEdit || isMovedUser">
+                                    :disabled="isEdit">
                                     <option value="">Pilih Nama Warga</option>
                                     @foreach ($wargas as $w)
                                         <option value="{{ $w->id_user }}">{{ $w->nama_lengkap }} (RW
@@ -392,9 +372,8 @@
                                                 Sampah <span class="text-red-500">*</span></label>
                                             <select name="sampah_id[]" x-model="item.sampah_id"
                                                 @change="updateHarga(index)"
-                                                class="w-full text-sm border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 py-1.5 cursor-pointer disabled:bg-gray-100 disabled:cursor-not-allowed"
-                                                :class="{ 'border-red-500': errors.items[index]?.sampah_id }"
-                                                :disabled="isMovedUser">
+                                                class="w-full text-sm border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 py-1.5 cursor-pointer"
+                                                :class="{ 'border-red-500': errors.items[index]?.sampah_id }">
                                                 <option value="">Pilih Jenis Sampah</option>
                                                 <template x-for="s in masterSampah">
                                                     <option :value="s.id_sampah"
@@ -412,10 +391,9 @@
                                                 <span class="text-red-500">*</span></label>
                                             <input type="number" name="berat[]" x-model="item.berat"
                                                 @input="updateHarga(index)" step="0.01" min="0"
-                                                class="w-full text-sm border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 py-1.5 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                                class="w-full text-sm border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 py-1.5"
                                                 placeholder="0"
                                                 :class="{ 'border-red-500': errors.items[index]?.berat }"
-                                                :disabled="isMovedUser"
                                                 onkeydown="return event.keyCode !== 69 && event.keyCode !== 189">
                                             <p x-show="errors.items[index]?.berat"
                                                 class="text-red-500 text-[10px] mt-1">Wajib diisi</p>
@@ -429,7 +407,7 @@
                                         </div>
 
                                         <div class="col-span-2 md:col-span-1 flex justify-center pb-1">
-                                            <button type="button" @click="removeItem(index)" x-show="!isMovedUser"
+                                            <button type="button" @click="removeItem(index)"
                                                 class="text-red-400 hover:text-red-600 transition p-1 rounded-full hover:bg-red-50">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
@@ -444,7 +422,7 @@
                                 </template>
                             </div>
 
-                            <button type="button" @click="addItem()" x-show="!isMovedUser"
+                            <button type="button" @click="addItem()"
                                 class="mt-3 w-full py-2 border-2 border-dashed border-green-300 text-green-600 rounded-lg text-sm font-semibold hover:bg-green-50 hover:border-green-400 transition flex items-center justify-center">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -469,10 +447,8 @@
                             </div>
                             <div class="flex gap-3 w-full md:w-auto justify-end">
                                 <button type="button" @click="showFormModal = false"
-                                    class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition">
-                                    <span x-text="isMovedUser ? 'Tutup' : 'Batal'"></span>
-                                </button>
-                                <button type="submit" x-show="!isMovedUser"
+                                    class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition">Batal</button>
+                                <button type="submit"
                                     class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition shadow-md">
                                     <span x-text="isEdit ? 'Update' : 'Simpan'"></span>
                                 </button>
@@ -561,7 +537,6 @@
                 showFormModal: false,
                 showDetailModal: false,
                 isEdit: false,
-                isMovedUser: false,
                 formAction: '',
                 formData: {
                     warga_id: ''
@@ -585,7 +560,6 @@
 
                 openCreateModal() {
                     this.isEdit = false;
-                    this.isMovedUser = false;
                     this.formAction = '{{ route('ketua.setoran.store') }}';
                     this.formData.warga_id = '';
                     this.items = [];
@@ -613,19 +587,6 @@
                         .then(data => {
                             this.formData.warga_id = data.warga_id;
 
-                            const selectElement = document.querySelector('select[name="warga_id"]');
-                            const optionExists = selectElement && selectElement.querySelector(
-                                `option[value="${data.warga_id}"]`);
-
-                            if (optionExists) {
-                                this.isMovedUser = false;
-                                this.detailData.warga_nama = '';
-                            } else {
-                                this.isMovedUser = true;
-                                this.detailData.warga_nama = data.warga ? data.warga.nama_lengkap :
-                                    'Warga Tidak Ditemukan';
-                            }
-
                             this.items = data.detail.map(d => ({
                                 sampah_id: d.sampah_id,
                                 berat: parseFloat(d.berat),
@@ -644,7 +605,6 @@
                 },
 
                 openDetailModal(id) {
-
                     fetch(`/ketua/setoran/${id}`)
                         .then(res => res.json())
                         .then(data => {
