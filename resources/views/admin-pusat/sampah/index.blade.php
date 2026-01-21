@@ -45,7 +45,8 @@
                             class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 active:bg-blue-700 focus:outline-none focus:ring ring-blue-300 transition ease-in-out duration-150 shadow-md w-full md:w-auto justify-center h-[42px]">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 4v16m8-8H4"></path>
+                                    d="M12 4v16m8-8H4">
+                                </path>
                             </svg>
                             Tambah Sampah
                         </a>
@@ -131,45 +132,47 @@
                     </div>
 
                     <div class="overflow-x-auto rounded-lg shadow border border-gray-200">
-                        <table class="min-w-full bg-white whitespace-nowrap">
+                        <table class="min-w-full bg-white">
                             <thead class="bg-gray-100 text-gray-700 uppercase text-xs font-bold leading-normal">
                                 <tr>
-                                    <th class="py-3 px-3 sm:px-6 text-center w-12">No</th>
-                                    <th class="py-3 px-3 sm:px-6 text-left">Kode</th>
-                                    <th class="py-3 px-3 sm:px-6 text-left">Kode BSB</th>
-                                    <th class="py-3 px-3 sm:px-6 text-left">Nama Sampah</th>
-                                    <th class="py-3 px-3 sm:px-6 text-center">Kategori</th>
-                                    <th class="py-3 px-3 sm:px-6 text-center">Satuan</th>
-                                    <th class="py-3 px-3 sm:px-6 text-right">Harga Anggota</th>
-                                    <th class="py-3 px-3 sm:px-6 text-right">Harga BSB</th>
-                                    <th class="py-3 px-3 sm:px-6 text-center">Status</th>
+                                    <th class="py-3 px-6 text-center w-12">No</th>
+                                    <th class="py-3 px-6 text-left">Kode</th>
+                                    <th class="py-3 px-6 text-left">Kode BSB</th>
+                                    <th class="py-3 px-6 text-left">Nama Sampah</th>
+                                    <th class="py-3 px-6 text-left w-1/3">Deskripsi</th>
+                                    <th class="py-3 px-6 text-center">Kategori</th>
+                                    <th class="py-3 px-6 text-center">Satuan</th>
+                                    <th class="py-3 px-6 text-right">Harga Anggota</th>
+                                    <th class="py-3 px-6 text-right">Harga BSB</th>
+                                    <th class="py-3 px-6 text-center">Status</th>
                                     <th class="py-3 px-6 text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="text-gray-600 text-sm font-light">
                                 @forelse ($sampahs as $sampah)
                                     <tr class="border-b border-gray-200 hover:bg-gray-50 transition duration-150">
-                                        <td class="py-3 px-3 sm:px-6 text-center font-medium">
+                                        <td class="py-3 px-6 text-center font-medium">
                                             {{ ($sampahs->currentPage() - 1) * $sampahs->perPage() + $loop->iteration }}
                                         </td>
-                                        <td class="py-3 px-3 sm:px-6 text-left">
-                                            <div class="font-bold text-gray-900">
-                                                {{ $sampah->kode_sampah }}
-                                            </div>
+                                        <td class="py-3 px-6 text-left whitespace-nowrap">
+                                            <span class="font-medium text-black">{{ $sampah->kode_sampah }}</span>
                                         </td>
-                                        <td class="py-3 px-3 sm:px-6 text-left">
+                                        <td class="py-3 px-6 text-left whitespace-nowrap">
                                             @if ($sampah->kode_bsb)
-                                                <div class="font-bold text-gray-900">
-                                                    {{ $sampah->kode_bsb }}
-                                                </div>
+                                                <span class="font-medium text-black">{{ $sampah->kode_bsb }}</span>
                                             @else
-                                                <span class="text-gray-300 text-xs italic">-</span>
+                                                <span class="text-gray-400 italic">-</span>
                                             @endif
                                         </td>
-                                        <td class="py-3 px-3 sm:px-6 text-left">
-                                            <div class="font-bold text-gray-900">{{ $sampah->nama_sampah }}</div>
+                                        <td class="py-3 px-6 text-left whitespace-nowrap">
+                                            <span class="font-bold text-black">{{ $sampah->nama_sampah }}</span>
                                         </td>
-                                        <td class="py-3 px-3 sm:px-6 text-center">
+
+                                        <td class="py-3 px-6 text-left text-sm leading-relaxed text-gray-700">
+                                            {{ $sampah->deskripsi }}
+                                        </td>
+
+                                        <td class="py-3 px-6 text-center whitespace-nowrap">
                                             @if ($sampah->kategori)
                                                 <span
                                                     class="bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-md border border-indigo-200">
@@ -179,31 +182,33 @@
                                                 <span class="text-gray-400 text-xs italic">-</span>
                                             @endif
                                         </td>
-                                        <td class="py-3 px-3 sm:px-6 text-center font-bold">
+                                        <td class="py-3 px-6 text-center font-bold whitespace-nowrap text-black">
                                             {{ strtoupper($sampah->UOM) }}
                                         </td>
-                                        <td class="py-3 px-3 sm:px-6 text-center font-bold text-green-600">
+                                        <td class="py-3 px-6 text-right font-bold text-green-600 whitespace-nowrap">
                                             Rp {{ number_format($sampah->harga_anggota, 0, ',', '.') }}
                                         </td>
-                                        <td class="py-3 px-3 sm:px-6 text-center font-medium text-blue-600">
+                                        <td class="py-3 px-6 text-right font-medium text-blue-600 whitespace-nowrap">
                                             Rp {{ number_format($sampah->harga_bsb, 0, ',', '.') }}
                                         </td>
-                                        <td class="py-3 px-3 sm:px-6 text-center">
+                                        <td class="py-3 px-6 text-center whitespace-nowrap">
                                             @if ($sampah->status_sampah == 'aktif')
                                                 <span
-                                                    class="bg-green-100 text-green-800 py-1 px-3 rounded-full text-xs font-bold uppercase tracking-wide">Aktif</span>
+                                                    class="bg-green-100 text-green-800 py-1 px-3 rounded-full text-xs font-bold uppercase tracking-wide">
+                                                    Aktif
+                                                </span>
                                             @else
                                                 <span
-                                                    class="bg-red-100 text-red-800 py-1 px-3 rounded-full text-xs font-bold uppercase tracking-wide">Tidak
-                                                    Aktif</span>
+                                                    class="bg-red-100 text-red-800 py-1 px-3 rounded-full text-xs font-bold uppercase tracking-wide">
+                                                    Tidak Aktif
+                                                </span>
                                             @endif
                                         </td>
 
-                                        <td class="py-3 px-6 text-center">
+                                        <td class="py-3 px-6 text-center whitespace-nowrap">
                                             <div class="flex item-center justify-center space-x-2">
-
                                                 <a href="{{ route('admin-pusat.sampah.edit', $sampah->id_sampah) }}"
-                                                    class="w-8 h-8 rounded bg-yellow-50 text-yellow-600 flex items-center justify-center hover:bg-yellow-500 hover:text-white transition"
+                                                    class="w-8 h-8 rounded bg-yellow-50 text-yellow-600 flex items-center justify-center hover:bg-yellow-500 hover:text-white transition shadow-sm"
                                                     title="Edit Data">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                         viewBox="0 0 24 24">
@@ -216,7 +221,7 @@
                                                 @if ($sampah->status_sampah == 'aktif')
                                                     <button type="button"
                                                         onclick="confirmNonaktif({{ $sampah->id_sampah }}, '{{ $sampah->nama_sampah }}')"
-                                                        class="w-8 h-8 rounded bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-600 hover:text-white transition"
+                                                        class="w-8 h-8 rounded bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-600 hover:text-white transition shadow-sm"
                                                         title="Nonaktifkan Sampah">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                             viewBox="0 0 24 24">
@@ -233,13 +238,12 @@
                                                         @method('DELETE')
                                                     </form>
                                                 @endif
-
                                             </div>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="10" class="text-center py-8 text-gray-500">
+                                        <td colspan="11" class="text-center py-8 text-gray-500">
                                             <div class="flex flex-col items-center justify-center">
                                                 <svg class="w-12 h-12 mb-2 text-gray-300" fill="none"
                                                     stroke="currentColor" viewBox="0 0 24 24">
@@ -281,7 +285,7 @@
         function showGlobalLoading() {
             const overlay = document.getElementById('loadingOverlay');
             overlay.classList.remove('hidden');
-            overlay.classList.add('flex'); 
+            overlay.classList.add('flex');
         }
 
         @if (session('success'))

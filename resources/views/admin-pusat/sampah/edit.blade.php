@@ -60,6 +60,7 @@
             };
     
             check('nama_sampah', 'Nama sampah wajib diisi.');
+            check('deskripsi', 'Deskripsi sampah wajib diisi.'); 
             checkSelect('kategori_id', 'Kategori wajib dipilih.');
     
             if (!this.code) {
@@ -185,6 +186,19 @@
                                 <p x-show="errors.kategori_id" class="text-red-500 text-xs mt-1 font-semibold"
                                     x-text="errors.kategori_id" style="display: none;"></p>
                                 <x-input-error :messages="$errors->get('kategori_id')" class="mt-2" />
+                            </div>
+
+                            <div class="col-span-1 md:col-span-2">
+                                <x-input-label for="deskripsi">
+                                    {{ __('Deskripsi') }} <span class="text-red-500">*</span>
+                                </x-input-label>
+                                <textarea id="deskripsi" name="deskripsi"
+                                    class="block mt-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm"
+                                    rows="3" placeholder="Jelaskan detail sampah ini.">{{ old('deskripsi', $sampah->deskripsi) }}</textarea>
+
+                                <p x-show="errors.deskripsi" class="text-red-500 text-xs mt-1 font-semibold"
+                                    x-text="errors.deskripsi" style="display: none;"></p>
+                                <x-input-error :messages="$errors->get('deskripsi')" class="mt-2" />
                             </div>
 
                             <div>

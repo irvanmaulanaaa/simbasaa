@@ -876,7 +876,7 @@
                                             x-text="item.satuan"></span></span>
                                 </div>
 
-                                <p class="text-xs text-gray-400 line-clamp-2 text-center leading-relaxed px-2"
+                                <p class="text-sm text-gray-600 text-center leading-relaxed px-2 mt-2 w-full break-words"
                                     x-text="item.deskripsi"></p>
                             </div>
                         </template>

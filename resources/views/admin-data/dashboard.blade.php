@@ -97,7 +97,7 @@
                     class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 border border-gray-100 group">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-sm font-medium text-gray-500">Kecamatan</p>
+                            <p class="text-sm font-medium text-gray-500">Total Kecamatan</p>
                             <p class="text-3xl font-bold text-gray-800 mt-1">{{ $totalKecamatan }}</p>
                         </div>
                         <div class="p-3 bg-orange-50 rounded-xl group-hover:bg-orange-100 transition-colors">

@@ -398,7 +398,7 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Tidak Bisa Dihapus!',
-                    html: `Kecamatan <b>${name}</b> tidak bisa dihapus.<br><br>Alasan:<br>${pesanError}<br><br>.`,
+                    html: `Kecamatan <b>${name}</b> tidak bisa dihapus.<br><br>Alasan:<br>${pesanError}<br><br>`,
                     confirmButtonColor: '#dc2626',
                     confirmButtonText: 'OK'
                 });

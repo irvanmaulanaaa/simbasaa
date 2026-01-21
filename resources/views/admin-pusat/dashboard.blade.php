@@ -55,7 +55,7 @@
                 class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-lg transition duration-300 group">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Master Sampah</p>
+                        <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Total Jenis Sampah</p>
                         <h4 class="text-3xl font-bold text-gray-800 mt-2 group-hover:text-blue-600 transition">
                             {{ $totalSampah ?? 0 }} <span class="text-sm font-normal text-gray-400">Jenis</span>
                         </h4>

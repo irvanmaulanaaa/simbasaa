@@ -65,14 +65,14 @@
                                 }
                             }">
 
-                            <div class="md:col-span-1">
+                            <div class="md:col-span-2">
                                 <label class="block text-xs font-medium text-gray-700 mb-1">Tampilkan</label>
                                 <select name="per_page" onchange="this.form.submit()"
                                     class="w-full rounded-lg border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 cursor-pointer">
-                                    <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
-                                    <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
-                                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
-                                    <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100
+                                    <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 Data</option>
+                                    <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 Data</option>
+                                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 Data</option>
+                                    <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 Data
                                     </option>
                                 </select>
                             </div>
@@ -119,7 +119,7 @@
                                 </div>
                             </div>
 
-                            <div class="md:col-span-3">
+                            <div class="md:col-span-2">
                                 <label class="block text-xs font-medium text-gray-700 mb-1">Cari Judul</label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
