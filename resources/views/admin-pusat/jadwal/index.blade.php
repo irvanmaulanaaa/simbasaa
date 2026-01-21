@@ -95,8 +95,8 @@
             this.formAction = updateUrl;
     
             this.form.tgl_jadwal = data.tgl_jadwal;
-            this.form.jam_penimbangan = data.jam_penimbangan.substring(0, 5); 
-            this.form.kecamatan_id = data.desa.kecamatan_id; 
+            this.form.jam_penimbangan = data.jam_penimbangan.substring(0, 5);
+            this.form.kecamatan_id = data.desa.kecamatan_id;
     
             await this.fetchDesa(false);
             this.form.desa_id = data.desa_id;
@@ -564,11 +564,9 @@
     </div>
 
     <div id="loadingOverlay"
-        class="fixed inset-0 bg-white bg-opacity-80 z-[60] hidden flex-col items-center justify-center backdrop-blur-sm transition-opacity">
-        <div class="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center border border-gray-100">
-            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
-            <p class="text-green-700 font-bold text-lg animate-pulse">Loading...</p>
-        </div>
+        class="fixed inset-0 z-[60] hidden flex-col items-center justify-center bg-white bg-opacity-50 backdrop-blur-sm transition-opacity">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
+        <p class="text-green-700 font-bold text-lg animate-pulse">Loading...</p>
     </div>
 
     <footer class="mt-auto py-6 text-center text-sm text-gray-500 bg-gray-50 border-t border-gray-200">
@@ -577,6 +575,12 @@
     </footer>
 
     <script>
+        function showGlobalLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex'); 
+        }
+
         @if (session('success'))
             Swal.fire({
                 icon: 'success',
@@ -601,8 +605,7 @@
                 reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
-                    document.getElementById('loadingOverlay').classList.remove('hidden');
-                    document.getElementById('loadingOverlay').classList.add('flex');
+                    showGlobalLoading();
                     document.getElementById('delete-form-' + id).submit();
                 }
             });

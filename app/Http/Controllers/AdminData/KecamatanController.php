@@ -5,6 +5,8 @@ namespace App\Http\Controllers\AdminData;
 use App\Http\Controllers\Controller;
 use App\Models\Kecamatan;
 use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\Desa;
 
 class KecamatanController extends Controller
 {
@@ -13,8 +15,8 @@ class KecamatanController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Kecamatan::query();
-
+        $query = Kecamatan::withCount(['users', 'desas']);
+        
         if ($request->has('search') && $request->search != '') {
             $query->where('nama_kecamatan', 'like', '%' . $request->search . '%');
         }
@@ -89,6 +91,18 @@ class KecamatanController extends Controller
      */
     public function destroy(Kecamatan $kecamatan)
     {
+        $jumlahUser = User::where('kecamatan_id', $kecamatan->id_kecamatan)->count();
+
+        if ($jumlahUser > 0) {
+            return back()->with('error', 'Gagal menghapus! Kecamatan ini sedang digunakan oleh ' . $jumlahUser . ' pengguna.');
+        }
+
+        $jumlahDesa = Desa::where('kecamatan_id', $kecamatan->id_kecamatan)->count();
+
+        if ($jumlahDesa > 0) {
+            return back()->with('error', 'Gagal menghapus! Masih ada ' . $jumlahDesa . ' Desa yang terdaftar di Kecamatan ini.');
+        }
+
         $kecamatan->delete();
 
         return redirect()->route('admin-data.kecamatan.index')

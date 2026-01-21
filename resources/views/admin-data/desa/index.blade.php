@@ -1,7 +1,7 @@
 <x-app-layout>
 
     @section('title', 'Manajemen Desa')
-    
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <x-slot name="sidebar">
@@ -177,7 +177,7 @@
                                                         </svg>
                                                     </button>
                                                     <button
-                                                        onclick="confirmDelete('{{ route('admin-data.desa.destroy', $desa->id_desa) }}', '{{ $desa->nama_desa }}')"
+                                                        onclick="confirmDelete('{{ route('admin-data.desa.destroy', $desa->id_desa) }}', '{{ $desa->nama_desa }}', {{ $desa->users_count }})"
                                                         class="w-8 h-8 rounded bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-600 hover:text-white transition"
                                                         title="Hapus">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor"
@@ -389,11 +389,9 @@
     <form id="delete-form" action="" method="POST" style="display: none;"> @csrf @method('DELETE') </form>
 
     <div id="loadingOverlay"
-        class="fixed inset-0 bg-white bg-opacity-80 z-[60] hidden flex-col items-center justify-center backdrop-blur-sm transition-opacity">
-        <div class="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center border border-gray-100">
-            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
-            <p class="text-green-700 font-bold text-lg animate-pulse">Loading...</p>
-        </div>
+        class="fixed inset-0 z-[60] hidden flex-col items-center justify-center bg-white bg-opacity-50 backdrop-blur-sm transition-opacity">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
+        <p class="text-green-700 font-bold text-lg animate-pulse">Loading...</p>
     </div>
 
     <script>
@@ -430,7 +428,29 @@
             });
         @endif
 
-        function confirmDelete(url, name) {
+        @if (session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal Menghapus!',
+                text: '{{ session('error') }}',
+                confirmButtonColor: '#dc2626',
+                confirmButtonText: 'OK'
+            });
+        @endif
+
+        function confirmDelete(url, name, userCount) {
+
+            if (userCount > 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Tidak Bisa Dihapus!',
+                    html: `Desa <b>${name}</b> tidak bisa dihapus karena saat ini sedang digunakan oleh <b>${userCount} pengguna</b>.`,
+                    confirmButtonColor: '#dc2626',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
             Swal.fire({
                 title: 'Hapus Desa?',
                 text: "Hapus desa: " + name + "?",
@@ -439,7 +459,8 @@
                 confirmButtonColor: '#dc2626',
                 cancelButtonColor: '#6b7280',
                 confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal'
+                cancelButtonText: 'Batal',
+                reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
                     showGlobalLoading();

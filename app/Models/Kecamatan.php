@@ -9,7 +9,7 @@ class Kecamatan extends Model
 {
     use HasFactory;
 
-    protected $table = 'kecamatan'; 
+    protected $table = 'kecamatan';
     protected $primaryKey = 'id_kecamatan';
 
     protected $fillable = [
@@ -23,5 +23,17 @@ class Kecamatan extends Model
     public function desas()
     {
         return $this->hasMany(Desa::class, 'kecamatan_id', 'id_kecamatan');
+    }
+
+    public function users()
+    {
+        return $this->hasManyThrough(
+            User::class,
+            Desa::class,
+            'kecamatan_id',
+            'desa_id',
+            'id_kecamatan',
+            'id_desa'
+        );
     }
 }

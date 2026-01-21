@@ -46,13 +46,13 @@
     <div class="py-6 px-4 sm:px-0 min-h-screen relative" x-data="setoranHandler()">
 
         <div x-show="isLoading"
-            class="fixed inset-0 bg-white bg-opacity-80 z-[9999] flex flex-col items-center justify-center backdrop-blur-sm transition-opacity"
+            class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white bg-opacity-50 backdrop-blur-sm transition-opacity"
             style="display: none;" x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
-            <div class="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center border border-gray-100">
-                <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
-                <p class="text-green-700 font-bold text-lg animate-pulse">Loading...</p>
-            </div>
+            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
+            <p class="text-green-700 font-bold text-lg animate-pulse">Loading...</p>
         </div>
 
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -322,18 +322,46 @@
                             </svg></button>
                     </div>
 
+                    <div x-show="isMovedUser" class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mx-6 mt-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-yellow-700">
+                                    <strong>Perhatian:</strong> Warga ini sudah tidak terdaftar di wilayah Anda (Pindah
+                                    RT/RW).
+                                    Data <b>dikunci</b> dan tidak dapat diedit untuk menjaga integritas saldo warga di
+                                    tempat baru.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
                     <form :action="formAction" method="POST" class="p-6" @submit.prevent="validateAndSubmit"
                         novalidate>
                         @csrf
                         <input type="hidden" name="_method" :value="isEdit ? 'PUT' : 'POST'">
 
                         <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Warga Penyetor <span
-                                    class="text-red-500">*</span></label>
-                            <div class="relative">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Warga Penyetor
+                                <span class="text-red-500">*</span></label>
+
+                            <div x-show="isEdit && isMovedUser">
+                                <input type="text" x-model="detailData.warga_nama" readonly
+                                    class="w-full border-gray-300 rounded-lg bg-gray-100 text-gray-500 text-sm cursor-not-allowed focus:ring-0">
+                                <input type="hidden" name="warga_id" x-model="formData.warga_id">
+                            </div>
+
+                            <div x-show="!isEdit || (isEdit && !isMovedUser)" class="relative">
                                 <select name="warga_id" x-model="formData.warga_id"
                                     class="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 text-sm cursor-pointer transition-colors"
-                                    :class="{ 'border-red-500': errors.warga_id }">
+                                    :class="{ 'border-red-500': errors.warga_id, 'bg-gray-100 cursor-not-allowed': isEdit }"
+                                    :disabled="isEdit || isMovedUser">
                                     <option value="">Pilih Nama Warga</option>
                                     @foreach ($wargas as $w)
                                         <option value="{{ $w->id_user }}">{{ $w->nama_lengkap }} (RW
@@ -364,8 +392,9 @@
                                                 Sampah <span class="text-red-500">*</span></label>
                                             <select name="sampah_id[]" x-model="item.sampah_id"
                                                 @change="updateHarga(index)"
-                                                class="w-full text-sm border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 py-1.5 cursor-pointer"
-                                                :class="{ 'border-red-500': errors.items[index]?.sampah_id }">
+                                                class="w-full text-sm border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 py-1.5 cursor-pointer disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                                :class="{ 'border-red-500': errors.items[index]?.sampah_id }"
+                                                :disabled="isMovedUser">
                                                 <option value="">Pilih Jenis Sampah</option>
                                                 <template x-for="s in masterSampah">
                                                     <option :value="s.id_sampah"
@@ -383,9 +412,10 @@
                                                 <span class="text-red-500">*</span></label>
                                             <input type="number" name="berat[]" x-model="item.berat"
                                                 @input="updateHarga(index)" step="0.01" min="0"
-                                                class="w-full text-sm border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 py-1.5"
+                                                class="w-full text-sm border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 py-1.5 disabled:bg-gray-100 disabled:cursor-not-allowed"
                                                 placeholder="0"
                                                 :class="{ 'border-red-500': errors.items[index]?.berat }"
+                                                :disabled="isMovedUser"
                                                 onkeydown="return event.keyCode !== 69 && event.keyCode !== 189">
                                             <p x-show="errors.items[index]?.berat"
                                                 class="text-red-500 text-[10px] mt-1">Wajib diisi</p>
@@ -399,7 +429,7 @@
                                         </div>
 
                                         <div class="col-span-2 md:col-span-1 flex justify-center pb-1">
-                                            <button type="button" @click="removeItem(index)"
+                                            <button type="button" @click="removeItem(index)" x-show="!isMovedUser"
                                                 class="text-red-400 hover:text-red-600 transition p-1 rounded-full hover:bg-red-50">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
@@ -414,7 +444,7 @@
                                 </template>
                             </div>
 
-                            <button type="button" @click="addItem()"
+                            <button type="button" @click="addItem()" x-show="!isMovedUser"
                                 class="mt-3 w-full py-2 border-2 border-dashed border-green-300 text-green-600 rounded-lg text-sm font-semibold hover:bg-green-50 hover:border-green-400 transition flex items-center justify-center">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -439,8 +469,10 @@
                             </div>
                             <div class="flex gap-3 w-full md:w-auto justify-end">
                                 <button type="button" @click="showFormModal = false"
-                                    class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition">Batal</button>
-                                <button type="submit"
+                                    class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition">
+                                    <span x-text="isMovedUser ? 'Tutup' : 'Batal'"></span>
+                                </button>
+                                <button type="submit" x-show="!isMovedUser"
                                     class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition shadow-md">
                                     <span x-text="isEdit ? 'Update' : 'Simpan'"></span>
                                 </button>
@@ -529,6 +561,7 @@
                 showFormModal: false,
                 showDetailModal: false,
                 isEdit: false,
+                isMovedUser: false,
                 formAction: '',
                 formData: {
                     warga_id: ''
@@ -552,6 +585,7 @@
 
                 openCreateModal() {
                     this.isEdit = false;
+                    this.isMovedUser = false;
                     this.formAction = '{{ route('ketua.setoran.store') }}';
                     this.formData.warga_id = '';
                     this.items = [];
@@ -578,20 +612,39 @@
                         .then(res => res.json())
                         .then(data => {
                             this.formData.warga_id = data.warga_id;
+
+                            const selectElement = document.querySelector('select[name="warga_id"]');
+                            const optionExists = selectElement && selectElement.querySelector(
+                                `option[value="${data.warga_id}"]`);
+
+                            if (optionExists) {
+                                this.isMovedUser = false;
+                                this.detailData.warga_nama = '';
+                            } else {
+                                this.isMovedUser = true;
+                                this.detailData.warga_nama = data.warga ? data.warga.nama_lengkap :
+                                    'Warga Tidak Ditemukan';
+                            }
+
                             this.items = data.detail.map(d => ({
                                 sampah_id: d.sampah_id,
                                 berat: parseFloat(d.berat),
-                                subtotal: d.subtotal,
+                                subtotal: parseFloat(d.subtotal),
                                 harga_per_kg: this.masterSampah.find(s => s.id_sampah == d.sampah_id)
                                     ?.harga_anggota || 0
                             }));
+
                             this.calculateTotal();
                             this.showFormModal = true;
                         })
-                        .catch(err => console.error(err));
+                        .catch(err => {
+                            console.error(err);
+                            Swal.fire('Error', 'Gagal memuat data.', 'error');
+                        });
                 },
 
                 openDetailModal(id) {
+
                     fetch(`/ketua/setoran/${id}`)
                         .then(res => res.json())
                         .then(data => {
@@ -613,6 +666,9 @@
                                 }))
                             };
                             this.showDetailModal = true;
+                        })
+                        .catch(err => {
+                            console.error(err);
                         });
                 },
 
@@ -633,17 +689,17 @@
 
                 updateHarga(index) {
                     let item = this.items[index];
-                    if (item.berat < 0) item.berat = 0;
+                    let berat = parseFloat(item.berat);
+                    if (isNaN(berat) || berat < 0) {
+                        berat = 0;
+                    }
 
                     let selectedSampah = this.masterSampah.find(s => s.id_sampah == item.sampah_id);
                     if (selectedSampah) {
-                        item.harga_per_kg = selectedSampah.harga_anggota;
+                        item.harga_per_kg = parseFloat(selectedSampah.harga_anggota);
                     } else {
                         item.harga_per_kg = 0;
                     }
-
-                    let berat = parseFloat(item.berat);
-                    if (isNaN(berat)) berat = 0;
 
                     item.subtotal = berat * item.harga_per_kg;
                     this.calculateTotal();

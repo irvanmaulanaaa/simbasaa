@@ -14,7 +14,7 @@ class KategoriSampahController extends Controller
      */
     public function index(Request $request)
     {
-        $query = KategoriSampah::query();
+        $query = KategoriSampah::withCount('sampah');
 
         if ($request->has('search') && $request->search != '') {
             $query->where('nama_kategori', 'like', '%' . $request->search . '%');

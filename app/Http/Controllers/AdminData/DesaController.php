@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Desa;
 use App\Models\Kecamatan;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class DesaController extends Controller
 {
@@ -16,7 +17,7 @@ class DesaController extends Controller
     {
         $kecamatans = Kecamatan::orderBy('nama_kecamatan', 'asc')->get();
 
-        $query = Desa::with('kecamatan');
+        $query = Desa::with('kecamatan')->withCount('users');
 
         if ($request->has('search') && $request->search != '') {
             $query->where('nama_desa', 'like', '%' . $request->search . '%');
@@ -95,6 +96,13 @@ class DesaController extends Controller
      */
     public function destroy(Desa $desa)
     {
+
+        $jumlahUser = User::where('desa_id', $desa->id_desa)->count();
+
+        if ($jumlahUser > 0) {
+            return back()->with('error', 'Gagal menghapus! Desa ini sedang digunakan oleh ' . $jumlahUser . ' pengguna.');
+        }
+
         $desa->delete();
 
         return redirect()->route('admin-data.desa.index')

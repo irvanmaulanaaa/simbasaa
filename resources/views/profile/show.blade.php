@@ -111,8 +111,10 @@
                     this.usernameStatus = data.status;
                     this.isUsernameValid = (data.status === 'available');
                 })
-                .catch(error => { console.error('Error:', error);
-                    this.usernameStatus = ''; });
+                .catch(error => {
+                    console.error('Error:', error);
+                    this.usernameStatus = '';
+                });
         },
     
         updateDesaList() {
@@ -631,17 +633,16 @@
     </div>
 
     <div id="loadingOverlay"
-        class="fixed inset-0 bg-gray-900 bg-opacity-50 z-[9999] hidden flex-col items-center justify-center">
-        <div class="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center">
-            <div class="animate-spin rounded-full h-14 w-14 border-t-4 border-b-4 border-green-600 mb-4"></div>
-            <p class="text-gray-800 font-bold">Loading...</p>
-        </div>
+        class="fixed inset-0 z-[9999] hidden flex-col items-center justify-center bg-white bg-opacity-50 backdrop-blur-sm transition-opacity">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
+        <p class="text-green-700 font-bold text-lg animate-pulse">Loading...</p>
     </div>
 
     <script>
         function showLoading() {
-            document.getElementById('loadingOverlay').classList.remove('hidden');
-            document.getElementById('loadingOverlay').classList.add('flex');
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
         }
 
         @if (session('status') === 'profile-updated' ||

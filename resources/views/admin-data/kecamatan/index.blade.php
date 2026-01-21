@@ -162,7 +162,7 @@
                                                     </button>
 
                                                     <button
-                                                        onclick="confirmDelete('{{ route('admin-data.kecamatan.destroy', $kecamatan->id_kecamatan) }}', '{{ $kecamatan->nama_kecamatan }}')"
+                                                        onclick="confirmDelete('{{ route('admin-data.kecamatan.destroy', $kecamatan->id_kecamatan) }}', '{{ $kecamatan->nama_kecamatan }}', {{ $kecamatan->users_count }}, {{ $kecamatan->desas_count }})"
                                                         class="w-8 h-8 rounded bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-600 hover:text-white transition"
                                                         title="Hapus">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor"
@@ -344,11 +344,9 @@
     <form id="delete-form" action="" method="POST" style="display: none;"> @csrf @method('DELETE') </form>
 
     <div id="loadingOverlay"
-        class="fixed inset-0 bg-white bg-opacity-80 z-[60] hidden flex-col items-center justify-center backdrop-blur-sm transition-opacity">
-        <div class="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center border border-gray-100">
-            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
-            <p class="text-green-700 font-bold text-lg animate-pulse">Loading...</p>
-        </div>
+        class="fixed inset-0 z-[60] hidden flex-col items-center justify-center bg-white bg-opacity-50 backdrop-blur-sm transition-opacity">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
+        <p class="text-green-700 font-bold text-lg animate-pulse">Loading...</p>
     </div>
 
     <script>
@@ -384,7 +382,29 @@
             });
         @endif
 
-        function confirmDelete(url, name) {
+        function confirmDelete(url, name, userCount, desaCount) {
+
+            let pesanError = '';
+
+            if (userCount > 0) {
+                pesanError += `Sedang digunakan oleh <b>${userCount} pengguna</b>.<br>`;
+            }
+
+            if (desaCount > 0) {
+                pesanError += `Masih membawahi <b>${desaCount} desa</b>.`;
+            }
+
+            if (pesanError !== '') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Tidak Bisa Dihapus!',
+                    html: `Kecamatan <b>${name}</b> tidak bisa dihapus.<br><br>Alasan:<br>${pesanError}<br><br>.`,
+                    confirmButtonColor: '#dc2626',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
             Swal.fire({
                 title: 'Hapus Kecamatan?',
                 text: "Apakah Anda yakin ingin menghapus kecamatan: " + name + "?",
@@ -393,7 +413,8 @@
                 confirmButtonColor: '#dc2626',
                 cancelButtonColor: '#6b7280',
                 confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal'
+                cancelButtonText: 'Batal',
+                reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
                     showGlobalLoading();
