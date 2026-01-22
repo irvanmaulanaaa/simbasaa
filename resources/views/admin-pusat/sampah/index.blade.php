@@ -150,7 +150,8 @@
                             </thead>
                             <tbody class="text-gray-600 text-sm font-light">
                                 @forelse ($sampahs as $sampah)
-                                    <tr class="border-b border-gray-200 hover:bg-gray-50 transition duration-150">
+                                    <tr
+                                        class="border-b border-gray-200 hover:bg-gray-50 transition duration-150 align-top">
                                         <td class="py-3 px-6 text-center font-medium">
                                             {{ ($sampahs->currentPage() - 1) * $sampahs->perPage() + $loop->iteration }}
                                         </td>
@@ -168,8 +169,11 @@
                                             <span class="font-bold text-black">{{ $sampah->nama_sampah }}</span>
                                         </td>
 
-                                        <td class="py-3 px-6 text-left text-sm leading-relaxed text-gray-700">
-                                            {{ $sampah->deskripsi }}
+                                        <td class="py-3 px-6 text-left">
+                                            <div
+                                                class="whitespace-normal min-w-[300px] text-sm text-gray-600 leading-relaxed">
+                                                {{ $sampah->deskripsi }}
+                                            </div>
                                         </td>
 
                                         <td class="py-3 px-6 text-center whitespace-nowrap">
@@ -252,7 +256,10 @@
                                                         d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
                                                     </path>
                                                 </svg>
-                                                <p>Data sampah belum tersedia.</p>
+                                                <p class="text-base font-medium text-gray-900">Belum ada data sampah
+                                                </p>
+                                                <p class="text-sm text-gray-500">Silakan tambahkan data sampah baru.
+                                                </p>
                                             </div>
                                         </td>
                                     </tr>

@@ -22,6 +22,7 @@ class SampahController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('nama_sampah', 'like', "%{$search}%")
+                    ->orWhere('kode_bsb', 'like', "%{$search}%")
                     ->orWhere('kode_sampah', 'like', "%{$search}%");
             });
         }

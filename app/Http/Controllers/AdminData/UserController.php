@@ -48,7 +48,7 @@ class UserController extends Controller
     public function create()
     {
         $roles = Role::all();
-        $kecamatans = Kecamatan::all();
+        $kecamatans = Kecamatan::orderBy('nama_kecamatan', 'asc')->get();
 
         return view('admin-data.users.create', compact('roles', 'kecamatans'));
     }
@@ -131,9 +131,11 @@ class UserController extends Controller
         $user->load('desa.kecamatan');
 
         $roles = Role::all();
-        $kecamatans = Kecamatan::all();
-        $desas = Desa::where('kecamatan_id', $user->desa->kecamatan_id)->get();
-
+        $kecamatans = Kecamatan::orderBy('nama_kecamatan', 'asc')->get();
+        $desas = Desa::where('kecamatan_id', $user->desa->kecamatan_id)
+            ->orderBy('nama_desa', 'asc')
+            ->get();
+        
         return view('admin-data.users.edit', compact('user', 'roles', 'kecamatans', 'desas'));
     }
 

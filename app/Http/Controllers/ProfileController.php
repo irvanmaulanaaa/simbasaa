@@ -22,8 +22,8 @@ class ProfileController extends Controller
     {
         $user = $request->user()->load('desa');
 
-        $kecamatans = Kecamatan::all();
-        $allDesas = Desa::all();
+        $kecamatans = Kecamatan::orderBy('nama_kecamatan', 'asc')->get();
+        $allDesas = Desa::orderBy('nama_desa', 'asc')->get();
 
         return view('profile.show', [
             'user' => $user,

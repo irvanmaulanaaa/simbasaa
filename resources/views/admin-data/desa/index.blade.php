@@ -145,8 +145,9 @@
                                 <thead class="bg-gray-100 text-gray-700 uppercase text-xs font-bold leading-normal">
                                     <tr>
                                         <th class="py-3 px-6 text-center w-16">No</th>
-                                        <th class="py-3 px-6 text-left">Nama Desa</th>
-                                        <th class="py-3 px-6 text-left">Kecamatan</th>
+                                        <th class="py-3 px-6 text-center">Nama Desa</th>
+                                        <th class="py-3 px-6 text-center">Kecamatan</th>
+                                        <th class="py-3 px-6 text-center">Kabupaten/Kota</th>
                                         <th class="py-3 px-6 text-center">Aksi</th>
                                     </tr>
                                 </thead>
@@ -156,12 +157,16 @@
                                             <td class="py-3 px-6 text-center font-medium">
                                                 {{ ($desas->currentPage() - 1) * $desas->perPage() + $loop->iteration }}
                                             </td>
-                                            <td class="py-3 px-6 text-left font-medium text-gray-900">
+                                            <td class="py-3 px-6 text-center font-medium text-gray-900">
                                                 {{ $desa->nama_desa }}
                                             </td>
-                                            <td class="py-3 px-6 text-left">
+                                            <td class="py-3 px-6 text-center">
                                                 <span
                                                     class="text-gray-600 text-sm font-semibold">{{ $desa->kecamatan->nama_kecamatan ?? '-' }}</span>
+                                            </td>
+                                            <td class="py-3 px-6 text-center">
+                                                <span
+                                                    class="text-gray-600 text-sm font-semibold">{{ $kecamatan->kab_kota }}</span>
                                             </td>
                                             <td class="py-3 px-6 text-center">
                                                 <div class="flex item-center justify-center space-x-2">

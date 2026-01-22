@@ -206,7 +206,7 @@
                                     {{ __('Kode Sampah') }} <span class="text-red-500">*</span>
                                 </x-input-label>
 
-                                <x-text-input id="kode_sampah" class="block mt-1 w-full uppercase" type="text"
+                                <x-text-input id="kode_sampah" class="block mt-1 w-full" type="text"
                                     name="kode_sampah" x-model="code" @input.debounce.500ms="checkCode()"
                                     placeholder="Contoh: PL-001"
                                     x-bind:class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': isDuplicate }" />
@@ -226,7 +226,7 @@
                                 <x-input-label for="kode_bsb">
                                     {{ __('Kode Sampah BSB') }} <span class="text-red-500">*</span>
                                 </x-input-label>
-                                <x-text-input id="kode_bsb" class="block mt-1 w-full uppercase" type="text"
+                                <x-text-input id="kode_bsb" class="block mt-1 w-full" type="text"
                                     name="kode_bsb" :value="old('kode_bsb', $sampah->kode_bsb)" placeholder="Contoh: K-01" />
                                 <p class="text-xs text-gray-500 mt-1">Wajib diisi sesuai data lama.</p>
 

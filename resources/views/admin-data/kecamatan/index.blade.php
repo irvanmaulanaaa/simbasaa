@@ -129,8 +129,8 @@
                                 <thead class="bg-gray-100 text-gray-700 uppercase text-xs font-bold leading-normal">
                                     <tr>
                                         <th class="py-3 px-6 text-center w-16">No</th>
-                                        <th class="py-3 px-6 text-left">Nama Kecamatan</th>
-                                        <th class="py-3 px-6 text-left">Kabupaten/Kota</th>
+                                        <th class="py-3 px-6 text-center">Nama Kecamatan</th>
+                                        <th class="py-3 px-6 text-center">Kabupaten/Kota</th>
                                         <th class="py-3 px-6 text-center">Aksi</th>
                                     </tr>
                                 </thead>
@@ -140,10 +140,10 @@
                                             <td class="py-3 px-6 text-center font-medium">
                                                 {{ ($kecamatans->currentPage() - 1) * $kecamatans->perPage() + $loop->iteration }}
                                             </td>
-                                            <td class="py-3 px-6 text-left font-medium text-gray-900">
+                                            <td class="py-3 px-6 text-center font-medium text-gray-900">
                                                 {{ $kecamatan->nama_kecamatan }}
                                             </td>
-                                            <td class="py-3 px-6 text-left">
+                                            <td class="py-3 px-6 text-center">
                                                 <span
                                                     class="text-gray-600 text-sm font-semibold">{{ $kecamatan->kab_kota }}</span>
                                             </td>

@@ -348,8 +348,8 @@
                                         </path>
                                     </svg>{{ Auth::user()->no_telepon ?? '-' }}</div>
                                 <div x-show="isEditing" style="display: none;">
-                                    <input type="text" name="no_telp"
-                                        value="{{ old('no_telp', Auth::user()->no_telepon) }}"
+                                    <input type="text" name="no_telepon"
+                                        value="{{ old('no_telepon', Auth::user()->no_telepon) }}"
                                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
                                         placeholder="08xxxxxxxx">
                                     <x-input-error class="mt-1" :messages="$errors->get('no_telp')" />
