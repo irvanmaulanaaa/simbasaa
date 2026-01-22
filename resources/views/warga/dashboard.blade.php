@@ -21,7 +21,7 @@
             <div class="absolute -right-10 -top-10 h-64 w-64 rounded-full bg-white opacity-10 blur-3xl"></div>
             <div class="relative z-10 p-8 flex flex-col md:flex-row justify-between items-center gap-6">
                 <div>
-                    <h3 class="text-3xl font-bold">Selamat Datang, {{ Auth::user()->nama_lengkap }}! 👋</h3>
+                    <h3 class="text-3xl font-bold">Halo, {{ Auth::user()->nama_lengkap }}! 👋</h3>
                     <p class="mt-2 text-green-50 text-lg opacity-90">
                         Ayo kelola sampahmu jadi cuan! Pantau saldo dan transaksi di sini.
                     </p>

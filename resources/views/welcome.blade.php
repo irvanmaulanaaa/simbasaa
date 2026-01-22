@@ -552,7 +552,7 @@
                         </div>
                     @else
                         <div class="text-center py-16 bg-gray-50 rounded-2xl border border-dashed border-gray-300">
-                            <p class="text-gray-500 font-medium">Belum ada konten berita saat ini.</p>
+                            <p class="text-gray-500 font-medium">Belum ada konten edukasi.</p>
                         </div>
                     @endif
                     <div class="mt-8 text-center md:hidden">
@@ -840,7 +840,8 @@
                         </div>
                     </div>
 
-                    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4 justify-center">
+                    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4 justify-center min-h-[300px]">
+
                         <template x-for="item in filteredItems" :key="item.id">
                             <div
                                 class="bg-white p-6 rounded-[24px] shadow-sm border border-gray-100 flex flex-col items-center hover:shadow-xl hover:shadow-green-900/5 hover:-translate-y-1 transition-all duration-300 group relative">
@@ -881,20 +882,34 @@
                             </div>
                         </template>
 
-                        <div x-show="filteredItems.length === 0" class="col-span-full py-20 text-center">
+                        <div x-show="items.length === 0" class="col-span-full py-20 text-center"
+                            style="display: none;">
                             <div
-                                class="bg-gray-50 rounded-full h-24 w-24 flex items-center justify-center mx-auto mb-6">
-                                <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor"
+                                class="bg-gray-50 rounded-full h-32 w-32 flex items-center justify-center mx-auto mb-6 shadow-inner">
+                                <span class="text-5xl">📭</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">Belum Ada Data Sampah</h3>
+                            <p class="text-gray-500 text-base max-w-md mx-auto">Admin belum menginput data sampah
+                                apapun saat ini. Silakan cek kembali nanti.</p>
+                        </div>
+
+                        <div x-show="items.length > 0 && filteredItems.length === 0"
+                            class="col-span-full py-20 text-center" style="display: none;">
+                            <div
+                                class="bg-red-50 rounded-full h-24 w-24 flex items-center justify-center mx-auto mb-6">
+                                <svg class="w-10 h-10 text-red-400" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                 </svg>
                             </div>
-                            <h3 class="text-lg font-bold text-gray-900 mb-1">Tidak Ditemukan</h3>
-                            <p class="text-gray-500 text-sm">Coba cari dengan kata kunci lain.</p>
+                            <h3 class="text-lg font-bold text-gray-900 mb-1">Pencarian Tidak Ditemukan</h3>
+                            <p class="text-gray-500 text-sm">Tidak ada sampah yang cocok dengan kata kunci "<span
+                                    x-text="search" class="font-bold"></span>".</p>
                             <button @click="search = ''; selectedCategory = 'all'"
-                                class="mt-4 text-sm font-bold text-green-600 hover:text-green-700 hover:underline">Reset
-                                Pencarian</button>
+                                class="mt-5 inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-full font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150">
+                                Reset Pencarian
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1084,7 +1099,8 @@
                     </div>
                 </div>
 
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 min-h-[300px]">
+                    
                     <template x-for="item in filteredKonten" :key="item.id">
                         <a :href="item.url"
                             class="group relative bg-white rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-green-900/5 hover:-translate-y-2 transition-all duration-500 flex flex-col h-full overflow-hidden">
@@ -1164,29 +1180,39 @@
                             </div>
                         </a>
                     </template>
-                </div>
 
-                <div x-show="filteredKonten.length === 0"
-                    class="text-center py-24 bg-white rounded-[32px] border border-dashed border-slate-300 max-w-2xl mx-auto shadow-sm mt-10">
-                    <div class="bg-slate-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg class="w-10 h-10 text-slate-400" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 01-2-2V7m2 13a2 2 0 01-2-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z">
-                            </path>
-                        </svg>
+                    <div x-show="kontenItems.length === 0" class="col-span-full py-20 text-center" style="display: none;">
+                        <div
+                            class="bg-gray-50 rounded-full h-32 w-32 flex items-center justify-center mx-auto mb-6 shadow-inner">
+                            <span class="text-5xl">📝</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Belum Ada Konten</h3>
+                        <p class="text-gray-500 text-base max-w-md mx-auto">Saat ini belum ada artikel atau video edukasi yang tersedia. Nantikan update terbaru dari kami!</p>
                     </div>
-                    <h3 class="text-xl font-bold text-slate-900 mb-2">Tidak Ditemukan</h3>
-                    <p class="text-slate-500 mb-8 max-w-sm mx-auto">Kami tidak dapat menemukan apa yang Anda cari. Coba
-                        kata kunci lain atau reset filter.</p>
-                    <button @click="searchKonten = ''; selectedKategoriKonten = 'all'; selectedSort = 'terbaru'"
-                        class="inline-flex items-center px-8 py-3 bg-white border-2 border-slate-200 rounded-full text-slate-700 font-bold hover:border-green-500 hover:text-green-600 transition-all duration-300">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
-                            </path>
-                        </svg> Reset Filter
-                    </button>
+
+                    <div x-show="kontenItems.length > 0 && filteredKonten.length === 0"
+                        class="col-span-full text-center py-24 bg-white rounded-[32px] border border-dashed border-slate-300 max-w-2xl mx-auto shadow-sm mt-10">
+                        <div class="bg-slate-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg class="w-10 h-10 text-slate-400" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 01-2-2V7m2 13a2 2 0 01-2-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z">
+                                </path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">Tidak Ditemukan</h3>
+                        <p class="text-slate-500 mb-8 max-w-sm mx-auto">Kami tidak dapat menemukan apa yang Anda cari. Coba
+                            kata kunci lain atau reset filter.</p>
+                        <button @click="searchKonten = ''; selectedKategoriKonten = 'all'; selectedSort = 'terbaru'"
+                            class="inline-flex items-center px-8 py-3 bg-white border-2 border-slate-200 rounded-full text-slate-700 font-bold hover:border-green-500 hover:text-green-600 transition-all duration-300">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                </path>
+                            </svg> Reset Filter
+                        </button>
+                    </div>
+
                 </div>
             </section>
         </div>

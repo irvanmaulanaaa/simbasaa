@@ -170,7 +170,7 @@
                                 @empty
                                     <tr>
                                         <td colspan="4" class="px-6 py-8 text-center text-gray-500">Belum ada konten
-                                            data.</td>
+                                            edukasi.</td>
                                     </tr>
                                 @endforelse
                             </tbody>

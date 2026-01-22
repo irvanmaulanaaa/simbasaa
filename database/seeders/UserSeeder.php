@@ -21,7 +21,7 @@ class UserSeeder extends Seeder
             User::create([
                 'nama_lengkap' => 'Admin Data',
                 'username' => 'admindata',
-                'password' => Hash::make('!@#$%^&*()'),
+                'password' => Hash::make('12345678'),
                 'role_id' => $adminDataRole->id_role,
                 'desa_id' => null, 
                 'status' => 'aktif',
