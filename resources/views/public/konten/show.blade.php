@@ -169,7 +169,8 @@
                     Kembali
                 </a>
                 <a href="{{ url('/') }}" class="flex items-center gap-2 group">
-                    <span class="font-extrabold text-2xl text-slate-800 tracking-tight group-hover:text-green-600 transition duration-300">SIMBASA</span>
+                    <span
+                        class="font-extrabold text-2xl text-slate-800 tracking-tight group-hover:text-green-600 transition duration-300">SIMBASA</span>
                     <img src="{{ asset('images/logosimbasa.png') }}" alt="Logo SIMBASA"
                         class="relative h-12 w-auto transform transition duration-300 group-hover:rotate-6">
                 </a>
@@ -329,7 +330,8 @@
                                                     class="text-xs font-medium text-slate-400">{{ $komen->created_at->diffForHumans() }}</span>
                                             </div>
                                             <p class="text-slate-600 text-sm leading-relaxed"
-                                                id="comment-text-{{ $komen->id_komentar }}">{{ $komen->isi_komentar }}
+                                                id="comment-text-{{ $komen->id_komentar }}">
+                                                {{ $komen->isi_komentar }}
                                             </p>
 
                                             @if (Auth::id() == $komen->user_id)
@@ -510,7 +512,8 @@
     </main>
 
     <footer class="mt-auto py-6 text-center text-sm text-gray-500 bg-gray-50 border-t border-gray-200">
-        <p>&copy; {{ date('Y') }} <span class="font-bold text-green-600">SIMBASA Developed by</span> Irvan Maulana.</p>
+        <p>&copy; {{ date('Y') }} <span class="font-bold text-green-600">SIMBASA Developed by</span> Irvan
+            Maulana.</p>
     </footer>
 
     <div id="imageZoomModal" class="image-zoom-modal" onclick="closeImageZoom()">
@@ -574,11 +577,17 @@
                     },
                     body: JSON.stringify({})
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     const countEl = document.getElementById('like-count');
                     const icon = document.getElementById('heart-icon');
                     countEl.innerText = data.likes;
+
                     if (data.status === 'liked') {
                         icon.classList.remove('text-slate-400', 'group-hover:text-red-500');
                         icon.classList.add('text-red-500', 'fill-red-500');
@@ -608,21 +617,16 @@
                     }
                 })
                 .catch(error => {
-                        console.error('Error:', error);
-                        @guest
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Oops...',
-                            text: 'Silakan login terlebih dahulu untuk menyukai konten ini!',
-                            showCancelButton: true,
-                            confirmButtonText: 'Login',
-                            cancelButtonText: 'Batal'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.href = "{{ route('login') }}";
-                            }
-                        });
-                    @endguest
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: 'Terjadi kesalahan saat memproses like.',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
                 });
         }
 
@@ -644,8 +648,8 @@
                 text: "Komentar ini akan dihapus secara permanen.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#dc2626', 
-                cancelButtonColor: '#94a3b8', 
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#94a3b8',
                 confirmButtonText: 'Ya, Hapus!',
                 cancelButtonText: 'Batal',
                 reverseButtons: true,

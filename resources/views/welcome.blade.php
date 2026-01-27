@@ -1104,6 +1104,7 @@
                     <template x-for="item in filteredKonten" :key="item.id">
                         <a :href="item.url"
                             class="group relative bg-white rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-green-900/5 hover:-translate-y-2 transition-all duration-500 flex flex-col h-full overflow-hidden">
+                            
                             <div class="h-64 bg-slate-50 relative overflow-hidden flex items-center justify-center">
                                 <template x-if="item.image">
                                     <img :src="item.image"
@@ -1125,11 +1126,6 @@
                                         </div>
                                     </div>
                                 </template>
-                                <div class="absolute top-4 left-4 z-20">
-                                    <span
-                                        class="bg-green-200 backdrop-blur text-slate-800 text-[10px] font-extrabold px-3 py-1 rounded-full border border-slate-200 uppercase tracking-wider shadow-sm"
-                                        x-text="item.kategori"></span>
-                                </div>
                             </div>
 
                             <div class="p-8 flex flex-col flex-grow relative">
@@ -1137,15 +1133,22 @@
                                     class="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent group-hover:via-green-400 transition-colors duration-500">
                                 </div>
                                 <div class="mb-4">
-                                    <span class="text-green-600 text-xs font-bold flex items-center gap-1 mb-2">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                            </path>
-                                        </svg>
-                                        <span x-text="item.tanggal"></span>
-                                    </span>
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="text-green-600 text-xs font-bold flex items-center gap-1">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                                </path>
+                                            </svg>
+                                            <span x-text="item.tanggal"></span>
+                                        </span>
+
+                                        <span class="bg-green-100 text-green-700 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border border-green-200 uppercase tracking-wider"
+                                              x-text="item.kategori">
+                                        </span>
+                                    </div>
+
                                     <h3 class="text-xl font-bold text-slate-900 group-hover:text-green-600 transition-colors duration-300 leading-snug tracking-tight line-clamp-2"
                                         x-text="item.judul"></h3>
                                 </div>

@@ -32,7 +32,7 @@ Route::get('/konten', function () {
 Route::get('/konten/{id}', [HomeController::class, 'show'])->name('public.konten.show');
 
 Route::post('/konten/{id}/like', [HomeController::class, 'like'])
-    ->middleware(['auth', 'throttle:60,1'])
+    ->middleware(['throttle:60,1'])
     ->name('public.konten.like');
 
 Route::get('/lupa-password', function () {
