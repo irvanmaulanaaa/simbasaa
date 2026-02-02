@@ -44,21 +44,25 @@
 
         @csrf
 
-        <div class="relative mt-4">
-            <x-text-input id="username"
-                class="block w-full px-4 pt-5 pb-2 text-gray-900 bg-white rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-green-600 peer lowercase"
-                type="text" name="username" x-model="username"
-                @input="username = $event.target.value.toLowerCase().replace(/\s/g, '')" placeholder=" " autofocus
-                autocomplete="username" />
+        <div class="mt-4">
+            <div class="relative">
+                <input id="username"
+                    class="block w-full px-4 pt-5 pb-2.5 text-gray-900 bg-white rounded-lg border appearance-none focus:outline-none focus:ring-0 peer lowercase
+            {{ $errors->has('username') ? 'border-red-500 text-red-900 focus:border-red-500' : 'border-gray-300 focus:border-blue-600' }}"
+                    type="text" name="username" value="{{ old('username') }}" x-model="username"
+                    @input="username = $event.target.value.toLowerCase().replace(/\s/g, '')" placeholder=" "
+                    autocomplete="username" />
 
-            <label for="username"
-                class="absolute text-base font-medium text-gray-600 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-green-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1 pointer-events-none">
-                {{ __('Username') }}
-            </label>
-
+                <label for="username"
+                    class="absolute text-base font-medium duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-4 pointer-events-none
+            {{ $errors->has('username') ? 'text-red-600 peer-focus:text-red-600' : 'text-gray-800 peer-focus:text-green-600' }}">
+                    {{ __('Username') }}
+                </label>
+            </div>
             <p x-show="errUsername" x-text="errUsername" class="text-sm text-red-600 mt-2 space-y-1"
                 style="display: none;"></p>
             <x-input-error :messages="$errors->get('username')" class="mt-2" />
+
         </div>
 
         <div class="relative mt-4">
@@ -69,7 +73,7 @@
                     autocomplete="current-password" />
 
                 <label for="password"
-                    class="absolute text-base font-medium text-gray-600 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-green-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1 pointer-events-none">
+                    class="absolute text-base font-medium text-gray-600 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-green-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-4 pointer-events-none">
                     Password
                 </label>
 
