@@ -1,6 +1,6 @@
 <x-guest-layout>
 
-    @section('title', 'Login')
+    @section('title', 'LOGIN | SIMBASA')
 
     <div class="text-center">
         <div class="flex items-center justify-center">
