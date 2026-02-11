@@ -246,8 +246,8 @@
 
                                 <div class="px-6 py-6">
                                     <div class="text-center mb-6">
-                                        <h4 class="text-xl font-bold text-gray-900 leading-snug whitespace-pre-line"
-                                            x-text="detail.judul"></h4>
+                                        <h4 class="text-xl font-bold text-gray-900 leading-snug"
+                                            x-html="detail.judul ? detail.judul.replace(/\n/g, '<br>') : ''"></h4>
                                     </div>
 
                                     <div
@@ -278,7 +278,8 @@
                                                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z">
                                                     </path>
                                                 </svg>
-                                                <span x-text="(detail.jam_kegiatan ? detail.jam_kegiatan.substring(0, 5) : '') + ' WIB'"></span>
+                                                <span
+                                                    x-text="(detail.jam_kegiatan ? detail.jam_kegiatan.substring(0, 5) : '') + ' WIB'"></span>
                                             </div>
                                         </div>
 
