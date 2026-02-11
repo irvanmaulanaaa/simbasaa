@@ -63,6 +63,7 @@
         form: {
             tgl_jadwal: '',
             jam_penimbangan: '',
+            nama_driver: '',
             kecamatan_id: '',
             desa_id: '',
             rw_penimbangan: ''
@@ -74,7 +75,7 @@
         errors: {},
     
         resetForm() {
-            this.form = { tgl_jadwal: '', jam_penimbangan: '', kecamatan_id: '', desa_id: '', rw_penimbangan: '' };
+            this.form = { tgl_jadwal: '', jam_penimbangan: '', nama_driver: '', kecamatan_id: '', desa_id: '', rw_penimbangan: '' };
             this.desaList = [];
             this.rwList = [];
             this.errors = {};
@@ -96,6 +97,7 @@
     
             this.form.tgl_jadwal = data.tgl_jadwal;
             this.form.jam_penimbangan = data.jam_penimbangan.substring(0, 5);
+            this.form.nama_driver = data.nama_driver;
             this.form.kecamatan_id = data.desa.kecamatan_id;
     
             await this.fetchDesa(false);
@@ -159,6 +161,10 @@
             }
             if (!this.form.jam_penimbangan) {
                 this.errors.jam_penimbangan = 'Jam wajib diisi.';
+                adaError = true;
+            }
+            if (!this.form.nama_driver) {
+                this.errors.nama_driver = 'Nama Driver wajib diisi.';
                 adaError = true;
             }
     
@@ -244,17 +250,36 @@
                                 <div class="w-full md:w-auto">
                                     <label class="block text-xs font-medium text-gray-500 mb-1">Tampilkan</label>
                                     <select name="per_page" onchange="this.form.submit()"
-                                        class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm cursor-pointer w-full md:w-32 h-[38px]">
+                                        class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm cursor-pointer w-full md:w-auto h-[38px]">
                                         <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 Data
                                         </option>
                                         <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 Data
                                         </option>
                                         <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 Data
                                         </option>
-                                        <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100
-                                            Data
+                                        <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 Data
                                         </option>
                                     </select>
+                                </div>
+
+                                <div class="w-full md:w-auto flex-grow" x-data="{ search: '{{ request('search_driver') }}' }">
+                                    <label class="block text-xs font-medium text-gray-500 mb-1">Cari Driver</label>
+                                    <div class="relative w-full md:w-48">
+                                        <input type="text" name="search_driver" x-model="search"
+                                            placeholder="Nama Driver..."
+                                            class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg text-sm shadow-sm w-full h-[38px] pr-8">
+
+                                        <button type="button" x-show="search && search.length > 0"
+                                            @click="search = ''; $nextTick(() => $el.closest('form').submit())"
+                                            class="absolute inset-y-0 right-0 flex items-center pr-2 text-gray-400 hover:text-red-500 cursor-pointer"
+                                            style="display: none;" x-transition>
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <div
@@ -273,9 +298,11 @@
                                                 class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition h-[38px] text-sm font-medium shadow-sm flex items-center">
                                                 Filter
                                             </button>
+
                                             @if (request('start_date') || request('end_date'))
                                                 <a href="{{ route('admin-pusat.jadwal.index') }}"
-                                                    class="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition h-[38px] flex items-center shadow-sm">
+                                                    class="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition h-[38px] flex items-center shadow-sm"
+                                                    title="Reset Filter Tanggal">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                         viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -295,9 +322,10 @@
                                     <tr>
                                         <th class="py-3 px-6 text-center w-12">No</th>
                                         <th class="py-3 px-6 text-left whitespace-nowrap">Hari, Tanggal</th>
-                                        <th class="py-3 px-6 text-left whitespace-nowrap">Jam</th>
+                                        <th class="py-3 px-6 text-left whitespace-nowrap">Driver</th>
+                                        <th class="py-3 px-6 text-center whitespace-nowrap">Jam</th>
                                         <th class="py-3 px-6 text-left">Lokasi</th>
-                                        <th class="py-3 px-6 text-left whitespace-nowrap">Status</th>
+                                        <th class="py-3 px-6 text-center whitespace-nowrap">Status</th>
                                         <th class="py-3 px-6 text-center w-32 whitespace-nowrap">Aksi</th>
                                     </tr>
                                 </thead>
@@ -312,6 +340,12 @@
                                                     class="font-bold text-gray-800 block">{{ \Carbon\Carbon::parse($jadwal->tgl_jadwal)->translatedFormat('l, d M Y') }}</span>
                                             </td>
                                             <td class="py-3 px-6 text-left align-middle whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <span
+                                                        class="font-semibold text-gray-700">{{ $jadwal->nama_driver ?? '-' }}</span>
+                                                </div>
+                                            </td>
+                                            <td class="py-3 px-6 text-center align-middle whitespace-nowrap">
                                                 <span
                                                     class="font-bold text-gray-800 block">{{ \Carbon\Carbon::parse($jadwal->jam_penimbangan)->format('H:i') }}
                                                     WIB</span>
@@ -330,7 +364,7 @@
                                                     </span>
                                                 </div>
                                             </td>
-                                            <td class="py-3 px-6 text-left align-middle whitespace-nowrap">
+                                            <td class="py-3 px-6 text-center align-middle whitespace-nowrap">
                                                 @php
                                                     $tgl = \Carbon\Carbon::parse($jadwal->tgl_jadwal);
                                                     $isToday = $tgl->isToday();
@@ -386,8 +420,13 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="6" class="text-center py-12 text-gray-500">Data Jadwal
-                                                Kosong</td>
+                                            <td colspan="7" class="text-center py-12 text-gray-500">
+                                                @if (request('search_driver') || request('start_date') || request('end_date'))
+                                                    Data tidak ditemukan.
+                                                @else
+                                                    Data Jadwal Kosong
+                                                @endif
+                                            </td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -429,6 +468,26 @@
                         <input type="hidden" name="_method" :value="isEdit ? 'PUT' : 'POST'">
 
                         <div class="p-6 space-y-5">
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Nama Driver / Petugas <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                    </div>
+                                    <input type="text" name="nama_driver" x-model="form.nama_driver"
+                                        class="pl-10 w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 text-sm shadow-sm"
+                                        placeholder="Masukkan nama driver..." required>
+                                </div>
+                                <p x-show="errors.nama_driver" class="text-red-500 text-xs mt-1 text-left"
+                                    x-text="errors.nama_driver"></p>
+                            </div>
 
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
@@ -578,7 +637,7 @@
         function showGlobalLoading() {
             const overlay = document.getElementById('loadingOverlay');
             overlay.classList.remove('hidden');
-            overlay.classList.add('flex'); 
+            overlay.classList.add('flex');
         }
 
         @if (session('success'))

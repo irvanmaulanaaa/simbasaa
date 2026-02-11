@@ -11,7 +11,12 @@ class JadwalPenimbangan extends Model
     protected $table = 'jadwal_penimbangan';
     protected $primaryKey = 'id_jadwal';
     protected $fillable = [
-        'user_id', 'desa_id', 'rw_penimbangan', 'jam_penimbangan', 'tgl_jadwal'
+        'user_id',
+        'desa_id',
+        'rw_penimbangan',
+        'nama_driver',
+        'jam_penimbangan',
+        'tgl_jadwal'
     ];
 
     public function desa()

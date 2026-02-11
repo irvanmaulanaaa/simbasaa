@@ -20,7 +20,7 @@
                 <div>
                     <h3 class="text-3xl font-bold">Halo, {{ Auth::user()->nama_lengkap }}! 👋</h3>
                     <p class="mt-2 text-green-50 text-lg opacity-90">
-                        Selamat datang di Panel Ketua RW. Kelola sampah warga dengan mudah & transparan.
+                        Selamat datang di Panel Ketua Unit BSB. Kelola sampah warga dengan mudah & transparan.
                     </p>
                     <div class="mt-4 flex flex-wrap gap-3">
                         <span class="inline-flex items-center px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 text-sm">

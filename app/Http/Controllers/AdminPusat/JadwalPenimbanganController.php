@@ -10,13 +10,17 @@ use App\Models\Kecamatan;
 use App\Models\Notifikasi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB; 
+use Illuminate\Support\Facades\DB;
 
 class JadwalPenimbanganController extends Controller
 {
     public function index(Request $request)
     {
         $query = JadwalPenimbangan::with('desa');
+
+        if ($request->filled('search_driver')) {
+            $query->where('nama_driver', 'like', '%' . $request->search_driver . '%');
+        }
 
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->whereBetween('tgl_jadwal', [$request->start_date, $request->end_date]);
@@ -43,20 +47,20 @@ class JadwalPenimbanganController extends Controller
     public function getDesasByKecamatan($kecamatanId)
     {
         $desas = Desa::where('kecamatan_id', $kecamatanId)
-                     ->orderBy('nama_desa')
-                     ->get(['id_desa', 'nama_desa']);
+            ->orderBy('nama_desa')
+            ->get(['id_desa', 'nama_desa']);
         return response()->json($desas);
     }
 
     public function getRwsByDesa($desaId)
     {
         $rws = User::where('desa_id', $desaId)
-                   ->whereNotNull('rw')
-                   ->select('rw')
-                   ->distinct()
-                   ->orderBy('rw')
-                   ->get();
-                   
+            ->whereNotNull('rw')
+            ->select('rw')
+            ->distinct()
+            ->orderBy('rw')
+            ->get();
+
         return response()->json($rws);
     }
 
@@ -65,6 +69,7 @@ class JadwalPenimbanganController extends Controller
         $request->validate([
             'desa_id' => 'required|exists:desa,id_desa',
             'rw_penimbangan' => 'required|string|max:5',
+            'nama_driver' => 'required|string|max:100',
             'tgl_jadwal' => 'required|date',
             'jam_penimbangan' => 'required',
         ]);
@@ -73,6 +78,7 @@ class JadwalPenimbanganController extends Controller
             'user_id' => Auth::id(),
             'desa_id' => $request->desa_id,
             'rw_penimbangan' => $request->rw_penimbangan,
+            'nama_driver' => $request->nama_driver,
             'tgl_jadwal' => $request->tgl_jadwal,
             'jam_penimbangan' => $request->jam_penimbangan,
         ]);
@@ -81,8 +87,8 @@ class JadwalPenimbanganController extends Controller
 
         Notifikasi::create([
             'jadwal_id' => $jadwal->id_jadwal,
-            'judul' => 'Penimbangan Sampah di RW ' . $request->rw_penimbangan,
-            'tgl_kegiatan' => $request->tgl_jadwal, 
+            'judul' => 'Penimbangan Sampah di RW ' . $request->rw_penimbangan . "\nDriver: " . $request->nama_driver,
+            'tgl_kegiatan' => $request->tgl_jadwal,
             'jam_kegiatan' => $request->jam_penimbangan,
             'desa_kegiatan' => $desa->nama_desa,
             'kecamatan_kegiatan' => $desa->kecamatan->nama_kecamatan ?? '-',
@@ -98,17 +104,17 @@ class JadwalPenimbanganController extends Controller
     {
         $jadwal = JadwalPenimbangan::with(['desa.kecamatan'])->findOrFail($id);
         $kecamatans = Kecamatan::orderBy('nama_kecamatan')->get();
-        
+
         $desas = Desa::where('kecamatan_id', $jadwal->desa->kecamatan_id)
-                     ->orderBy('nama_desa')
-                     ->get();
+            ->orderBy('nama_desa')
+            ->get();
 
         $rws = User::where('desa_id', $jadwal->desa_id)
-                   ->whereNotNull('rw')
-                   ->select('rw')
-                   ->distinct()
-                   ->orderBy('rw')
-                   ->get();
+            ->whereNotNull('rw')
+            ->select('rw')
+            ->distinct()
+            ->orderBy('rw')
+            ->get();
 
         return view('admin-pusat.jadwal.edit', compact('jadwal', 'kecamatans', 'desas', 'rws'));
     }
@@ -118,6 +124,7 @@ class JadwalPenimbanganController extends Controller
         $request->validate([
             'desa_id' => 'required|exists:desa,id_desa',
             'rw_penimbangan' => 'required|string|max:5',
+            'nama_driver' => 'required|string|max:100',
             'tgl_jadwal' => 'required|date',
             'jam_penimbangan' => 'required',
         ]);
@@ -127,17 +134,18 @@ class JadwalPenimbanganController extends Controller
         $jadwal->update([
             'desa_id' => $request->desa_id,
             'rw_penimbangan' => $request->rw_penimbangan,
+            'nama_driver' => $request->nama_driver,
             'tgl_jadwal' => $request->tgl_jadwal,
             'jam_penimbangan' => $request->jam_penimbangan,
         ]);
 
         $desaBaru = Desa::with('kecamatan')->findOrFail($request->desa_id);
-        
+
         $notif = Notifikasi::where('jadwal_id', $jadwal->id_jadwal)->first();
 
         if ($notif) {
             $notif->update([
-                'judul' => 'Update Jadwal: RW ' . $request->rw_penimbangan,
+                'judul' => 'Update: Penimbangan RW ' . $request->rw_penimbangan . ' (Driver: ' . $request->nama_driver . ')',
                 'tgl_kegiatan' => $request->tgl_jadwal,
                 'jam_kegiatan' => $request->jam_penimbangan,
                 'desa_kegiatan' => $desaBaru->nama_desa,
@@ -145,7 +153,7 @@ class JadwalPenimbanganController extends Controller
                 'kab_kota' => $desaBaru->kecamatan->kab_kota ?? 'Kab. Bandung',
                 'rw_kegiatan' => $request->rw_penimbangan,
             ]);
-            
+
             DB::table('notifikasi_status')
                 ->where('notifikasi_id', $notif->id_notif)
                 ->update(['read_at' => null]);

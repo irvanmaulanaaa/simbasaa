@@ -208,7 +208,7 @@
                                                         <p class="mt-1">Desa {{ $user->desa->nama_desa }}, Kec.
                                                             {{ $user->desa->kecamatan->nama_kecamatan ?? '' }}</p>
                                                         <p class="mt-1">
-                                                            {{ $user->desa->kecamatan->kab_kota ?? '' }}, Jawa Barat
+                                                            {{ $user->desa->kecamatan->kab_kota ?? '' }}, JAWA BARAT
                                                         </p>
                                                     @else
                                                         <span

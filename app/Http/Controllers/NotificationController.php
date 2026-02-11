@@ -16,40 +16,42 @@ class NotificationController extends Controller
     public function getLatest()
     {
         $user = Auth::user();
-        $userId = $user->id_user; 
-        
-        $roleName = $user->role->nama_role ?? ''; 
+        $userId = $user->id_user;
+
+        $roleName = $user->role->nama_role ?? '';
 
         $query = Notifikasi::query();
 
         if (!in_array($roleName, ['admin_pusat', 'admin_data'])) {
-            $userDesa = $user->desa->nama_desa ?? ''; 
-            $userRW   = $user->rw ?? '';
+            $userDesa = $user->desa->nama_desa ?? '';
+            $userRW = $user->rw ?? '';
             $query->where('desa_kegiatan', $userDesa)->where('rw_kegiatan', $userRW);
         }
 
-        $query->whereDoesntHave('statuses', function($q) use ($userId) {
-            $q->where('user_id', $userId) 
-              ->whereNotNull('deleted_at');
+        $query->whereDoesntHave('statuses', function ($q) use ($userId) {
+            $q->where('user_id', $userId)
+                ->whereNotNull('deleted_at');
         });
+
+        $countQuery = clone $query;
 
         $notifikasis = $query->latest('created_at')->take(10)->get();
 
-        $formattedData = $notifikasis->map(function($notif) use ($userId) {
+        $formattedData = $notifikasis->map(function (Notifikasi $notif) use ($userId) {
             $isRead = $notif->statuses()
-                            ->where('user_id', $userId)
-                            ->whereNotNull('read_at')
-                            ->exists();
+                ->where('user_id', $userId)
+                ->whereNotNull('read_at')
+                ->exists();
             $notif->is_read = $isRead;
             return $notif;
         });
 
-        $allRelevantIds = $query->pluck('id_notif'); 
+        $allRelevantIds = $countQuery->pluck('id_notif');
         $readCount = NotifikasiStatus::whereIn('notifikasi_id', $allRelevantIds)
-                        ->where('user_id', $userId) 
-                        ->whereNotNull('read_at')
-                        ->count();
-        
+            ->where('user_id', $userId)
+            ->whereNotNull('read_at')
+            ->count();
+
         $unreadCount = $allRelevantIds->count() - $readCount;
 
         return response()->json([

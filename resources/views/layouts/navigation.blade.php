@@ -180,7 +180,7 @@
                                             </div>
                                         </div>
                                         <div class="flex-1 min-w-0">
-                                            <p class="text-sm font-medium text-gray-900 truncate group-hover:text-blue-600 transition"
+                                            <p class="text-sm font-medium text-gray-900 whitespace-pre-line group-hover:text-blue-600 transition"
                                                 x-text="notif.judul"></p>
                                             <p class="text-xs text-gray-500 mt-0.5">
                                                 RW <span x-text="notif.rw_kegiatan"></span> &bull; <span
@@ -241,7 +241,7 @@
 
                                 <div class="px-6 py-6">
                                     <div class="text-center mb-6">
-                                        <h4 class="text-xl font-bold text-gray-900 leading-snug"
+                                        <h4 class="text-xl font-bold text-gray-900 leading-snug whitespace-pre-line"
                                             x-text="detail.judul"></h4>
                                     </div>
 

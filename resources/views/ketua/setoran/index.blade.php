@@ -338,16 +338,22 @@
                             <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Warga Penyetor <span
                                     class="text-red-500">*</span></label>
                             <div class="relative">
-                                <select name="warga_id" x-model="formData.warga_id"
+                                <select :name="isEdit ? '' : 'warga_id'" x-model="formData.warga_id"
                                     class="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 text-sm cursor-pointer transition-colors"
                                     :class="{ 'border-red-500': errors.warga_id, 'bg-gray-100 cursor-not-allowed': isEdit }"
                                     :disabled="isEdit">
+
                                     <option value="">Pilih Nama Warga</option>
                                     @foreach ($wargas as $w)
                                         <option value="{{ $w->id_user }}">{{ $w->nama_lengkap }} (RW
                                             {{ $w->rw }})</option>
                                     @endforeach
                                 </select>
+
+                                <template x-if="isEdit">
+                                    <input type="hidden" name="warga_id" :value="formData.warga_id">
+                                </template>
+
                                 <p x-show="errors.warga_id" class="text-red-500 text-xs mt-1"
                                     x-text="errors.warga_id"></p>
                             </div>
@@ -374,12 +380,15 @@
                                                 @change="updateHarga(index)"
                                                 class="w-full text-sm border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 py-1.5 cursor-pointer"
                                                 :class="{ 'border-red-500': errors.items[index]?.sampah_id }">
+
                                                 <option value="">Pilih Jenis Sampah</option>
-                                                <template x-for="s in masterSampah">
-                                                    <option :value="s.id_sampah"
-                                                        x-text="s.nama_sampah + ' (Rp ' + s.harga_anggota + '/' + s.UOM + ')'">
+
+                                                @foreach ($sampahs as $s)
+                                                    <option value="{{ $s->id_sampah }}">
+                                                        {{ $s->nama_sampah }} (Rp
+                                                        {{ $s->harga_anggota }}/{{ $s->UOM }})
                                                     </option>
-                                                </template>
+                                                @endforeach
                                             </select>
                                             <p x-show="errors.items[index]?.sampah_id"
                                                 class="text-red-500 text-[10px] mt-1">Wajib dipilih</p>
@@ -576,6 +585,9 @@
                 openEditModal(id) {
                     this.isEdit = true;
                     this.formAction = `/ketua/setoran/${id}`;
+
+                    this.items = [];
+                    this.formData.warga_id = '';
                     this.errors = {
                         warga_id: null,
                         items: {},
@@ -587,13 +599,17 @@
                         .then(data => {
                             this.formData.warga_id = data.warga_id;
 
-                            this.items = data.detail.map(d => ({
-                                sampah_id: d.sampah_id,
-                                berat: parseFloat(d.berat),
-                                subtotal: parseFloat(d.subtotal),
-                                harga_per_kg: this.masterSampah.find(s => s.id_sampah == d.sampah_id)
-                                    ?.harga_anggota || 0
-                            }));
+                            this.items = data.detail.map(d => {
+                                let master = this.masterSampah.find(s => s.id_sampah == d.sampah_id);
+
+                                return {
+                                    sampah_id: String(d.sampah_id),
+
+                                    berat: parseFloat(d.berat),
+                                    subtotal: parseFloat(d.subtotal),
+                                    harga_per_kg: master ? parseFloat(master.harga_anggota) : 0
+                                };
+                            });
 
                             this.calculateTotal();
                             this.showFormModal = true;
