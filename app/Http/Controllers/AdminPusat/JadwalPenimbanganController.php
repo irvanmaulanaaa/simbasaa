@@ -87,7 +87,7 @@ class JadwalPenimbanganController extends Controller
 
         Notifikasi::create([
             'jadwal_id' => $jadwal->id_jadwal,
-            'judul' => "Penimbangan Sampah di RW " . $request->rw_penimbangan . "\nDriver: " . $request->nama_driver,
+            'judul' => "Penimbangan Sampah di RW " . $request->rw_penimbangan . "\n" . "Driver: " . $request->nama_driver,
             'tgl_kegiatan' => $request->tgl_jadwal,
             'jam_kegiatan' => $request->jam_penimbangan,
             'desa_kegiatan' => $desa->nama_desa,
@@ -145,7 +145,7 @@ class JadwalPenimbanganController extends Controller
 
         if ($notif) {
             $notif->update([
-                'judul' => "Update: Penimbangan Sampah di RW " . $request->rw_penimbangan . "\nDriver: " . $request->nama_driver,
+                'judul' => "Update: Penimbangan Sampah di RW " . $request->rw_penimbangan . "\n" . "Driver: " . $request->nama_driver,
                 'tgl_kegiatan' => $request->tgl_jadwal,
                 'jam_kegiatan' => $request->jam_penimbangan,
                 'desa_kegiatan' => $desaBaru->nama_desa,

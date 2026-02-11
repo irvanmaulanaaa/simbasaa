@@ -307,7 +307,7 @@
                                                             x-text="detail.kecamatan_kegiatan"></span></p>
                                                     <p class="text-gray-600">
                                                         <span x-text="detail.kab_kota"></span>,
-                                                        <span x-text="detail.provinsi || 'Jawa Barat'"></span>
+                                                        <span x-text="detail.provinsi || 'JAWA BARAT'"></span>
                                                     </p>
                                                 </div>
                                             </div>
