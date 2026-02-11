@@ -110,7 +110,12 @@
                     },
                 
                     formatDate(dateStr) {
-                        return new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+                        return new Date(dateStr).toLocaleDateString('id-ID', {
+                            weekday: 'long',
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric'
+                        });
                     }
                 }" x-init="fetchNotif()" class="relative mr-2">
 
@@ -273,7 +278,7 @@
                                                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z">
                                                     </path>
                                                 </svg>
-                                                <span x-text="detail.jam_kegiatan + ' WIB'"></span>
+                                                <span x-text="(detail.jam_kegiatan ? detail.jam_kegiatan.substring(0, 5) : '') + ' WIB'"></span>
                                             </div>
                                         </div>
 
