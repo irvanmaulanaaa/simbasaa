@@ -8,6 +8,10 @@ use App\Models\KategoriSampah;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\SampahExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Storage;
 
 class SampahController extends Controller
 {
@@ -63,6 +67,9 @@ class SampahController extends Controller
             'numeric' => ':attribute harus berupa angka.',
             'unique' => ':attribute sudah terdaftar di sistem.',
             'min' => ':attribute tidak boleh kurang dari :min.',
+            'image' => 'File yang diupload harus berupa gambar.',
+            'mimes' => 'Format gambar harus jpeg, png, jpg, atau webp.',
+            'max' => 'Ukuran gambar maksimal 2MB.',
 
             'nama_sampah.required' => 'Nama Sampah wajib diisi.',
             'kode_sampah.required' => 'Kode Sampah wajib diisi.',
@@ -80,16 +87,24 @@ class SampahController extends Controller
         $request->validate([
             'nama_sampah' => 'required|string|max:255',
             'kode_sampah' => 'required|string|max:20|unique:sampah,kode_sampah',
-            'kode_bsb' => 'required|string|max:20', 
+            'kode_bsb' => 'required|string|max:20',
             'kategori_id' => 'required|exists:kategori_sampah,id_kategori',
             'harga_anggota' => 'required|numeric|min:0',
             'harga_bsb' => 'required|numeric|min:0',
             'UOM' => 'required|in:kg,pcs',
             'status_sampah' => 'required|in:aktif,tidak_aktif',
-        ], $messages); 
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+        ], $messages);
 
-        $data = $request->all();
-        $data['diinput_oleh'] = Auth::id(); 
+        $data = $request->except('gambar');
+        $data['diinput_oleh'] = Auth::id();
+
+        if ($request->hasFile('gambar')) {
+            $image = $request->file('gambar');
+            $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('sampah'), $imageName);
+            $data['gambar'] = 'sampah/' . $imageName;
+        }
 
         Sampah::create($data);
 
@@ -115,6 +130,9 @@ class SampahController extends Controller
             'required' => ':attribute wajib diisi.',
             'numeric' => ':attribute harus berupa angka.',
             'unique' => ':attribute sudah terdaftar di sistem.',
+            'image' => 'File yang diupload harus berupa gambar.',
+            'mimes' => 'Format gambar harus jpeg, png, jpg, atau webp.',
+            'max' => 'Ukuran gambar maksimal 2MB.',
 
             'nama_sampah.required' => 'Nama Sampah wajib diisi.',
             'kode_sampah.required' => 'Kode Sampah wajib diisi.',
@@ -133,10 +151,33 @@ class SampahController extends Controller
             'harga_bsb' => 'required|numeric|min:0',
             'UOM' => 'required|in:kg,pcs',
             'status_sampah' => 'required|in:aktif,tidak_aktif',
-        ], $messages); 
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+        ], $messages);
 
         $sampah = Sampah::findOrFail($id);
-        $sampah->update($request->all());
+        $data = $request->except(['gambar', 'hapus_gambar']);
+
+        if ($request->has('hapus_gambar') && $request->hapus_gambar == '1') {
+            if ($sampah->gambar && file_exists(public_path($sampah->gambar))) {
+                unlink(public_path($sampah->gambar));
+            }
+            $data['gambar'] = null;
+        }
+
+        if ($request->hasFile('gambar')) {
+            if ($sampah->gambar && file_exists(public_path($sampah->gambar))) {
+                unlink(public_path($sampah->gambar));
+            }
+
+            $image = $request->file('gambar');
+            $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+
+            $image->move(public_path('sampah'), $imageName);
+
+            $data['gambar'] = 'sampah/' . $imageName;
+        }
+
+        $sampah->update($data);
 
         return redirect()->route('admin-pusat.sampah.index')
             ->with('success', 'Data sampah berhasil diperbarui.');
@@ -164,5 +205,44 @@ class SampahController extends Controller
             return response()->json(['exists' => $exists]);
         }
         return response()->json(['exists' => false]);
+    }
+
+    public function exportPdf(Request $request)
+    {
+        if (ob_get_length()) {
+            ob_end_clean();
+        }
+
+        $query = Sampah::with('kategori');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_sampah', 'like', "%{$search}%")
+                    ->orWhere('kode_bsb', 'like', "%{$search}%")
+                    ->orWhere('kode_sampah', 'like', "%{$search}%");
+            });
+        }
+        if ($request->filled('kategori_id')) {
+            $query->where('kategori_id', $request->kategori_id);
+        }
+        if ($request->filled('status')) {
+            $query->where('status_sampah', $request->status);
+        }
+
+        $sampahs = $query->latest()->get();
+        $admin = Auth::user();
+
+        $pdf = Pdf::loadView('admin-pusat.sampah.pdf', compact('sampahs', 'admin', 'request'));
+
+        return $pdf->setPaper('A4', 'landscape')->stream('Master_Data_Sampah_SIMBASA.pdf');
+    }
+
+    public function exportExcel(Request $request)
+    {
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+        return Excel::download(new SampahExport($request), 'Master_Data_Sampah.xlsx');
     }
 }

@@ -8,6 +8,10 @@
             ->where('status', 'ditolak')
             ->where('is_read', 0)
             ->count();
+
+        $notifSetuju = \App\Models\Penarikan::where('warga_id', Auth::user()->id_user)
+            ->where('status', 'disetujui')
+            ->count();
     @endphp
 
     <h3 class="px-3 pt-4 pb-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">
@@ -28,17 +32,26 @@
     </h3>
 
     <a href="{{ route('warga.penarikan.index') }}"
-        class="{{ request()->routeIs('warga.penarikan.*') ? $activeClass : $inactiveClass }}">
+        class="{{ request()->routeIs('warga.penarikan.*') ? $activeClass : $inactiveClass }} justify-between">
+        
         <div class="flex items-center">
             <x-heroicon-o-clipboard-document-list class="h-6 w-6 mr-3" />
             {{ __('Riwayat Penarikan') }}
         </div>
 
-        @if ($notifTolak > 0)
-            <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">
-                {{ $notifTolak }}
-            </span>
-        @endif
+        <div class="flex items-center gap-1.5">
+            @if ($notifSetuju > 0)
+                <span class="bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse" title="Tunggu Konfirmasi Anda">
+                    {{ $notifSetuju }}
+                </span>
+            @endif
+
+            @if ($notifTolak > 0)
+                <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse" title="Penarikan Ditolak">
+                    {{ $notifTolak }}
+                </span>
+            @endif
+        </div>
     </a>
 
     <h3 class="px-3 pt-4 pb-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">

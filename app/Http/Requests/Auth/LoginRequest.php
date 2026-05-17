@@ -42,12 +42,11 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        // Ganti 'email' menjadi 'username' di sini
         if (!Auth::attempt($this->only('username', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'username' => trans('Username atau password yang Anda masukkan salah.'), // Ganti dari 'email'
+                'username' => trans('Username atau password yang Anda masukkan salah.'),
             ]);
         }
 

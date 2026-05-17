@@ -11,6 +11,9 @@ use App\Models\Notifikasi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\JadwalExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class JadwalPenimbanganController extends Controller
 {
@@ -173,5 +176,32 @@ class JadwalPenimbanganController extends Controller
 
         return redirect()->route('admin-pusat.jadwal.index')
             ->with('success', 'Jadwal berhasil dihapus.');
+    }
+
+    public function exportPdf(Request $request)
+    {
+        if (ob_get_length()) { ob_end_clean(); }
+
+        $query = JadwalPenimbangan::with('desa.kecamatan');
+
+        if ($request->filled('search_driver')) {
+            $query->where('nama_driver', 'like', '%' . $request->search_driver . '%');
+        }
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('tgl_jadwal', [$request->start_date, $request->end_date]);
+        }
+
+        $jadwals = $query->latest('tgl_jadwal')->get();
+        $admin = Auth::user();
+
+        $pdf = Pdf::loadView('admin-pusat.jadwal.pdf', compact('jadwals', 'admin', 'request'));
+        
+        return $pdf->setPaper('A4', 'portrait')->stream('Surat_Jalan_Jadwal_SIMBASA.pdf');
+    }
+
+    public function exportExcel(Request $request)
+    {
+        while (ob_get_level() > 0) { ob_end_clean(); }
+        return Excel::download(new JadwalExport($request), 'Jadwal_Penimbangan_SIMBASA.xlsx');
     }
 }

@@ -18,6 +18,7 @@ class Penarikan extends Model
         'status',
         'tgl_request',
         'tgl_konfirmasi',
+        'tgl_selesai',
         'catatan_ketua',
         'is_read',
     ];

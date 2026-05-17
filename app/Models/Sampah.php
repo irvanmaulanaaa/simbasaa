@@ -23,7 +23,8 @@ class Sampah extends Model
         'UOM',
         'status_sampah',
         'tgl_nonaktif',
-        'deskripsi'
+        'deskripsi',
+        'gambar'
     ];
 
     public function kategori()

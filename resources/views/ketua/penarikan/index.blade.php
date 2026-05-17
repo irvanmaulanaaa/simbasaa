@@ -104,7 +104,7 @@
                                         <td class="py-4 px-6 text-center font-bold">{{ $loop->iteration }}</td>
                                         <td class="py-4 px-6 align-middle">
                                             <div class="font-bold text-gray-800">
-                                                {{ \Carbon\Carbon::parse($tarik->tgl_request)->format('d M Y') }}
+                                                {{ \Carbon\Carbon::parse($tarik->tgl_request)->translatedFormat('d M Y') }}
                                             </div>
                                         </td>
                                         <td class="py-4 px-6 align-middle">
@@ -143,7 +143,7 @@
                                                     <button type="button"
                                                         onclick="confirmAction({{ $tarik->id_tarik }}, 'setuju', {{ $tarik->jumlah }}, {{ $tarik->warga->saldo->jumlah_saldo ?? 0 }})"
                                                         class="w-8 h-8 rounded-full bg-green-100 text-green-600 hover:bg-green-600 hover:text-white flex items-center justify-center transition shadow-sm border border-green-200"
-                                                        title="Setujui">
+                                                        title="Siapkan Uang (Setujui)">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                             viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -210,6 +210,30 @@
                                 Riwayat Penarikan Saldo Warga
                             </h3>
                         </div>
+
+                        <div class="flex space-x-2">
+                            <a href="{{ route('ketua.penarikan.export.pdf', request()->query()) }}" target="_blank"
+                                class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 transition shadow-sm"
+                                title="Cetak Laporan PDF">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                    </path>
+                                </svg>
+                                Export ke PDF
+                            </a>
+
+                            <a href="{{ route('ketua.penarikan.export.excel', request()->query()) }}"
+                                class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 transition shadow-sm"
+                                title="Export ke Excel">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                    </path>
+                                </svg>
+                                Export ke Excel
+                            </a>
+                        </div>
                     </div>
 
                     <form method="GET" action="{{ route('ketua.penarikan.index') }}"
@@ -238,7 +262,9 @@
                                 <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending
                                 </option>
                                 <option value="disetujui" {{ request('status') == 'disetujui' ? 'selected' : '' }}>
-                                    Disetujui</option>
+                                    Siap Diambil</option>
+                                <option value="selesai" {{ request('status') == 'selesai' ? 'selected' : '' }}>Selesai
+                                </option>
                                 <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak
                                 </option>
                             </select>
@@ -306,11 +332,13 @@
                         <thead class="bg-gray-100 text-gray-600 uppercase text-xs font-bold">
                             <tr>
                                 <th class="py-3 px-6 text-center w-12">No</th>
-                                <th class="py-3 px-6 text-left">Tanggal</th>
                                 <th class="py-3 px-6 text-left">Nama Warga</th>
                                 <th class="py-3 px-6 text-center">Jumlah</th>
                                 <th class="py-3 px-6 text-center">Status</th>
-                                <th class="py-3 px-6 text-center">Dikonfirmasi Oleh</th>
+                                <th class="py-3 px-6 text-center">Waktu Request</th>
+                                <th class="py-3 px-6 text-center">ACC Ketua</th>
+                                <th class="py-3 px-6 text-center">Waktu Selesai</th>
+                                <th class="py-3 px-6 text-center w-24">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="text-gray-600 text-sm">
@@ -318,11 +346,6 @@
                                 <tr class="border-b border-gray-100 hover:bg-gray-50 transition duration-150">
                                     <td class="py-3 px-6 text-center font-medium">
                                         {{ $historyRequests->firstItem() + $index }}
-                                    </td>
-                                    <td class="py-3 px-6">
-                                        <div class="font-medium text-gray-800">
-                                            {{ \Carbon\Carbon::parse($history->tgl_request)->translatedFormat('d M Y') }}
-                                        </div>
                                     </td>
                                     <td class="py-3 px-6 font-medium">{{ $history->warga->nama_lengkap }}</td>
                                     <td class="py-3 px-6 text-center font-bold text-gray-700">Rp
@@ -335,8 +358,13 @@
                                             </span>
                                         @elseif($history->status == 'disetujui')
                                             <span
+                                                class="inline-flex items-center bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded-full border border-blue-200">
+                                                Siap Diambil
+                                            </span>
+                                        @elseif($history->status == 'selesai')
+                                            <span
                                                 class="inline-flex items-center bg-green-100 text-green-800 text-xs font-bold px-2.5 py-0.5 rounded-full border border-green-200">
-                                                Disetujui
+                                                Selesai
                                             </span>
                                         @else
                                             <span
@@ -346,17 +374,61 @@
                                         @endif
                                     </td>
                                     <td class="py-3 px-6 text-center text-xs text-gray-500">
-                                        @if ($history->ketua_id)
-                                            <span
-                                                class="block font-semibold text-gray-700">{{ $history->ketua->nama_lengkap ?? 'Ketua' }}</span>
+                                        {{ \Carbon\Carbon::parse($history->tgl_request)->translatedFormat('d M Y') }}
+                                    </td>
+                                    <td class="py-3 px-6 text-center text-xs text-gray-500">
+                                        @if ($history->tgl_konfirmasi)
+                                            {{ \Carbon\Carbon::parse($history->tgl_konfirmasi)->translatedFormat('d M Y') }}
                                         @else
-                                            <span class="italic text-gray-400">-</span>
+                                            <span class="italic text-gray-300">-</span>
                                         @endif
+                                    </td>
+                                    <td class="py-3 px-6 text-center text-xs text-gray-500">
+                                        @if ($history->tgl_selesai)
+                                            <span
+                                                class="{{ $history->status == 'ditolak' ? 'text-red-500' : 'text-green-600' }} font-semibold text-xs">
+                                                {{ \Carbon\Carbon::parse($history->tgl_selesai)->translatedFormat('d M Y') }}
+                                            </span>
+                                        @else
+                                            <span class="italic text-gray-300">-</span>
+                                        @endif
+                                    </td>
+                                    <td class="py-3 px-6 relative">
+                                        <div class="flex justify-center items-center">
+                                            @if ($history->status == 'ditolak')
+                                                <button
+                                                    onclick="showReason('{{ $history->catatan_ketua ?? 'Tidak ada alasan spesifik.' }}')"
+                                                    class="group relative inline-flex items-center justify-center w-8 h-8 bg-red-50 text-red-500 rounded-full hover:bg-red-500 hover:text-white transition shadow-sm border border-red-100"
+                                                    title="Lihat Alasan">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z">
+                                                        </path>
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                                        </path>
+                                                    </svg>
+                                                </button>
+                                            @elseif ($history->status == 'selesai')
+                                                <div class="text-green-600 bg-green-50 p-1 rounded-full inline-flex items-center justify-center border border-green-200"
+                                                    title="Transaksi Selesai">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="3" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                </div>
+                                            @else
+                                                <span class="text-gray-300 font-bold text-xl">-</span>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center py-8 text-gray-400">
+                                    <td colspan="8" class="text-center py-8 text-gray-400">
                                         Data tidak ditemukan untuk pencarian/filter ini.
                                     </td>
                                 </tr>
@@ -392,26 +464,10 @@
         @endif
 
         function confirmAction(id, type, amount = 0, balance = 0) {
-            let titleText = '';
-            let confirmBtnColor = '';
-            let formId = '';
-
             if (type === 'setuju') {
-                if (amount > balance) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Saldo Tidak Cukup!',
-                        text: 'Saldo warga hanya Rp ' + new Intl.NumberFormat('id-ID').format(balance) +
-                            ', tapi meminta Rp ' + new Intl.NumberFormat('id-ID').format(amount),
-                        confirmButtonColor: '#dc2626'
-                    });
-                    return;
-                }
-
                 Swal.fire({
-                    title: 'Setujui Penarikan?',
-                    text: 'Saldo warga akan otomatis dikurangi sebesar Rp ' + new Intl.NumberFormat('id-ID').format(
-                        amount),
+                    title: 'Siapkan Uang Fisik?',
+                    text: 'Ubah status menjadi siap diambil. Saldo warga BELUM DIPOTONG sebelum warga mengkonfirmasi uang diterima.',
                     icon: 'question',
                     showCancelButton: true,
                     confirmButtonColor: '#16a34a',
@@ -467,6 +523,23 @@
 
         function showLoading() {
             document.getElementById('global-loader').style.display = 'flex';
+        }
+
+        function showReason(message) {
+            Swal.fire({
+                title: 'Alasan Penolakan',
+                text: message,
+                icon: 'info',
+                confirmButtonText: 'Tutup',
+                confirmButtonColor: '#3b82f6',
+                background: '#fff',
+                iconColor: '#ef4444',
+                customClass: {
+                    popup: 'rounded-2xl shadow-xl',
+                    title: 'text-lg font-bold text-gray-800',
+                    confirmButton: 'rounded-lg px-6 py-2'
+                }
+            });
         }
     </script>
 

@@ -90,13 +90,18 @@ Route::middleware('auth')->group(function () {
         ->middleware('role:admin_data')
         ->group(function () {
             Route::get('dashboard', [AdminDataDashboard::class, 'index'])->name('dashboard');
+
             Route::get('/users/get-desa', [UserController::class, 'getDesa'])->name('users.get-desa');
+            Route::get('/users/export/pdf', [UserController::class, 'exportPdf'])->name('users.export.pdf');
+            Route::get('/users/export/excel', [UserController::class, 'exportExcel'])->name('users.export.excel');
+            Route::resource('users', UserController::class);
+            Route::put('users/{id}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset_password');
 
             Route::resource('kecamatan', KecamatanController::class);
             Route::resource('desa', DesaController::class);
-            Route::resource('users', UserController::class);
+            
             Route::resource('konten', KontenController::class)->except(['show']);
-            Route::put('users/{id}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset_password');
+            
         });
 
 
@@ -104,11 +109,15 @@ Route::middleware('auth')->group(function () {
         ->middleware('role:admin_pusat')
         ->group(function () {
             Route::get('dashboard', [AdminPusatDashboard::class, 'index'])->name('dashboard');
+
             Route::get('sampah/check-code', [SampahController::class, 'checkCode'])->name('sampah.check-code');
-
             Route::resource('sampah', SampahController::class);
-            Route::resource('jadwal', JadwalPenimbanganController::class);
+            Route::get('sampah/export/pdf', [SampahController::class, 'exportPdf'])->name('sampah.export.pdf');
+            Route::get('sampah/export/excel', [SampahController::class, 'exportExcel'])->name('sampah.export.excel');
 
+            Route::get('jadwal/export/pdf', [JadwalPenimbanganController::class, 'exportPdf'])->name('jadwal.export.pdf');
+            Route::get('jadwal/export/excel', [JadwalPenimbanganController::class, 'exportExcel'])->name('jadwal.export.excel');
+            Route::resource('jadwal', JadwalPenimbanganController::class);
             Route::get('/api/desas/{kecamatanId}', [JadwalPenimbanganController::class, 'getDesasByKecamatan'])->name('api.desas');
             Route::get('/api/rws/{desaId}', [JadwalPenimbanganController::class, 'getRwsByDesa'])->name('api.rws');
 
@@ -123,12 +132,16 @@ Route::middleware('auth')->group(function () {
 
             Route::get('setoran', [SetoranController::class, 'index'])->name('setoran.index');
             Route::post('setoran', [SetoranController::class, 'store'])->name('setoran.store');
+            Route::get('setoran/export/pdf', [SetoranController::class, 'exportPdf'])->name('setoran.export.pdf');
+            Route::get('setoran/export/excel', [SetoranController::class, 'exportExcel'])->name('setoran.export.excel');
             Route::get('setoran/{id}', [SetoranController::class, 'show'])->name('setoran.show');
             Route::put('setoran/{id}', [SetoranController::class, 'update'])->name('setoran.update');
             Route::delete('setoran/{id}', [SetoranController::class, 'destroy'])->name('setoran.destroy');
 
             Route::get('penarikan', [KetuaPenarikan::class, 'index'])->name('penarikan.index');
             Route::patch('penarikan/{id}', [KetuaPenarikan::class, 'konfirmasi'])->name('penarikan.konfirmasi');
+            Route::get('penarikan/export/pdf', [KetuaPenarikan::class, 'exportPdf'])->name('penarikan.export.pdf');
+            Route::get('penarikan/export/excel', [KetuaPenarikan::class, 'exportExcel'])->name('penarikan.export.excel');
 
             Route::get('/api/count-pending', [NotifikasiController::class, 'countPending'])->name('api.count-pending');
         });
@@ -139,11 +152,13 @@ Route::middleware('auth')->group(function () {
             Route::get('dashboard', [WargaDashboard::class, 'index'])->name('dashboard');
 
             Route::post('tarik-saldo', [WargaPenarikan::class, 'store'])->name('tarik.store');
-
             Route::get('riwayat-penarikan', [WargaPenarikan::class, 'index'])->name('penarikan.index');
-            Route::get('riwayat-setoran', [WargaSetoranController::class, 'index'])->name('setoran.index');
-
             Route::post('penarikan/{id}/mark-read', [WargaPenarikan::class, 'markAsRead'])->name('penarikan.markRead');
+            Route::get('riwayat-penarikan/export/pdf', [WargaPenarikan::class, 'exportPdf'])->name('penarikan.export.pdf');
+
+            Route::get('riwayat-setoran', [WargaSetoranController::class, 'index'])->name('setoran.index');
+            Route::get('riwayat-setoran/export/pdf', [WargaSetoranController::class, 'exportPdf'])->name('setoran.export.pdf');
+            Route::patch('penarikan/{id}/selesai', [WargaPenarikan::class, 'konfirmasiSelesai'])->name('penarikan.selesai');
         });
 });
 

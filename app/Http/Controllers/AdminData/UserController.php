@@ -11,6 +11,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\UserExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
 {
@@ -210,5 +213,37 @@ class UserController extends Controller
         ]);
 
         return back()->with('success', 'Password berhasil direset menjadi: ' . $request->new_password);
+    }
+
+    public function exportPdf(Request $request)
+    {
+        if (ob_get_length()) { ob_end_clean(); }
+
+        $query = User::with(['role', 'desa.kecamatan', 'saldo'])
+            ->when($request->search, function ($query) use ($request) {
+                $query->where(function ($q) use ($request) {
+                    $q->where('nama_lengkap', 'like', '%' . $request->search . '%')
+                        ->orWhere('username', 'like', '%' . $request->search . '%');
+                });
+            })
+            ->when($request->role, function ($query) use ($request) {
+                $query->where('role_id', $request->role);
+            })
+            ->when($request->status, function ($query) use ($request) {
+                $query->where('status', $request->status);
+            });
+
+        $users = $query->latest()->get();
+        $admin = Auth::user(); 
+
+        $pdf = Pdf::loadView('admin-data.users.pdf', compact('users', 'admin', 'request'));
+        
+        return $pdf->setPaper('A4', 'landscape')->stream('Laporan_Data_Pengguna_SIMBASA.pdf');
+    }
+
+    public function exportExcel(Request $request)
+    {
+        while (ob_get_level() > 0) { ob_end_clean(); }
+        return Excel::download(new UserExport($request), 'Laporan_Data_Pengguna.xlsx');
     }
 }

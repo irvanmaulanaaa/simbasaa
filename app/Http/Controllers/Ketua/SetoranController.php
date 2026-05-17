@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Ketua;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\SetoranExport;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -73,6 +76,62 @@ class SetoranController extends Controller
         $sampahs = Sampah::where('status_sampah', 'aktif')->get();
 
         return view('ketua.setoran.index', compact('setorans', 'wargas', 'sampahs', 'dataRT'));
+    }
+
+    /**
+     * Export ke PDF
+     */
+    public function exportPdf(Request $request)
+    {
+        if (ob_get_length()) {
+            ob_end_clean();
+        }
+        
+        $ketua = Auth::user()->load('desa.kecamatan');
+
+        $query = Setoran::with(['warga', 'detail.sampah'])
+            ->where(function ($q) use ($ketua) {
+                $q->where('ketua_id', $ketua->id_user)
+                    ->orWhereHas('warga', function ($subQ) use ($ketua) {
+                        $subQ->where('desa_id', $ketua->desa_id)->where('rw', $ketua->rw);
+                    });
+            });
+
+        if ($request->filled('search')) {
+            $query->whereHas('warga', function ($q) use ($request) {
+                $q->where('nama_lengkap', 'like', "%{$request->search}%");
+            });
+        }
+        if ($request->filled('rt')) {
+            $query->whereHas('warga', function ($q) use ($request) {
+                $q->where('rt', $request->rt);
+            });
+        }
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('tgl_setor', [$request->start_date, $request->end_date]);
+        }
+
+        $setorans = $query->latest('tgl_setor')->get();
+
+        $totalPendapatan = $setorans->sum('total_harga');
+
+        $pdf = Pdf::loadView('ketua.setoran.pdf', compact('setorans', 'ketua', 'totalPendapatan', 'request'));
+        
+        $pdf->setPaper('A4', 'landscape');
+
+        return $pdf->stream('Laporan_Setoran_Sampah_RW_' . $ketua->rw . '.pdf');
+    }
+
+    /**
+     * Export ke Excel
+     */
+    public function exportExcel(Request $request)
+    {
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+
+        return Excel::download(new SetoranExport($request), 'Laporan_Setoran_Sampah.xlsx');
     }
 
     /**

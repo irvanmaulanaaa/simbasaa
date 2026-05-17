@@ -8,13 +8,11 @@ return new class extends Migration {
     /**
      * Run the migrations.
      */
-    // file: ..._create_users_table.php
-    // database/migrations/..._create_users_table.php
 
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id('id_user'); // Mengganti id() menjadi id('id_user')
+            $table->id('id_user'); 
             $table->unsignedBigInteger('role_id');
             $table->unsignedBigInteger('desa_id')->nullable();
             $table->string('nama_lengkap');
@@ -26,7 +24,7 @@ return new class extends Migration {
             $table->string('rw', 5)->nullable();
             $table->enum('status', ['aktif', 'tidak_aktif'])->default('aktif');
             $table->rememberToken();
-            $table->timestamps(); // Ini akan membuat 'tgl_dibuat' (created_at) dan updated_at
+            $table->timestamps(); 
         });
     }
 

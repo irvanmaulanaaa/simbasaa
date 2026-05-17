@@ -1,7 +1,7 @@
 <x-app-layout>
 
     @section('title', 'Dashboard Warga')
-    
+
     <x-slot name="sidebar">
         @include('warga.partials.sidebar')
     </x-slot>
@@ -65,7 +65,6 @@
                 </div>
 
                 <div class="relative z-10 p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 h-full">
-
                     <div class="flex-1">
                         <div class="flex items-center gap-3 mb-1">
                             <div class="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
@@ -78,23 +77,43 @@
                             </div>
                             <p class="text-green-100 font-medium text-sm uppercase tracking-wider">Saldo Tersedia</p>
                         </div>
-
                         <h4 class="text-4xl font-extrabold tracking-tight">
                             Rp {{ number_format($saldo, 0, ',', '.') }}
                         </h4>
-
                         <p class="mt-1 text-xs text-green-100 flex items-center opacity-80">
                             Siap dicairkan kapan saja
                         </p>
                     </div>
 
-                    <div class="flex-shrink-0">
-                        <button onclick="openModal()"
-                            class="w-full md:w-auto px-6 py-3 bg-white text-green-700 font-bold rounded-xl shadow-lg hover:bg-green-50 hover:scale-105 transition transform flex items-center justify-center gap-2">
-                            <span>Tarik Saldo</span>
-                        </button>
-                    </div>
+                    @php
+                        $hasActiveTarik = \App\Models\Penarikan::where('warga_id', Auth::user()->id_user)
+                            ->whereIn('status', ['pending', 'disetujui'])
+                            ->exists();
+                    @endphp
 
+                    <div class="flex-shrink-0">
+                        @if ($hasActiveTarik)
+                            <button onclick="showActiveWarning()"
+                                class="w-full md:w-auto px-6 py-3 bg-gray-100/90 text-gray-500 font-bold rounded-xl shadow-lg hover:bg-gray-200 transition transform flex items-center justify-center gap-2"
+                                title="Selesaikan penarikan sebelumnya">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span>Diproses...</span>
+                            </button>
+                        @else
+                            <button onclick="openModal()"
+                                class="w-full md:w-auto px-6 py-3 bg-white text-green-700 font-bold rounded-xl shadow-lg hover:bg-green-50 hover:scale-105 transition transform flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z">
+                                    </path>
+                                </svg>
+                                <span>Tarik Saldo</span>
+                            </button>
+                        @endif
+                    </div>
                 </div>
             </div>
 
@@ -130,13 +149,11 @@
                 <div class="flex justify-between items-start">
                     <div>
                         <p class="text-sm font-medium text-gray-500">Total Sampah Disetor</p>
-
                         <div class="mt-2">
                             <h4 class="text-2xl font-bold text-gray-900 flex items-baseline">
                                 {{ number_format($totalKg, 1) }}
                                 <span class="text-sm font-medium text-gray-500 ml-1">Kg</span>
                             </h4>
-
                             @if ($totalPcs > 0)
                                 <h4 class="text-2xl font-bold text-gray-700 flex items-baseline mt-1">
                                     {{ number_format($totalPcs, 0) }}
@@ -172,9 +189,9 @@
 
                     <div class="overflow-x-auto">
                         <table class="min-w-full bg-white text-sm whitespace-nowrap">
-                            <thead class="bg-gray-50 text-gray-500 uppercase font-semibold">
+                            <thead class="bg-gray-50 text-gray-500 uppercase font-semibold border-b border-gray-100">
                                 <tr>
-                                    <th class="py-4 px-6 text-left w-10">No</th>
+                                    <th class="py-4 px-6 text-center w-16">No</th>
                                     <th class="py-4 px-6 text-center">Tanggal</th>
                                     <th class="py-4 px-6 text-center">Total Sampah</th>
                                     <th class="py-4 px-6 text-center">Pendapatan</th>
@@ -183,10 +200,10 @@
                             <tbody class="text-gray-600 divide-y divide-gray-100">
                                 @forelse ($riwayatSetoran as $setoran)
                                     <tr class="hover:bg-gray-50 transition duration-150">
-                                        <td class="py-4 px-6 text-center">{{ $loop->iteration }}</td>
+                                        <td class="py-4 px-6 text-center font-medium">{{ $loop->iteration }}</td>
 
                                         <td class="py-4 px-6 text-center">
-                                            <div class="font-medium text-gray-900">
+                                            <div class="font-bold text-gray-800">
                                                 {{ \Carbon\Carbon::parse($setoran->tgl_setor)->translatedFormat('d M Y') }}
                                             </div>
                                         </td>
@@ -267,8 +284,8 @@
                     <div class="p-4 space-y-4">
                         @forelse ($kontenTerbaru ?? [] as $edukasi)
                             @if (is_object($edukasi))
-                                <div
-                                    class="flex gap-4 items-start p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition duration-200">
+                                <div class="flex gap-4 items-start p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition duration-200 cursor-pointer"
+                                    onclick="window.location='{{ route('public.konten.index') }}'">
                                     <div
                                         class="w-16 h-16 flex-shrink-0 bg-gray-200 rounded-lg overflow-hidden relative shadow-sm group">
                                         @php
@@ -463,7 +480,6 @@
         const loadingOverlay = document.getElementById('loadingOverlay');
 
         inputJumlah.addEventListener('keydown', function(event) {
-
             if (event.key === '-' || event.key === 'e' || event.key === '+' || event.key === 'E') {
                 event.preventDefault();
             }
@@ -474,6 +490,18 @@
                 this.value = Math.abs(this.value);
             }
         });
+
+        function showActiveWarning() {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Harap Tunggu!',
+                text: 'Anda masih memiliki penarikan yang sedang diproses atau menunggu diambil. Silakan selesaikan terlebih dahulu sebelum mengajukan penarikan baru.',
+                confirmButtonColor: '#ca8a04',
+                customClass: {
+                    popup: 'rounded-2xl shadow-xl'
+                }
+            });
+        }
 
         function openModal() {
             modal.classList.remove('hidden');
@@ -487,10 +515,8 @@
 
         function showError(message) {
             errorText.innerText = message;
-
             errorMsg.classList.remove('hidden');
             errorMsg.classList.add('flex');
-
             inputJumlah.classList.add('border-red-500', 'focus:ring-red-500', 'focus:border-red-500');
             inputJumlah.classList.remove('border-gray-300', 'focus:ring-green-500', 'focus:border-green-500');
         }
@@ -498,7 +524,6 @@
         function hideError() {
             errorMsg.classList.add('hidden');
             errorMsg.classList.remove('flex');
-
             inputJumlah.classList.remove('border-red-500', 'focus:ring-red-500', 'focus:border-red-500');
             inputJumlah.classList.add('border-gray-300', 'focus:ring-green-500', 'focus:border-green-500');
         }

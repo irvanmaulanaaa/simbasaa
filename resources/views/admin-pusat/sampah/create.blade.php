@@ -20,6 +20,7 @@
         isDuplicate: false,
         isLoading: false,
         errors: {},
+        imageUrl: '',
     
         checkCode() {
             if (this.code.length > 2) {
@@ -31,6 +32,11 @@
             } else {
                 this.isDuplicate = false;
             }
+        },
+    
+        removeImage() {
+            this.imageUrl = '';
+            document.getElementById('gambar').value = '';
         },
     
         validateAndSubmit() {
@@ -140,11 +146,71 @@
                     <p class="text-green-700 font-bold text-lg animate-pulse">Loading...</p>
                 </div>
 
-                <div class="p-6 text-gray-900">
+                <div class="p-6 md:p-8 text-gray-900">
 
                     <form id="sampahForm" action="{{ route('admin-pusat.sampah.store') }}" method="POST"
-                        @submit.prevent="validateAndSubmit" novalidate>
+                        enctype="multipart/form-data" @submit.prevent="validateAndSubmit" novalidate>
                         @csrf
+
+                        <div class="mb-8 p-6 bg-gray-50 rounded-xl border border-gray-200">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">Foto Sampah (Opsional)
+                            </h3>
+
+                            <div class="transition-opacity duration-300">
+                                <div x-show="!imageUrl"
+                                    class="border-2 border-dashed border-blue-300 hover:border-green-500 rounded-xl p-8 text-center cursor-pointer bg-white hover:bg-green-50 transition relative group"
+                                    onclick="document.getElementById('gambar').click()">
+
+                                    <div
+                                        class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                                        <svg class="h-8 w-8 text-blue-600" stroke="currentColor" fill="none"
+                                            viewBox="0 0 48 48" aria-hidden="true">
+                                            <path
+                                                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                    </div>
+                                    <p class="mt-2 text-sm text-gray-600"><span
+                                            class="font-bold text-green-600 hover:underline">Klik di sini</span> untuk
+                                        memilih gambar sampah</p>
+                                    <p class="text-xs text-gray-400 mt-1">Mendukung: JPG, PNG, JPEG, WEBP <span
+                                            class="text-red-500 font-bold">(Maks. 2MB)</span></p>
+                                </div>
+
+                                <div x-show="imageUrl" class="relative inline-block w-full text-center"
+                                    style="display: none;">
+                                    <div class="relative inline-block">
+                                        <img :src="imageUrl"
+                                            class="max-h-80 mx-auto rounded-lg shadow-lg object-contain border border-gray-200" />
+                                        <button type="button" @click.stop="removeImage()"
+                                            class="absolute -top-3 -right-3 bg-red-600 text-white rounded-full p-1.5 hover:bg-red-700 shadow-md transition transform hover:scale-110"
+                                            title="Hapus Gambar">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <input type="file" id="gambar" name="gambar" class="hidden"
+                                    accept="image/png, image/jpeg, image/jpg, image/webp"
+                                    @change="
+                                        const file = $event.target.files[0];
+                                        if(file) {
+                                            if(file.size > 2 * 1024 * 1024) {
+                                                Swal.fire('Ukuran Terlalu Besar', 'Maksimal ukuran gambar adalah 2MB.', 'warning');
+                                                $event.target.value = '';
+                                            } else {
+                                                imageUrl = URL.createObjectURL(file);
+                                            }
+                                        }
+                                    ">
+
+                                <x-input-error :messages="$errors->get('gambar')" class="mt-2 text-center" />
+                            </div>
+                        </div>
 
                         <h3 class="text-lg font-bold text-gray-700 mb-4 border-b pb-2">Identitas Sampah</h3>
 
@@ -303,14 +369,14 @@
                             </div>
                         </div>
 
-                        <div class="flex items-center justify-end mt-8 border-t pt-4">
+                        <div class="flex items-center justify-end mt-8 border-t pt-6 gap-3">
                             <a href="{{ route('admin-pusat.sampah.index') }}"
-                                class="inline-flex items-center px-4 py-2 bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-300 focus:bg-gray-300 active:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                class="px-4 py-2 bg-gray-200 border border-transparent rounded-lg font-semibold text-sm text-gray-700 hover:bg-gray-300 transition">
                                 Batal
                             </a>
 
                             <button type="submit"
-                                class="ml-4 inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
+                                class="px-6 py-2 bg-green-600 border border-transparent rounded-lg font-bold text-sm text-white hover:bg-green-700 shadow-md transform hover:scale-105 transition"
                                 :class="{ 'opacity-50 cursor-not-allowed': isLoading || isDuplicate }"
                                 :disabled="isLoading || isDuplicate">
                                 <span x-text="isLoading ? 'Menyimpan...' : 'Simpan Data Sampah'"></span>
@@ -328,7 +394,7 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Gagal Menyimpan!',
-                    text: 'Terdapat kesalahan pada inputan Anda. Silakan periksa kembali kolom yang berwarna merah.',
+                    text: 'Terdapat kesalahan pada inputan Anda. Silakan periksa kembali.',
                     confirmButtonColor: '#d33',
                     confirmButtonText: 'Oke'
                 });

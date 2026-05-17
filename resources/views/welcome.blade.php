@@ -710,6 +710,9 @@
             <section class="py-12 bg-white min-h-screen" x-data="{
                 search: '',
                 selectedCategory: 'all',
+                isModalOpen: false,
+                modalImageSrc: '',
+                modalImageTitle: '',
                 items: {{ $sampah->map(function ($item) {
                         return [
                             'id' => $item->id_sampah,
@@ -718,6 +721,7 @@
                             'satuan' => $item->UOM,
                             'deskripsi' => $item->deskripsi ?? 'Sampah dalam keadaan bersih.',
                             'kategori' => $item->kategori ? $item->kategori->nama_kategori : 'Lainnya',
+                            'gambar' => $item->gambar ? asset($item->gambar) : null,
                         ];
                     })->toJson() }},
             
@@ -728,7 +732,7 @@
                         return matchesSearch && matchesCategory;
                     });
                 }
-            }">
+            }" x-effect="document.body.style.overflow = isModalOpen ? 'hidden' : ''">
 
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -815,7 +819,7 @@
                                                     class="text-sm font-medium text-gray-700 group-hover:text-green-700"
                                                     :class="{
                                                         'font-bold text-green-700': selectedCategory ===
-                                                            '{{ $kat->nama_kategori }}'
+                                                    '{{ $kat->nama_kategori }}'
                                                     }">
                                                     {{ $kat->nama_kategori }}
                                                 </span>
@@ -847,22 +851,34 @@
                                 class="bg-white p-6 rounded-[24px] shadow-sm border border-gray-100 flex flex-col items-center hover:shadow-xl hover:shadow-green-900/5 hover:-translate-y-1 transition-all duration-300 group relative">
 
                                 <span
-                                    class="absolute top-4 right-4 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wide rounded-full bg-green-50 text-green-600 border border-green-100"
+                                    class="absolute top-4 right-4 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wide rounded-full bg-green-50 text-green-600 border border-green-100 z-20"
                                     x-text="item.kategori"></span>
 
-                                <div
-                                    class="text-6xl mb-6 mt-4 group-hover:scale-110 transition duration-300 drop-shadow-sm">
-                                    <span x-show="item.nama.toLowerCase().includes('plastik')">🥤</span>
-                                    <span
-                                        x-show="item.nama.toLowerCase().includes('kertas') || item.nama.toLowerCase().includes('koran')">📰</span>
-                                    <span
-                                        x-show="item.nama.toLowerCase().includes('kardus') || item.nama.toLowerCase().includes('box')">📦</span>
-                                    <span
-                                        x-show="item.nama.toLowerCase().includes('besi') || item.nama.toLowerCase().includes('kaleng')">🔧</span>
-                                    <span
-                                        x-show="item.nama.toLowerCase().includes('botol') || item.nama.toLowerCase().includes('kaca')">🧴</span>
-                                    <span
-                                        x-show="!item.nama.toLowerCase().match(/plastik|kertas|koran|kardus|box|besi|kaleng|botol|kaca/)">♻️</span>
+                                <div @click="if(item.gambar) { modalImageSrc = item.gambar; modalImageTitle = item.nama; isModalOpen = true; }"
+                                    class="w-full h-40 mb-5 rounded-2xl overflow-hidden bg-gray-50 flex items-center justify-center border border-gray-100 group-hover:shadow-md transition duration-300 relative"
+                                    :class="item.gambar ? 'cursor-pointer' : ''">
+
+                                    <template x-if="item.gambar">
+                                        <img :src="item.gambar" :alt="item.nama"
+                                            class="w-full h-full object-cover group-hover:scale-110 transition duration-500 ease-in-out">
+                                    </template>
+
+                                    <template x-if="!item.gambar">
+                                        <div
+                                            class="text-6xl group-hover:scale-110 transition duration-300 drop-shadow-sm">
+                                            <span x-show="item.nama.toLowerCase().includes('plastik')">🥤</span>
+                                            <span
+                                                x-show="item.nama.toLowerCase().includes('kertas') || item.nama.toLowerCase().includes('koran')">📰</span>
+                                            <span
+                                                x-show="item.nama.toLowerCase().includes('kardus') || item.nama.toLowerCase().includes('box')">📦</span>
+                                            <span
+                                                x-show="item.nama.toLowerCase().includes('besi') || item.nama.toLowerCase().includes('kaleng')">🔧</span>
+                                            <span
+                                                x-show="item.nama.toLowerCase().includes('botol') || item.nama.toLowerCase().includes('kaca')">🧴</span>
+                                            <span
+                                                x-show="!item.nama.toLowerCase().match(/plastik|kertas|koran|kardus|box|besi|kaleng|botol|kaca/)">♻️</span>
+                                        </div>
+                                    </template>
                                 </div>
 
                                 <h4 class="font-bold text-lg text-gray-800 text-center leading-snug"
@@ -912,6 +928,32 @@
                             </button>
                         </div>
                     </div>
+
+                    <div x-show="isModalOpen" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6" @keydown.escape.window="isModalOpen = false">
+                        
+                        <div class="absolute inset-0 bg-gray-900/80 backdrop-blur-sm transition-opacity" @click="isModalOpen = false"
+                             x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                             x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"></div>
+                        
+                        <div class="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden transform"
+                             x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-8 scale-95" x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                             x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 scale-100" x-transition:leave-end="opacity-0 translate-y-8 scale-95"
+                             @click.stop>
+                             
+                            <button @click="isModalOpen = false" class="absolute top-4 right-4 z-20 p-2 bg-black/40 hover:bg-red-500 text-white rounded-full transition-colors focus:outline-none">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+
+                            <div class="overflow-auto flex-1 flex items-center justify-center p-4 bg-gray-100 relative border-b border-gray-200">
+                                <img :src="modalImageSrc" :alt="modalImageTitle" class="max-w-full max-h-[70vh] object-contain rounded-lg shadow-sm bg-white z-10 relative">
+                            </div>
+
+                            <div class="p-4 bg-white text-center">
+                                <h3 class="text-xl font-bold text-gray-900" x-text="modalImageTitle"></h3>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </section>
         </div>
@@ -1100,11 +1142,11 @@
                 </div>
 
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 min-h-[300px]">
-                    
+
                     <template x-for="item in filteredKonten" :key="item.id">
                         <a :href="item.url"
                             class="group relative bg-white rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-green-900/5 hover:-translate-y-2 transition-all duration-500 flex flex-col h-full overflow-hidden">
-                            
+
                             <div class="h-64 bg-slate-50 relative overflow-hidden flex items-center justify-center">
                                 <template x-if="item.image">
                                     <img :src="item.image"
@@ -1144,8 +1186,9 @@
                                             <span x-text="item.tanggal"></span>
                                         </span>
 
-                                        <span class="bg-green-100 text-green-700 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border border-green-200 uppercase tracking-wider"
-                                              x-text="item.kategori">
+                                        <span
+                                            class="bg-green-100 text-green-700 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border border-green-200 uppercase tracking-wider"
+                                            x-text="item.kategori">
                                         </span>
                                     </div>
 
@@ -1184,13 +1227,15 @@
                         </a>
                     </template>
 
-                    <div x-show="kontenItems.length === 0" class="col-span-full py-20 text-center" style="display: none;">
+                    <div x-show="kontenItems.length === 0" class="col-span-full py-20 text-center"
+                        style="display: none;">
                         <div
                             class="bg-gray-50 rounded-full h-32 w-32 flex items-center justify-center mx-auto mb-6 shadow-inner">
                             <span class="text-5xl">📝</span>
                         </div>
                         <h3 class="text-xl font-bold text-gray-900 mb-2">Belum Ada Konten</h3>
-                        <p class="text-gray-500 text-base max-w-md mx-auto">Saat ini belum ada artikel atau video edukasi yang tersedia. Nantikan update terbaru dari kami!</p>
+                        <p class="text-gray-500 text-base max-w-md mx-auto">Saat ini belum ada artikel atau video
+                            edukasi yang tersedia. Nantikan update terbaru dari kami!</p>
                     </div>
 
                     <div x-show="kontenItems.length > 0 && filteredKonten.length === 0"
@@ -1204,7 +1249,8 @@
                             </svg>
                         </div>
                         <h3 class="text-xl font-bold text-slate-900 mb-2">Tidak Ditemukan</h3>
-                        <p class="text-slate-500 mb-8 max-w-sm mx-auto">Kami tidak dapat menemukan apa yang Anda cari. Coba
+                        <p class="text-slate-500 mb-8 max-w-sm mx-auto">Kami tidak dapat menemukan apa yang Anda cari.
+                            Coba
                             kata kunci lain atau reset filter.</p>
                         <button @click="searchKonten = ''; selectedKategoriKonten = 'all'; selectedSort = 'terbaru'"
                             class="inline-flex items-center px-8 py-3 bg-white border-2 border-slate-200 rounded-full text-slate-700 font-bold hover:border-green-500 hover:text-green-600 transition-all duration-300">

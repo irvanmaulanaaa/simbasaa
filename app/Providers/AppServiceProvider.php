@@ -40,12 +40,19 @@ class AppServiceProvider extends ServiceProvider
             if ($user) {
                 if ($user->hasRole('ketua')) {
                     $showDot = Penarikan::where('status', 'pending')->exists();
+                    
                 } elseif ($user->hasRole('warga')) {
- 
-                    $showDot = Penarikan::where('warga_id', $user->id_user)
+                    
+                    $adaDitolak = Penarikan::where('warga_id', $user->id_user)
                         ->where('status', 'ditolak')
                         ->where('is_read', 0)
                         ->exists();
+
+                    $adaDisetujui = Penarikan::where('warga_id', $user->id_user)
+                        ->where('status', 'disetujui')
+                        ->exists();
+
+                    $showDot = $adaDitolak || $adaDisetujui;
                 }
             }
 

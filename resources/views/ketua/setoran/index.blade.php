@@ -57,24 +57,44 @@
 
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            <nav class="flex mb-4" aria-label="Breadcrumb">
-                <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
-                    <li class="inline-flex items-center">
-                        <a href="{{ route('ketua.dashboard') }}"
-                            class="inline-flex items-center text-lg font-medium text-gray-700 hover:text-green-600">Home</a>
-                    </li>
-                    <li aria-current="page">
-                        <div class="flex items-center">
-                            <svg class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                    stroke-width="2" d="m1 9 4-4-4-4" />
-                            </svg>
-                            <span class="ms-1 text-lg font-medium text-gray-500 md:ms-2">Setoran Warga</span>
-                        </div>
-                    </li>
-                </ol>
-            </nav>
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
+                <nav class="flex" aria-label="Breadcrumb">
+                    <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+                        <li class="inline-flex items-center">
+                            <a href="{{ route('ketua.dashboard') }}"
+                                class="inline-flex items-center text-lg font-medium text-gray-700 hover:text-green-600">Home</a>
+                        </li>
+                        <li aria-current="page">
+                            <div class="flex items-center">
+                                <svg class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="m1 9 4-4-4-4" />
+                                </svg>
+                                <span class="ms-1 text-lg font-medium text-gray-500 md:ms-2">Setoran Warga</span>
+                            </div>
+                        </li>
+                    </ol>
+                </nav>
+
+                <div class="flex space-x-2">
+                    <a href="{{ route('ketua.setoran.export.pdf', request()->query()) }}" target="_blank"
+                        class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 transition shadow-sm" title="Cetak Laporan PDF">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Export ke PDF
+                    </a>
+                
+                    <a href="{{ route('ketua.setoran.export.excel', request()->query()) }}"
+                        class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 transition shadow-sm" title="Export ke Excel">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Export ke Excel
+                    </a>
+                </div>
+            </div>
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
@@ -132,7 +152,8 @@
 
                                     <button type="button" @click="$el.closest('form').submit()"
                                         class="absolute inset-y-0 right-0 flex items-center pr-2 text-gray-400 hover:text-green-600 transition cursor-pointer">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                         </svg>
@@ -313,12 +334,12 @@
             <div class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity"
                 @click="showFormModal = false"></div>
             <div class="flex min-h-full items-center justify-center p-4">
-                <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden transform transition-all"
+                <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-4xl overflow-visible transform transition-all"
                     x-transition:enter="transition ease-out duration-300"
                     x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                     x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100">
 
-                    <div class="bg-green-600 px-6 py-4 flex justify-between items-center">
+                    <div class="bg-green-600 px-6 py-4 flex justify-between items-center rounded-t-xl">
                         <h3 class="text-lg font-bold text-white flex items-center">
                             <span x-text="isEdit ? 'Edit Data Setoran' : 'Input Setoran Baru'"></span>
                         </h3>
@@ -334,7 +355,7 @@
                         @csrf
                         <input type="hidden" name="_method" :value="isEdit ? 'PUT' : 'POST'">
 
-                        <div class="mb-6">
+                        <div class="mb-6 relative z-40">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Warga Penyetor <span
                                     class="text-red-500">*</span></label>
                             <div class="relative">
@@ -368,32 +389,59 @@
                                     x-text="items.length + ' Item'"></span>
                             </div>
 
-                            <div class="space-y-3 max-h-60 overflow-y-auto custom-scrollbar pr-2">
+                            <!-- MENGHILANGKAN OVERFLOW & MAX HEIGHT AGAR DROPDOWN TIDAK MEMAKAN SPACE KOSONG -->
+                            <div class="space-y-3 pr-2 pb-2">
                                 <template x-for="(item, index) in items" :key="index">
                                     <div
-                                        class="grid grid-cols-12 gap-3 items-end bg-white p-3 rounded-lg shadow-sm border border-gray-100">
-                                        <div class="col-span-12 md:col-span-5">
+                                        class="grid grid-cols-12 gap-3 items-start bg-white p-3 rounded-lg shadow-sm border border-gray-100 relative">
+                                        
+                                        <!-- KOLOM JENIS SAMPAH -->
+                                        <div class="col-span-12 md:col-span-5 relative" @click.away="item.showDropdown = false">
                                             <label
                                                 class="text-[10px] text-gray-400 uppercase font-bold mb-1 block">Jenis
                                                 Sampah <span class="text-red-500">*</span></label>
-                                            <select name="sampah_id[]" x-model="item.sampah_id"
-                                                @change="updateHarga(index)"
-                                                class="w-full text-sm border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 py-1.5 cursor-pointer"
+                                            
+                                            <!-- SEARCHABLE TEXT INPUT -->
+                                            <input type="text"
+                                                x-model="item.searchQuery"
+                                                @focus="item.showDropdown = true"
+                                                @input="item.showDropdown = true; item.sampah_id = ''; updateHarga(index)"
+                                                placeholder="Ketik nama sampah..."
+                                                class="w-full text-sm border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 py-1.5 bg-white text-gray-900"
                                                 :class="{ 'border-red-500': errors.items[index]?.sampah_id }">
+                                            
+                                            <!-- HIDDEN INPUT ID SAMPAH -->
+                                            <input type="hidden" name="sampah_id[]" :value="item.sampah_id">
 
-                                                <option value="">Pilih Jenis Sampah</option>
+                                            <!-- DROPDOWN MENU MENGAMBANG -->
+                                            <ul x-show="item.showDropdown"
+                                                class="absolute z-[100] w-full bg-white border border-gray-200 mt-1 rounded-lg shadow-xl max-h-48 overflow-y-auto custom-scrollbar"
+                                                style="display: none;"
+                                                x-transition:enter="transition ease-out duration-100"
+                                                x-transition:enter-start="opacity-0 scale-95"
+                                                x-transition:enter-end="opacity-100 scale-100"
+                                                x-transition:leave="transition ease-in duration-75"
+                                                x-transition:leave-start="opacity-100 scale-100"
+                                                x-transition:leave-end="opacity-0 scale-95">
+                                                
+                                                <template x-for="sampah in masterSampah.filter(s => s.nama_sampah.toLowerCase().includes(item.searchQuery.toLowerCase()))" :key="sampah.id_sampah">
+                                                    <li @click="item.sampah_id = sampah.id_sampah; item.searchQuery = sampah.nama_sampah + ' (Rp ' + sampah.harga_anggota + '/' + sampah.UOM + ')'; item.showDropdown = false; updateHarga(index)"
+                                                        class="px-3 py-2 text-xs text-gray-800 hover:bg-green-50 hover:text-green-700 cursor-pointer border-b border-gray-50 last:border-b-0"
+                                                        x-text="sampah.nama_sampah + ' (Rp ' + sampah.harga_anggota + '/' + sampah.UOM + ')'">
+                                                    </li>
+                                                </template>
+                                                
+                                                <li x-show="masterSampah.filter(s => s.nama_sampah.toLowerCase().includes(item.searchQuery.toLowerCase())).length === 0"
+                                                    class="px-3 py-2 text-xs text-red-500 text-center italic bg-white">
+                                                    Sampah tidak ditemukan
+                                                </li>
+                                            </ul>
 
-                                                @foreach ($sampahs as $s)
-                                                    <option value="{{ $s->id_sampah }}">
-                                                        {{ $s->nama_sampah }} (Rp
-                                                        {{ $s->harga_anggota }}/{{ $s->UOM }})
-                                                    </option>
-                                                @endforeach
-                                            </select>
                                             <p x-show="errors.items[index]?.sampah_id"
-                                                class="text-red-500 text-[10px] mt-1">Wajib dipilih</p>
+                                                class="text-red-500 text-[10px] mt-1">Wajib dipilih dari daftar</p>
                                         </div>
 
+                                        <!-- KOLOM BERAT -->
                                         <div class="col-span-5 md:col-span-3">
                                             <label
                                                 class="text-[10px] text-gray-400 uppercase font-bold mb-1 block">Berat/Qty
@@ -408,6 +456,7 @@
                                                 class="text-red-500 text-[10px] mt-1">Wajib diisi</p>
                                         </div>
 
+                                        <!-- KOLOM SUBTOTAL -->
                                         <div class="col-span-5 md:col-span-3 text-right">
                                             <label
                                                 class="text-[10px] text-gray-400 uppercase font-bold mb-1 block">Subtotal</label>
@@ -415,9 +464,10 @@
                                                 x-text="formatRupiah(item.subtotal)"></div>
                                         </div>
 
-                                        <div class="col-span-2 md:col-span-1 flex justify-center pb-1">
+                                        <!-- TOMBOL HAPUS -->
+                                        <div class="col-span-2 md:col-span-1 flex justify-center mt-6 pb-1">
                                             <button type="button" @click="removeItem(index)"
-                                                class="text-red-400 hover:text-red-600 transition p-1 rounded-full hover:bg-red-50">
+                                                class="text-red-400 hover:text-red-600 transition p-1 rounded-full hover:bg-red-50" title="Hapus Item">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -604,7 +654,8 @@
 
                                 return {
                                     sampah_id: String(d.sampah_id),
-
+                                    searchQuery: master ? `${master.nama_sampah} (Rp ${master.harga_anggota}/${master.UOM})` : '',
+                                    showDropdown: false,
                                     berat: parseFloat(d.berat),
                                     subtotal: parseFloat(d.subtotal),
                                     harga_per_kg: master ? parseFloat(master.harga_anggota) : 0
@@ -651,6 +702,8 @@
                 addItem() {
                     this.items.push({
                         sampah_id: '',
+                        searchQuery: '',
+                        showDropdown: false,
                         berat: '',
                         subtotal: 0,
                         harga_per_kg: 0

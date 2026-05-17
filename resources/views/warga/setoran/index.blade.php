@@ -93,7 +93,17 @@
 
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="p-6 border-b border-gray-100">
-                <h3 class="text-lg font-bold text-gray-900">Riwayat Setoran Sampah</h3>
+                <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+                    <h3 class="text-lg font-bold text-gray-900">Riwayat Setoran Sampah</h3>
+                    
+                    <a href="{{ route('warga.setoran.export.pdf', request()->query()) }}" target="_blank"
+                        class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 transition shadow-sm" title="Cetak Bukti Setoran">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Cetak PDF
+                    </a>
+                </div>
 
                 <form method="GET" action="{{ route('warga.setoran.index') }}" class="mt-6">
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">

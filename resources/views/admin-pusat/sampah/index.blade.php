@@ -15,26 +15,42 @@
     <div class="py-6 px-4 sm:px-0 min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            <nav class="flex mb-4" aria-label="Breadcrumb">
-                <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
-                    <li class="inline-flex items-center">
-                        <a href="{{ route('admin-pusat.dashboard') }}"
-                            class="inline-flex items-center text-lg font-medium text-gray-700 hover:text-green-600">
-                            Home
-                        </a>
-                    </li>
-                    <li aria-current="page">
-                        <div class="flex items-center">
-                            <svg class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                    stroke-width="2" d="m1 9 4-4-4-4" />
-                            </svg>
-                            <span class="ms-1 text-lg font-medium text-gray-500 md:ms-2">Data Sampah</span>
-                        </div>
-                    </li>
-                </ol>
-            </nav>
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
+                <nav class="flex" aria-label="Breadcrumb">
+                    <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+                        <li class="inline-flex items-center">
+                            <a href="{{ route('admin-pusat.dashboard') }}"
+                                class="inline-flex items-center text-lg font-medium text-gray-700 hover:text-green-600">Home</a>
+                        </li>
+                        <li aria-current="page">
+                            <div class="flex items-center">
+                                <svg class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4" />
+                                </svg>
+                                <span class="ms-1 text-lg font-medium text-gray-500 md:ms-2">Data Sampah</span>
+                            </div>
+                        </li>
+                    </ol>
+                </nav>
+
+                <div class="flex space-x-2">
+                    <a href="{{ route('admin-pusat.sampah.export.pdf', request()->query()) }}" target="_blank"
+                        class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 transition shadow-sm" title="Cetak Laporan PDF">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Export ke PDF
+                    </a>
+                
+                    <a href="{{ route('admin-pusat.sampah.export.excel', request()->query()) }}"
+                        class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 transition shadow-sm" title="Export ke Excel">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Export ke Excel
+                    </a>
+                </div>
+            </div>
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
